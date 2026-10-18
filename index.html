@@ -3,26 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aventuras de OrtografÃ­a ğŸŒŸ</title>
+  <title>Aventuras de Ortografía </title>
 
-  <!-- ETIQUETAS PARA QUE SEA INSTALABLE EN ANDROID (PWA) -->
   <meta name="theme-color" content="#38BDF8">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="OrtografÃ­a">
+  <meta name="apple-mobile-web-app-title" content="Ortografía">
 
-  <!-- MANIFIESTO DE LA APP -->
   <link rel="manifest" href='data:application/manifest+json,{
-    "name": "Aventuras de OrtografÃ­a",
-    "short_name": "OrtografÃ­a",
+    "name": "Aventuras de Ortografía",
+    "short_name": "Ortografía",
     "start_url": "./",
     "display": "standalone",
     "background_color": "#F0F9FF",
     "theme_color": "#38BDF8",
     "icons": [
       {
-        "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>ğŸ¦‰</text></svg>",
+        "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22></text></svg>",
         "sizes": "192x192 512x512",
         "type": "image/svg+xml",
         "purpose": "any maskable"
@@ -175,25 +173,24 @@
     
     <!-- 1. PANTALLA PRINCIPAL: MUNDOS -->
     <div id="screen-main-menu">
-      <div style="font-size: 3.5rem;">ğŸ¦‰</div>
+      <div style="font-size: 3.5rem;"></div>
       <h1 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 4px;">Elige tu Aventura</h1>
-      <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 14px;">65 retos por mundo Â· 260 palabras en total</p>
+      <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 14px;">65 retos por mundo · 260 palabras en total</p>
       
-      <!-- BotÃ³n de instalaciÃ³n que aparece solo cuando el mÃ³vil lo permite -->
       <button id="btn-pwa-install" class="btn hidden" style="background: #F59E0B; font-size: 1rem; padding: 10px; margin-bottom: 12px;">
-        ğŸ“² Instalar app en mi mÃ³vil
+         Instalar app en mi móvil
       </button>
 
       <div class="world-card" onclick="app.enterSection('G')">
-        <div style="font-size: 2.2rem;">ğŸŸ¢</div>
+        <div style="font-size: 2.2rem;"></div>
         <div>
           <h3 style="color: #1E293B;">El Mundo de la G</h3>
-          <p style="color: #64748B; font-size: 0.85rem;">ga, go, gu / gue, gui / gÃ¼e, gÃ¼i</p>
+          <p style="color: #64748B; font-size: 0.85rem;">ga, go, gu / gue, gui / güe, güi</p>
         </div>
       </div>
 
       <div class="world-card" onclick="app.enterSection('J')">
-        <div style="font-size: 2.2rem;">ğŸŸ </div>
+        <div style="font-size: 2.2rem;"></div>
         <div>
           <h3 style="color: #1E293B;">El Reino de la J</h3>
           <p style="color: #64748B; font-size: 0.85rem;">ja, jo, ju, palabras en -aje, aje-/eje-</p>
@@ -201,7 +198,7 @@
       </div>
 
       <div class="world-card" onclick="app.enterSection('B')">
-        <div style="font-size: 2.2rem;">ğŸ”µ</div>
+        <div style="font-size: 2.2rem;"></div>
         <div>
           <h3 style="color: #1E293B;">El Castillo de la B</h3>
           <p style="color: #64748B; font-size: 0.85rem;">bra, bla, mb, -aba, bu-/bur-/bus-</p>
@@ -209,24 +206,24 @@
       </div>
 
       <div class="world-card" onclick="app.enterSection('V')">
-        <div style="font-size: 2.2rem;">ğŸŸ£</div>
+        <div style="font-size: 2.2rem;"></div>
         <div>
           <h3 style="color: #1E293B;">La Galaxia de la V</h3>
-          <p style="color: #64748B; font-size: 0.85rem;">nv, despuÃ©s de ol-, -ave/-eve/-ivo</p>
+          <p style="color: #64748B; font-size: 0.85rem;">nv, después de ol-, -ave/-eve/-ivo</p>
         </div>
       </div>
     </div>
 
-    <!-- 2. HUB DE LA SECCIÃ“N (ELEGIR JUEGO) -->
+    <!-- 2. HUB DE LA SECCIÓN (ELEGIR JUEGO) -->
     <div id="screen-section-hub" class="hidden">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <button class="btn btn-back" onclick="app.goToMainMenu()">â¬…ï¸ Volver</button>
+        <button class="btn btn-back" onclick="app.goToMainMenu()"> Volver</button>
         <span style="font-size: 0.85rem; color: #64748B;">Banco: 65 palabras</span>
       </div>
 
-      <div id="sec-icon" style="font-size: 3rem; margin-top: 5px;">ğŸŸ¢</div>
+      <div id="sec-icon" style="font-size: 3rem; margin-top: 5px;"></div>
       <h2 id="sec-title" style="color: var(--primary-dark); font-size: 1.8rem;">Mundo de la G</h2>
-      <p id="sec-subtitle" style="color: #64748B; font-size: 0.95rem; margin-bottom: 10px;">Elige a quÃ© juego quieres jugar</p>
+      <p id="sec-subtitle" style="color: #64748B; font-size: 0.95rem; margin-bottom: 10px;">Elige a qué juego quieres jugar</p>
 
       <div class="traffic-pill">
         <span><span class="dot dot-green"></span> <b id="sec-green">0</b> Listas</span>
@@ -236,19 +233,19 @@
 
       <div class="game-choice-card" onclick="app.startGame('options')">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="font-size: 2rem;">ğŸ¯</div>
+          <div style="font-size: 2rem;"></div>
           <div>
             <h3 style="color: var(--text);">Juego 1: Las 3 Opciones</h3>
-            <p style="color: #64748B; font-size: 0.85rem;">Escribe a mano, elige la correcta y Â¡gana confeti!</p>
+            <p style="color: #64748B; font-size: 0.85rem;">Escribe a mano, elige la correcta y ¡gana confeti!</p>
           </div>
         </div>
       </div>
 
       <div class="game-choice-card" onclick="app.startGame('spelling')">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="font-size: 2rem;">ğŸ”¤</div>
+          <div style="font-size: 2rem;"></div>
           <div>
-            <h3 style="color: var(--text);">Juego 2: SÃºper Deletreo</h3>
+            <h3 style="color: var(--text);">Juego 2: Súper Deletreo</h3>
             <p style="color: #64748B; font-size: 0.85rem;">Escribe a mano y la app te canta letra por letra.</p>
           </div>
         </div>
@@ -263,318 +260,677 @@
       
       <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: #64748B;">
         <span id="word-counter">Palabra 1 de 10</span>
-        <span id="game-tag-info">ğŸŸ¢ G Â· ğŸ¯ Opciones</span>
+        <span id="game-tag-info"> G ·  Opciones</span>
       </div>
 
-      <!-- Fase 1: Escuchar y escribir en libreta -->
       <div id="phase-write">
-        <button class="btn btn-audio" onclick="app.playAudioWord()" title="Repetir audio">ğŸ”Š</button>
+        <button class="btn btn-audio" onclick="app.playAudioWord()" title="Repetir audio"></button>
         <h2 style="font-size: 1.35rem; color: var(--text);">Escribe en tu cuaderno</h2>
-        <p style="color: #64748B; font-size: 0.95rem;">Escucha con atenciÃ³n y escribe con lÃ¡piz.</p>
+        <p style="color: #64748B; font-size: 0.95rem;">Escucha con atención y escribe con lápiz.</p>
 
         <button class="btn btn-primary" onclick="app.readyToCheck()" style="margin-top: 24px;">
-          âœï¸ Â¡Ya la he escrito! Comprobar
+           ¡Ya la he escrito! Comprobar
         </button>
       </div>
 
-      <!-- Fase 2A: 3 Opciones -->
       <div id="phase-options" class="hidden">
-        <h3 style="color: #475569; margin: 10px 0; font-size: 1.15rem;">Â¿CÃ³mo la has escrito en tu cuaderno?</h3>
+        <h3 style="color: #475569; margin: 10px 0; font-size: 1.15rem;">¿Cómo la has escrito en tu cuaderno?</h3>
         <div id="options-container" class="options-grid"></div>
       </div>
 
-      <!-- Fase 2B: Deletreo letra a letra -->
       <div id="phase-spelling" class="hidden">
         <h3 style="color: #475569; font-size: 1.15rem;">Comprueba letra por letra:</h3>
         <div id="spelling-tiles" class="spelling-board"></div>
 
         <button class="btn btn-purple" onclick="app.spellWordAloud()" style="margin-bottom: 12px; font-size: 0.95rem; padding: 10px;">
-          ğŸ”„ Volver a deletrear en voz alta
+           Volver a deletrear en voz alta
         </button>
 
-        <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 8px;">Â¿CÃ³mo la tenÃ­as en tu libreta?</p>
+        <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 8px;">¿Cómo la tenías en tu libreta?</p>
         <div style="display: flex; gap: 10px;">
           <button class="btn btn-green" onclick="app.evaluateSpelling(true)" style="margin-top: 0; font-size: 1rem;">
-            ğŸ‘ Â¡La tuve igual!
+             ¡La tuve igual!
           </button>
           <button class="btn" style="background: #F87171; margin-top: 0; font-size: 1rem;" onclick="app.evaluateSpelling(false)">
-            âœï¸ Tuve un fallito
+             Tuve un fallito
           </button>
         </div>
       </div>
 
-      <!-- Fase 3: Feedback amoroso -->
       <div id="phase-feedback" class="hidden">
         <div id="feedback-card" class="feedback-box">
           <div id="feedback-emoji" style="font-size: 2.6rem;"></div>
           <h2 id="feedback-title" style="margin: 6px 0;"></h2>
           <p id="feedback-desc" style="font-size: 1.1rem; line-height: 1.35;"></p>
         </div>
-        <button class="btn btn-primary" onclick="app.nextWord()">Siguiente palabra â¡ï¸</button>
+        <button class="btn btn-primary" onclick="app.nextWord()">Siguiente palabra </button>
       </div>
     </div>
 
-    <!-- 4. PANTALLA FINAL: NOTA POSITIVA -->
+    <!-- 4. PANTALLA FINAL -->
     <div id="screen-result" class="hidden">
-      <div id="result-trophy" style="font-size: 4rem; margin-top: 6px;">ğŸŒŸ</div>
-      <h1 id="result-title" style="color: var(--primary-dark); font-size: 2.1rem;">Â¡MisiÃ³n cumplida!</h1>
+      <div id="result-trophy" style="font-size: 4rem; margin-top: 6px;"></div>
+      <h1 id="result-title" style="color: var(--primary-dark); font-size: 2.1rem;">¡Misión cumplida!</h1>
       <p id="result-subtitle" style="font-size: 1.15rem; color: #64748B; margin: 6px 0;"></p>
       
       <div style="background: #FEF9C3; border: 3px dashed #FACC15; border-radius: 20px; padding: 16px; margin: 18px 0;">
-        <span style="font-size: 1rem; color: #854D0E; font-weight: 600;">CalificaciÃ³n de hoy:</span>
+        <span style="font-size: 1rem; color: #854D0E; font-weight: 600;">Calificación de hoy:</span>
         <h2 id="result-grade" style="color: #A16207; font-size: 2.2rem; margin-top: 4px;">SOBRESALIENTE +</h2>
       </div>
 
-      <button class="btn btn-green" onclick="app.returnToSectionHub()">Seguir jugando en esta secciÃ³n ğŸ”</button>
-      <button class="btn" style="background: #94A3B8; margin-top: 8px;" onclick="app.goToMainMenu()">Ir al MenÃº Principal ğŸ </button>
+      <button class="btn btn-green" onclick="app.returnToSectionHub()">Seguir jugando en esta sección </button>
+      <button class="btn" style="background: #94A3B8; margin-top: 8px;" onclick="app.goToMainMenu()">Ir al Menú Principal </button>
     </div>
 
   </div>
 
   <script>
     // ==============================================================
-    // BANCO COMPLETO: 65 POR MUNDO (260 PALABRAS TOTALES)
+    // BANCO DE DATOS: 65 PALABRAS POR SECCIÓN (260 TOTALES)
     // ==============================================================
     const DATABASE = {
-      // ğŸŸ¢ MUNDO DE LA G (65 palabras)
       G: {
         title: "El Mundo de la G",
-        icon: "ğŸŸ¢",
-        subtitle: "ga, go, gu / gue, gui / gÃ¼e, gÃ¼i",
+        icon: "",
+        subtitle: "ga, go, gu / gue, gui / güe, güi",
         words: [
-          { id: 'g1', word: 'cigÃ¼eÃ±a', options: ['cigueÃ±a', 'cigÃ¼eÃ±a', 'cigoÃ±a'], rule: 'Â¡DiÃ©resis! Los dos puntitos hacen sonar la "u" en gÃ¼e y gÃ¼i.' },
-          { id: 'g2', word: 'pingÃ¼ino', options: ['pinguino', 'pingÃ¼ino', 'pingino'], rule: 'En "gÃ¼i" ponemos diÃ©resis para pronunciar la "u".' },
-          { id: 'g3', word: 'paragÃ¼ero', options: ['paraguero', 'paragÃ¼ero', 'paragero'], rule: 'Como suena la "u", ponemos diÃ©resis: gÃ¼e.' },
-          { id: 'g4', word: 'desagÃ¼e', options: ['desague', 'desagÃ¼e', 'desage'], rule: 'Al decir "gÃ¼e", la "Ã¼" lleva siempre sus dos puntitos.' },
-          { id: 'g5', word: 'piragÃ¼ista', options: ['piraguista', 'piragÃ¼ista', 'piragista'], rule: 'Lleva diÃ©resis porque la "u" tiene su propio sonido.' },
-          { id: 'g6', word: 'lengÃ¼eta', options: ['lengueta', 'lengÃ¼eta', 'lengeta'], rule: 'Â¡No olvides la diÃ©resis en "gÃ¼e" para que la "u" no sea muda!' },
-          { id: 'g7', word: 'vergÃ¼enza', options: ['verguenza', 'vergÃ¼enza', 'vergonza'], rule: 'Lleva diÃ©resis en la "Ã¼".' },
-          { id: 'g8', word: 'antigÃ¼edad', options: ['antiguedad', 'antigÃ¼edad', 'antigidad'], rule: 'La diÃ©resis le da vida a la "u" en antigÃ¼edad.' },
-          { id: 'g9', word: 'ungÃ¼ento', options: ['unguento', 'ungÃ¼ento', 'ungento'], rule: 'En "gÃ¼e" pronunciamos la "u" gracias a la diÃ©resis.' },
-          { id: 'g10', word: 'pedigÃ¼eÃ±o', options: ['pedigueÃ±o', 'pedigÃ¼eÃ±o', 'pedigeÃ±o'], rule: 'Lleva los dos puntitos mÃ¡gicos sobre la "u".' },
-          { id: 'g11', word: 'agÃ¼ita', options: ['aguita', 'agÃ¼ita', 'agita'], rule: 'Como decimos a-gÃ¼i-ta, la "u" lleva diÃ©resis.' },
-          { id: 'g12', word: 'bilingÃ¼e', options: ['bilingue', 'bilingÃ¼e', 'bilinge'], rule: 'Termina en "gÃ¼e" con diÃ©resis.' },
-          { id: 'g13', word: 'yegÃ¼ita', options: ['yeguita', 'yegÃ¼ita', 'yegita'], rule: 'Suena la "u", por tanto lleva diÃ©resis: gÃ¼i.' },
-          { id: 'g14', word: 'zarigÃ¼eya', options: ['zarigueya', 'zarigÃ¼eya', 'zarigeya'], rule: 'Lleva "gÃ¼e" con sus dos puntitos.' },
-          { id: 'g15', word: 'paragÃ¼itas', options: ['paraguitas', 'paragÃ¼itas', 'paragitas'], rule: 'En "gÃ¼i" ponemos la diÃ©resis.' },
-          { id: 'g16', word: 'guitarra', options: ['gitarra', 'guitarra', 'gÃ¼itarra'], rule: 'La "u" es muda: protege a la G para sonar suave.' },
-          { id: 'g17', word: 'manguera', options: ['mangera', 'manguera', 'mangÃ¼era'], rule: 'Lleva "gue" con "u" mudita para sonar suave.' },
-          { id: 'g18', word: 'Ã¡guila', options: ['Ã¡gila', 'Ã¡guila', 'Ã¡gÃ¼ila'], rule: 'Lleva "gui" con "u" muda para sonar suave.' },
-          { id: 'g19', word: 'juguete', options: ['jugete', 'juguete', 'jugÃ¼ete'], rule: 'Con "gue" para que no suene fuerte como ju-je-te.' },
-          { id: 'g20', word: 'guisante', options: ['gisante', 'guisante', 'gÃ¼isante'], rule: 'Empieza por "gui" suave.' },
-          { id: 'g21', word: 'hoguera', options: ['hogera', 'hoguera', 'hogÃ¼era'], rule: 'Lleva "gue" para sonar suavecito.' },
-          { id: 'g22', word: 'tortuguita', options: ['tortugita', 'tortuguita', 'tortugÃ¼ita'], rule: 'Lleva "gui" con su "u" muda.' },
-          { id: 'g23', word: 'espagueti', options: ['espageti', 'espagueti', 'espagÃ¼eti'], rule: 'Lleva "gue" suave.' },
-          { id: 'g24', word: 'higuera', options: ['higera', 'higuera', 'higÃ¼era'], rule: 'Lleva "gue" con la "u" mudita.' },
-          { id: 'g25', word: 'guepardo', options: ['gepardo', 'guepardo', 'gÃ¼epardo'], rule: 'Comienza con "gue" suave.' },
-          { id: 'g26', word: 'guirnalda', options: ['girnalda', 'guirnalda', 'gÃ¼irnalda'], rule: 'Empieza por "gui".' },
-          { id: 'g27', word: 'amiguito', options: ['amigito', 'amiguito', 'amigÃ¼ito'], rule: 'Lleva "gui" con "u" muda.' },
-          { id: 'g28', word: 'guiÃ±o', options: ['giÃ±o', 'guiÃ±o', 'gÃ¼iÃ±o'], rule: 'Lleva "gui" para sonido suave.' },
-          { id: 'g29', word: 'guerrero', options: ['gerrero', 'guerrero', 'gÃ¼errero'], rule: 'Lleva "gue" con la "u" muda.' },
-          { id: 'g30', word: 'guinda', options: ['ginda', 'guinda', 'gÃ¼inda'], rule: 'Lleva "gui" suave.' },
-          { id: 'g31', word: 'merengue', options: ['merenge', 'merengue', 'merengÃ¼e'], rule: 'Termina en "gue" suave.' },
-          { id: 'g32', word: 'hamburguesa', options: ['hamburgesa', 'hamburguesa', 'hamburgÃ¼esa'], rule: 'Lleva "gue" con su "u" muda.' },
-          { id: 'g33', word: 'hormiguero', options: ['hormigero', 'hormiguero', 'hormigÃ¼ero'], rule: 'Lleva "gue" suave.' },
-          { id: 'g34', word: 'manguito', options: ['mangito', 'manguito', 'mangÃ¼ito'], rule: 'Lleva "gui" con "u" mudita.' },
-          { id: 'g35', word: 'anguila', options: ['angila', 'anguila', 'angÃ¼ila'], rule: 'Lleva "gui" suave.' },
-          { id: 'g36', word: 'madriguera', options: ['madrigera', 'madriguera', 'madrigÃ¼era'], rule: 'Lleva "gue" con la "u" en medio.' },
-          { id: 'g37', word: 'seguidor', options: ['segidor', 'seguidor', 'segÃ¼idor'], rule: 'Lleva "gui" para que suene suave.' },
-          { id: 'g38', word: 'guiÃ±ol', options: ['giÃ±ol', 'guiÃ±ol', 'gÃ¼iÃ±ol'], rule: 'Empieza por "gui" suave.' },
-          { id: 'g39', word: 'ceguera', options: ['cegera', 'ceguera', 'cegÃ¼era'], rule: 'Lleva "gue" con "u" muda.' },
-          { id: 'g40', word: 'guiso', options: ['giso', 'guiso', 'gÃ¼iso'], rule: 'Empieza por "gui" suave.' },
-          { id: 'g41', word: 'gorila', options: ['guorila', 'gorila', 'gorrila'], rule: 'Con la "o" la G va directa sin "u": ga, go, gu.' },
-          { id: 'g42', word: 'galleta', options: ['gualleta', 'galleta', 'galeta'], rule: 'Con la "a" la G va solita: ga, go, gu.' },
-          { id: 'g43', word: 'amigo', options: ['amiguo', 'amigo', 'amigÃ¼o'], rule: 'Con la "o" va la G directa.' },
-          { id: 'g44', word: 'gusanito', options: ['guosanito', 'gusanito', 'gÃ¼sanito'], rule: 'Con la "u" la G suena suave por sÃ­ sola.' },
-          { id: 'g45', word: 'regalo', options: ['regualo', 'regalo', 'regallo'], rule: 'La sÃ­laba "ga" va sin letras en medio.' },
-          { id: 'g46', word: 'tortuga', options: ['tortugua', 'tortuga', 'tortugÃ¼a'], rule: 'Termina en "ga" directo.' },
-          { id: 'g47', word: 'lago', options: ['laguo', 'lago', 'lagÃ¼o'], rule: 'La sÃ­laba "go" va directa.' },
-          { id: 'g48', word: 'mago', options: ['maguo', 'mago', 'magÃ¼o'], rule: 'Con la "o" nunca lleva "u" intermedia.' },
-          { id: 'g49', word: 'canguro', options: ['canguoro', 'canguro', 'cangÃ¼ro'], rule: 'Con la "u" va directa: gu.' },
-          { id: 'g50', word: 'gafas', options: ['guafas', 'gafas', 'garras'], rule: 'Empieza por "ga" directo.' },
-          { id: 'g51', word: 'gallina', options: ['guallina', 'gallina', 'gayina'], rule: 'Empieza por "ga".' },
-          { id: 'g52', word: 'gota', options: ['guota', 'gota', 'gotta'], rule: 'Con la "o" va sola: go.' },
-          { id: 'g53', word: 'gusano', options: ['guosano', 'gusano', 'gÃ¼sano'], rule: 'Empieza por "gu" directo.' },
-          { id: 'g54', word: 'figura', options: ['figura', 'figÃ¼ra', 'figuora'], rule: 'Lleva "gu" directo.' },
-          { id: 'g55', word: 'bigote', options: ['biguote', 'bigote', 'bigotte'], rule: 'La sÃ­laba "go" va sola.' },
-          { id: 'g56', word: 'abrigo', options: ['abriguo', 'abrigo', 'abrigÃ¼o'], rule: 'Termina en "go" directo.' },
-          { id: 'g57', word: 'goma', options: ['guoma', 'goma', 'gomma'], rule: 'La sÃ­laba "go" va directa.' },
-          { id: 'g58', word: 'garra', options: ['guarra', 'garra', 'gara'], rule: 'Empieza por "ga".' },
-          { id: 'g59', word: 'laguna', options: ['lagÃ¼na', 'laguna', 'laguona'], rule: 'Lleva "gu" directo.' },
-          { id: 'g60', word: 'fuego', options: ['fuego', 'fueguo', 'fuegÃ¼o'], rule: 'Termina en "go" directo.' },
-          { id: 'g61', word: 'hongo', options: ['honguo', 'hongo', 'hongÃ¼o'], rule: 'Con la "o" va la G sola.' },
-          { id: 'g62', word: 'garganta', options: ['guarganta', 'garganta', 'garrganta'], rule: 'Empieza por "ga".' },
-          { id: 'g63', word: 'aguja', options: ['agÃ¼ja', 'aguja', 'aguoja'], rule: 'Lleva "gu" directo.' },
-          { id: 'g64', word: 'gasolina', options: ['guasolina', 'gasolina', 'gazolina'], rule: 'Empieza por "ga" directo.' },
-          { id: 'g65', word: 'golosina', options: ['guolosina', 'golosina', 'gollosina'], rule: 'Empieza por "go" directo.' }
+          {id:'g1',word:'cigüeña',options:['cigueña','cigüeña','cigoña'],rule:'¡Diéresis en "güe" para que suene la "u"!'},
+          {id:'g2',word:'pingüino',options:['pinguino','pingüino','pingino'],rule:'En "güi" ponemos diéresis para que se escuche la "u".'},
+          {id:'g3',word:'paragüero',options:['paraguero','paragüero','paragero'],rule:'Como suena la "u", ponemos diéresis: güe.'},
+          {id:'g4',word:'desagüe',options:['desague','desagüe','desage'],rule:'En "güe" la "ü" lleva siempre puntitos.'},
+          {id:'g5',word:'piragüista',options:['piraguista','piragüista','piragista'],rule:'Lleva diéresis porque la "u" suena.'},
+          {id:'g6',word:'lengüeta',options:['lengueta','lengüeta','lengeta'],rule:'Diéresis en "güe" para que la "u" hable.'},
+          {id:'g7',word:'vergüenza',options:['verguenza','vergüenza','vergonza'],rule:'Lleva diéresis en la "ü".'},
+          {id:'g8',word:'antigüedad',options:['antiguedad','antigüedad','antigidad'],rule:'La diéresis le da vida a la "u".'},
+          {id:'g9',word:'ungüento',options:['unguento','ungüento','ungento'],rule:'En "güe" pronunciamos la "u" con diéresis.'},
+          {id:'g10',word:'pedigüeño',options:['pedigueño','pedigüeño','pedigeño'],rule:'Lleva diéresis sobre la "u".'},
+          {id:'g11',word:'agüita',options:['aguita','agüita','agita'],rule:'En a-güi-ta, la "u" lleva diéresis.'},
+          {id:'g12',word:'bilingüe',options:['bilingue','bilingüe','bilinge'],rule:'Termina en "güe" con diéresis.'},
+          {id:'g13',word:'yegüita',options:['yeguita','yegüita','yegita'],rule:'Suena la "u", lleva diéresis: güi.'},
+          {id:'g14',word:'zarigüeya',options:['zarigueya','zarigüeya','zarigeya'],rule:'Lleva "güe" con sus dos puntitos.'},
+          {id:'g15',word:'paragüitas',options:['paraguitas','paragüitas','paragitas'],rule:'En "güi" ponemos la diéresis.'},
+          {id:'g16',word:'guitarra',options:['gitarra','guitarra','güitarra'],rule:'La "u" es muda: protege a la G para sonar suave.'},
+          {id:'g17',word:'manguera',options:['mangera','manguera','mangüera'],rule:'Lleva "gue" con "u" mudita para sonar suave.'},
+          {id:'g18',word:'águila',options:['ágila','águila','ágüila'],rule:'Lleva "gui" con su "u" muda.'},
+          {id:'g19',word:'juguete',options:['jugete','juguete','jugüete'],rule:'Con "gue" para no sonar como ju-je-te.'},
+          {id:'g20',word:'guisante',options:['gisante','guisante','güisante'],rule:'Empieza por "gui" suave.'},
+          {id:'g21',word:'hoguera',options:['hogera','hoguera','hogüera'],rule:'Lleva "gue" para sonar suave.'},
+          {id:'g22',word:'tortuguita',options:['tortugita','tortuguita','tortugüita'],rule:'Lleva "gui" con su "u" muda.'},
+          {id:'g23',word:'espagueti',options:['espageti','espagueti','espagüeti'],rule:'Lleva "gue" suave.'},
+          {id:'g24',word:'higuera',options:['higera','higuera','higüera'],rule:'Lleva "gue" con la "u" mudita.'},
+          {id:'g25',word:'guepardo',options:['gepardo','guepardo','güepardo'],rule:'Empieza con "gue" suave.'},
+          {id:'g26',word:'guirnalda',options:['girnalda','guirnalda','güirnalda'],rule:'Empieza por "gui".'},
+          {id:'g27',word:'amiguito',options:['amigito','amiguito','amigüito'],rule:'Lleva "gui" con "u" muda.'},
+          {id:'g28',word:'guiño',options:['giño','guiño','güiño'],rule:'Lleva "gui" para sonido suave.'},
+          {id:'g29',word:'guerrero',options:['gerrero','guerrero','güerrero'],rule:'Lleva "gue" con la "u" muda.'},
+          {id:'g30',word:'guinda',options:['ginda','guinda','güinda'],rule:'Lleva "gui" suave.'},
+          {id:'g31',word:'merengue',options:['merenge','merengue','merengüe'],rule:'Termina en "gue" suave.'},
+          {id:'g32',word:'hamburguesa',options:['hamburgesa','hamburguesa','hamburgüesa'],rule:'Lleva "gue" con su "u" muda.'},
+          {id:'g33',word:'hormiguero',options:['hormigero','hormiguero','hormigüero'],rule:'Lleva "gue" suave.'},
+          {id:'g34',word:'manguito',options:['mangito','manguito','mangüito'],rule:'Lleva "gui" con "u" mudita.'},
+          {id:'g35',word:'anguila',options:['angila','anguila','angüila'],rule:'Lleva "gui" suave.'},
+          {id:'g36',word:'madriguera',options:['madrigera','madriguera','madrigüera'],rule:'Lleva "gue" con la "u" en medio.'},
+          {id:'g37',word:'seguidor',options:['segidor','seguidor','següidor'],rule:'Lleva "gui" para que suene suave.'},
+          {id:'g38',word:'guiñol',options:['giñol','guiñol','güiñol'],rule:'Empieza por "gui" suave.'},
+          {id:'g39',word:'ceguera',options:['cegera','ceguera','cegüera'],rule:'Lleva "gue" con "u" muda.'},
+          {id:'g40',word:'guiso',options:['giso','guiso','güiso'],rule:'Empieza por "gui" suave.'},
+          {id:'g41',word:'gorila',options:['guorila','gorila','gorrila'],rule:'Con la "o" la G va sola: ga, go, gu.'},
+          {id:'g42',word:'galleta',options:['gualleta','galleta','galeta'],rule:'Con la "a" la G va solita: ga.'},
+          {id:'g43',word:'amigo',options:['amiguo','amigo','amigüo'],rule:'Con la "o" va la G directa.'},
+          {id:'g44',word:'gusanito',options:['guosanito','gusanito','güsanito'],rule:'Con la "u" la G suena suave por sí sola.'},
+          {id:'g45',word:'regalo',options:['regualo','regalo','regallo'],rule:'La sílaba "ga" va sin letras en medio.'},
+          {id:'g46',word:'tortuga',options:['tortugua','tortuga','tortugüa'],rule:'Termina en "ga" directo.'},
+          {id:'g47',word:'lago',options:['laguo','lago','lagüo'],rule:'La sílaba "go" va directa.'},
+          {id:'g48',word:'mago',options:['maguo','mago','magüo'],rule:'Con la "o" nunca lleva "u" intermedia.'},
+          {id:'g49',word:'canguro',options:['canguoro','canguro','cangüro'],rule:'Con la "u" va directa: gu.'},
+          {id:'g50',word:'gafas',options:['guafas','gafas','garras'],rule:'Empieza por "ga" directo.'},
+          {id:'g51',word:'gallina',options:['guallina','gallina','gayina'],rule:'Empieza por "ga".'},
+          {id:'g52',word:'gota',options:['guota','gota','gotta'],rule:'Con la "o" va sola: go.'},
+          {id:'g53',word:'gusano',options:['guosano','gusano','güsano'],rule:'Empieza por "gu" directo.'},
+          {id:'g54',word:'figura',options:['figura','figüra','figuora'],rule:'Lleva "gu" directo.'},
+          {id:'g55',word:'bigote',options:['biguote','bigote','bigotte'],rule:'La sílaba "go" va sola.'},
+          {id:'g56',word:'abrigo',options:['abriguo','abrigo','abrigüo'],rule:'Termina en "go" directo.'},
+          {id:'g57',word:'goma',options:['guoma','goma','gomma'],rule:'La sílaba "go" va directa.'},
+          {id:'g58',word:'garra',options:['guarra','garra','gara'],rule:'Empieza por "ga".'},
+          {id:'g59',word:'laguna',options:['lagüna','laguna','laguona'],rule:'Lleva "gu" directo.'},
+          {id:'g60',word:'fuego',options:['fuego','fueguo','fuegüo'],rule:'Termina en "go" directo.'},
+          {id:'g61',word:'hongo',options:['honguo','hongo','hongüo'],rule:'Con la "o" va la G sola.'},
+          {id:'g62',word:'garganta',options:['guarganta','garganta','garrganta'],rule:'Empieza por "ga".'},
+          {id:'g63',word:'aguja',options:['agüja','aguja','aguoja'],rule:'Lleva "gu" directo.'},
+          {id:'g64',word:'gasolina',options:['guasolina','gasolina','gazolina'],rule:'Empieza por "ga" directo.'},
+          {id:'g65',word:'golosina',options:['guolosina','golosina','gollosina'],rule:'Empieza por "go" directo.'}
         ]
       },
 
-      // ğŸŸ  REINO DE LA J (65 palabras)
       J: {
         title: "El Reino de la J",
-        icon: "ğŸŸ ",
+        icon: "",
         subtitle: "ja, jo, ju, palabras en -aje, aje-/eje-",
         words: [
-          { id: 'j1', word: 'tijeras', options: ['tigeras', 'tijeras', 'tilleras'], rule: 'El sonido fuerte "je/ji" suele escribirse con J.' },
-          { id: 'j2', word: 'jirafa', options: ['girafa', 'jirafa', 'guirafa'], rule: 'Jirafa siempre se escribe con J.' },
-          { id: 'j3', word: 'viaje', options: ['viage', 'viaje', 'viaxe'], rule: 'Las palabras terminadas en -aje se escriben con J.' },
-          { id: 'j4', word: 'equipaje', options: ['equipage', 'equipaje', 'equipahe'], rule: 'Palabras terminadas en -aje siempre con J.' },
-          { id: 'j5', word: 'conejo', options: ['conego', 'conejo', 'coneyo'], rule: 'El sonido fuerte "jo" siempre se escribe con J.' },
-          { id: 'j6', word: 'oveja', options: ['ovega', 'oveja', 'obeja'], rule: 'El sonido "ja" siempre se escribe con J.' },
-          { id: 'j7', word: 'reloj', options: ['relog', 'reloj', 'reloge'], rule: 'Palabras que acaban en sonido j terminan en J.' },
-          { id: 'j8', word: 'cojÃ­n', options: ['cogÃ­n', 'cojÃ­n', 'cojin'], rule: 'CojÃ­n se escribe con J.' },
-          { id: 'j9', word: 'naranja', options: ['naranga', 'naranja', 'naranje'], rule: 'Termina en "ja" con J.' },
-          { id: 'j10', word: 'ajedrez', options: ['agedrez', 'ajedrez', 'axedrez'], rule: 'Palabras que empiezan por aje- van con J.' },
-          { id: 'j11', word: 'dibujo', options: ['dibugo', 'dibujo', 'divujo'], rule: 'La sÃ­laba "jo" siempre va con J.' },
-          { id: 'j12', word: 'ejercicio', options: ['egercicio', 'ejercicio', 'ejeccicio'], rule: 'Palabras que empiezan por eje- van con J.' },
-          { id: 'j13', word: 'tejer', options: ['teger', 'tejer', 'teyer'], rule: 'Tejer y crujir son excepciones que van con J.' },
-          { id: 'j14', word: 'jardÃ­n', options: ['gardÃ­n', 'jardÃ­n', 'llardÃ­n'], rule: 'El sonido fuerte "ja" siempre es con J.' },
-          { id: 'j15', word: 'bruja', options: ['bruga', 'bruja', 'bruya'], rule: 'Termina en "ja" con J.' },
-          { id: 'j16', word: 'mensaje', options: ['mensage', 'mensaje', 'mensahe'], rule: 'Las palabras terminadas en -aje van con J.' },
-          { id: 'j17', word: 'paisaje', options: ['paisage', 'paisaje', 'paizaje'], rule: 'TerminaciÃ³n en -aje siempre con J.' },
-          { id: 'j18', word: 'garaje', options: ['garage', 'garaje', 'garahe'], rule: 'TerminaciÃ³n en -aje con J.' },
-          { id: 'j19', word: 'patinaje', options: ['patinage', 'patinaje', 'patinahe'], rule: 'TerminaciÃ³n en -aje va con J.' },
-          { id: 'j20', word: 'maquillaje', options: ['maquillage', 'maquillaje', 'maquillahe'], rule: 'Termina en -aje con J.' },
-          { id: 'j21', word: 'salvaje', options: ['salvage', 'salvaje', 'salbaje'], rule: 'TerminaciÃ³n en -aje con J.' },
-          { id: 'j22', word: 'oleaje', options: ['oleage', 'oleaje', 'oleahe'], rule: 'TerminaciÃ³n en -aje va con J.' },
-          { id: 'j23', word: 'plumaje', options: ['plumage', 'plumaje', 'plumahe'], rule: 'Termina en -aje con J.' },
-          { id: 'j24', word: 'lenguaje', options: ['lenguage', 'lenguaje', 'lenguahe'], rule: 'Termina en -aje con J.' },
-          { id: 'j25', word: 'rodaje', options: ['rodage', 'rodaje', 'rodahe'], rule: 'TerminaciÃ³n en -aje con J.' },
-          { id: 'j26', word: 'ejemplo', options: ['egemplo', 'ejemplo', 'ejemplo'], rule: 'Empieza por eje- con J.' },
-          { id: 'j27', word: 'ejÃ©rcito', options: ['egÃ©rcito', 'ejÃ©rcito', 'ejerzito'], rule: 'Empieza por eje- con J.' },
-          { id: 'j28', word: 'ajeno', options: ['ageno', 'ajeno', 'aheno'], rule: 'Empieza por aje- con J.' },
-          { id: 'j29', word: 'ejecutar', options: ['egecutar', 'ejecutar', 'executar'], rule: 'Empieza por eje- con J.' },
-          { id: 'j30', word: 'granjero', options: ['grangero', 'granjero', 'granxero'], rule: 'Terminaciones en -jero/-jera van con J.' },
-          { id: 'j31', word: 'cajera', options: ['cagera', 'cajera', 'cahera'], rule: 'TerminaciÃ³n en -jera va con J.' },
-          { id: 'j32', word: 'pasajero', options: ['pasagero', 'pasajero', 'pazahero'], rule: 'TerminaciÃ³n en -jero con J.' },
-          { id: 'j33', word: 'extranjero', options: ['extrangero', 'extranjero', 'estranjero'], rule: 'TerminaciÃ³n en -jero con J.' },
-          { id: 'j34', word: 'cerrajero', options: ['cerragero', 'cerrajero', 'cerrahero'], rule: 'TerminaciÃ³n en -jero con J.' },
-          { id: 'j35', word: 'consejero', options: ['consegero', 'consejero', 'conzehero'], rule: 'TerminaciÃ³n en -jero con J.' },
-          { id: 'j36', word: 'relojerÃ­a', options: ['relogerÃ­a', 'relojerÃ­a', 'relojerilla'], rule: 'Terminaciones en -jerÃ­a van con J.' },
-          { id: 'j37', word: 'brujerÃ­a', options: ['brugerÃ­a', 'brujerÃ­a', 'brujeria'], rule: 'TerminaciÃ³n en -jerÃ­a va con J.' },
-          { id: 'j38', word: 'ojo', options: ['ogo', 'ojo', 'oyo'], rule: 'La sÃ­laba "jo" siempre se escribe con J.' },
-          { id: 'j39', word: 'ceja', options: ['cega', 'ceja', 'seja'], rule: 'La sÃ­laba "ja" va con J.' },
-          { id: 'j40', word: 'oreja', options: ['orega', 'oreja', 'oreya'], rule: 'Termina en "ja" con J.' },
-          { id: 'j41', word: 'hoja', options: ['hoga', 'hoja', 'oja'], rule: 'Lleva H muda y termina en "ja" con J.' },
-          { id: 'j42', word: 'navaja', options: ['navaga', 'navaja', 'nabaja'], rule: 'Termina en "ja" con J.' },
-          { id: 'j43', word: 'caja', options: ['caga', 'caja', 'caya'], rule: 'Termina en "ja" con J.' },
-          { id: 'j44', word: 'pijama', options: ['pigama', 'pijama', 'piyama'], rule: 'Pijama se escribe con J.' },
-          { id: 'j45', word: 'jinete', options: ['ginete', 'jinete', 'llinete'], rule: 'Jinete se escribe con J.' },
-          { id: 'j46', word: 'jamÃ³n', options: ['gamÃ³n', 'jamÃ³n', 'yamÃ³n'], rule: 'El sonido fuerte "ja" siempre es con J.' },
-          { id: 'j47', word: 'jarabe', options: ['garabe', 'jarabe', 'xarabe'], rule: 'Empieza por "ja" con J.' },
-          { id: 'j48', word: 'joya', options: ['goya', 'joya', 'jolla'], rule: 'Empieza por "jo" con J.' },
-          { id: 'j49', word: 'judÃ­a', options: ['gudÃ­a', 'judÃ­a', 'ludia'], rule: 'Empieza por "ju" con J.' },
-          { id: 'j50', word: 'jugo', options: ['gugo', 'jugo', 'judo'], rule: 'Empieza por "ju" con J.' },
-          { id: 'j51', word: 'juego', options: ['guego', 'juego', 'luego'], rule: 'Empieza por "ju" con J.' },
-          { id: 'j52', word: 'juez', options: ['guez', 'juez', 'jues'], rule: 'Empieza por "ju" con J.' },
-          { id: 'j53', word: 'joven', options: ['goven', 'joven', 'hoben'], rule: 'Empieza por "jo" con J.' },
-          { id: 'j54', word: 'jersey', options: ['gersey', 'jersey', 'llersey'], rule: 'Jersey se escribe con J.' },
-          { id: 'j55', word: 'jabalÃ­', options: ['gabalÃ­', 'jabalÃ­', 'yabalÃ­'], rule: 'Empieza por "ja" con J.' },
-          { id: 'j56', word: 'jarrÃ³n', options: ['garrÃ³n', 'jarrÃ³n', 'xarrÃ³n'], rule: 'Empieza por "ja" con J.' },
-          { id: 'j57', word: 'ajo', options: ['ago', 'ajo', 'ayo'], rule: 'Termina en "jo" con J.' },
-          { id: 'j58', word: 'reja', options: ['rega', 'reja', 'reya'], rule: 'Termina en "ja" con J.' },
-          { id: 'j59', word: 'espejo', options: ['espego', 'espejo', 'espeyo'], rule: 'Termina en "jo" con J.' },
-          { id: 'j60', word: 'viejo', options: ['viego', 'viejo', 'biejo'], rule: 'Termina en "jo" con J.' },
-          { id: 'j61', word: 'rojo', options: ['rogo', 'rojo', 'royo'], rule: 'Termina en "jo" con J.' },
-          { id: 'j62', word: 'aguja', options: ['aguga', 'aguja', 'aguya'], rule: 'Termina en "ja" con J.' },
-          { id: 'j63', word: 'esponja', options: ['esponga', 'esponja', 'esponlla'], rule: 'Termina en "ja" con J.' },
-          { id: 'j64', word: 'granja', options: ['granga', 'granja', 'granya'], rule: 'Termina en "ja" con J.' },
-          { id: 'j65', word: 'crujir', options: ['crugir', 'crujir', 'cruxir'], rule: 'Crujir es una de las excepciones que van con J.' }
+          {id:'j1',word:'tijeras',options:['tigeras','tijeras','tilleras'],rule:'El sonido fuerte "je/ji" suele escribirse con J.'},
+          {id:'j2',word:'jirafa',options:['girafa','jirafa','guirafa'],rule:'Jirafa siempre se escribe con J.'},
+          {id:'j3',word:'viaje',options:['viage','viaje','viaxe'],rule:'Las palabras terminadas en -aje se escriben con J.'},
+          {id:'j4',word:'equipaje',options:['equipage','equipaje','equipahe'],rule:'Palabras terminadas en -aje siempre con J.'},
+          {id:'j5',word:'conejo',options:['conego','conejo','coneyo'],rule:'El sonido fuerte "jo" siempre se escribe con J.'},
+          {id:'j6',word:'oveja',options:['ovega','oveja','obeja'],rule:'El sonido "ja" siempre se escribe con J.'},
+          {id:'j7',word:'reloj',options:['relog','reloj','reloge'],rule:'Palabras que acaban en sonido j terminan en J.'},
+          {id:'j8',word:'cojín',options:['cogín','cojín','cojin'],rule:'Cojín se escribe con J.'},
+          {id:'j9',word:'naranja',options:['naranga','naranja','naranje'],rule:'Termina en "ja" con J.'},
+          {id:'j10',word:'ajedrez',options:['agedrez','ajedrez','axedrez'],rule:'Palabras que empiezan por aje- van con J.'},
+          {id:'j11',word:'dibujo',options:['dibugo','dibujo','divujo'],rule:'La sílaba "jo" siempre va con J.'},
+          {id:'j12',word:'ejercicio',options:['egercicio','ejercicio','ejeccicio'],rule:'Palabras que empiezan por eje- van con J.'},
+          {id:'j13',word:'tejer',options:['teger','tejer','teyer'],rule:'Tejer y crujir son excepciones que van con J.'},
+          {id:'j14',word:'jardín',options:['gardín','jardín','llardín'],rule:'El sonido fuerte "ja" siempre es con J.'},
+          {id:'j15',word:'bruja',options:['bruga','bruja','bruya'],rule:'Termina en "ja" con J.'},
+          {id:'j16',word:'mensaje',options:['mensage','mensaje','mensahe'],rule:'Las palabras terminadas en -aje van con J.'},
+          {id:'j17',word:'paisaje',options:['paisage','paisaje','paizaje'],rule:'Terminación en -aje siempre con J.'},
+          {id:'j18',word:'garaje',options:['garage','garaje','garahe'],rule:'Terminación en -aje con J.'},
+          {id:'j19',word:'patinaje',options:['patinage','patinaje','patinahe'],rule:'Terminación en -aje va con J.'},
+          {id:'j20',word:'maquillaje',options:['maquillage','maquillaje','maquillahe'],rule:'Termina en -aje con J.'},
+          {id:'j21',word:'salvaje',options:['salvage','salvaje','salbaje'],rule:'Terminación en -aje con J.'},
+          {id:'j22',word:'oleaje',options:['oleage','oleaje','oleahe'],rule:'Terminación en -aje va con J.'},
+          {id:'j23',word:'plumaje',options:['plumage','plumaje','plumahe'],rule:'Termina en -aje con J.'},
+          {id:'j24',word:'lenguaje',options:['lenguage','lenguaje','lenguahe'],rule:'Termina en -aje con J.'},
+          {id:'j25',word:'rodaje',options:['rodage','rodaje','rodahe'],rule:'Terminación en -aje con J.'},
+          {id:'j26',word:'ejemplo',options:['egemplo','ejemplo','ejemplo'],rule:'Empieza por eje- con J.'},
+          {id:'j27',word:'ejército',options:['egército','ejército','ejerzito'],rule:'Empieza por eje- con J.'},
+          {id:'j28',word:'ajeno',options:['ageno','ajeno','aheno'],rule:'Empieza por aje- con J.'},
+          {id:'j29',word:'ejecutar',options:['egecutar','ejecutar','executar'],rule:'Empieza por eje- con J.'},
+          {id:'j30',word:'granjero',options:['grangero','granjero','granxero'],rule:'Terminaciones en -jero/-jera van con J.'},
+          {id:'j31',word:'cajera',options:['cagera','cajera','cahera'],rule:'Terminación en -jera va con J.'},
+          {id:'j32',word:'pasajero',options:['pasagero','pasajero','pazahero'],rule:'Terminación en -jero con J.'},
+          {id:'j33',word:'extranjero',options:['extrangero','extranjero','estranjero'],rule:'Terminación en -jero con J.'},
+          {id:'j34',word:'cerrajero',options:['cerragero','cerrajero','cerrahero'],rule:'Terminación en -jero con J.'},
+          {id:'j35',word:'consejero',options:['consegero','consejero','conzehero'],rule:'Terminación en -jero con J.'},
+          {id:'j36',word:'relojería',options:['relogería','relojería','relojerilla'],rule:'Terminaciones en -jería van con J.'},
+          {id:'j37',word:'brujería',options:['brugería','brujería','brujeria'],rule:'Terminación en -jería va con J.'},
+          {id:'j38',word:'ojo',options:['ogo','ojo','oyo'],rule:'La sílaba "jo" siempre se escribe con J.'},
+          {id:'j39',word:'ceja',options:['cega','ceja','seja'],rule:'La sílaba "ja" va con J.'},
+          {id:'j40',word:'oreja',options:['orega','oreja','oreya'],rule:'Termina en "ja" con J.'},
+          {id:'j41',word:'hoja',options:['hoga','hoja','oja'],rule:'Lleva H muda y termina en "ja" con J.'},
+          {id:'j42',word:'navaja',options:['navaga','navaja','nabaja'],rule:'Termina en "ja" con J.'},
+          {id:'j43',word:'caja',options:['caga','caja','caya'],rule:'Termina en "ja" con J.'},
+          {id:'j44',word:'pijama',options:['pigama','pijama','piyama'],rule:'Pijama se escribe con J.'},
+          {id:'j45',word:'jinete',options:['ginete','jinete','llinete'],rule:'Jinete se escribe con J.'},
+          {id:'j46',word:'jamón',options:['gamón','jamón','yamón'],rule:'El sonido fuerte "ja" siempre es con J.'},
+          {id:'j47',word:'jarabe',options:['garabe','jarabe','xarabe'],rule:'Empieza por "ja" con J.'},
+          {id:'j48',word:'joya',options:['goya','joya','jolla'],rule:'Empieza por "jo" con J.'},
+          {id:'j49',word:'judía',options:['gudía','judía','ludia'],rule:'Empieza por "ju" con J.'},
+          {id:'j50',word:'jugo',options:['gugo','jugo','judo'],rule:'Empieza por "ju" con J.'},
+          {id:'j51',word:'juego',options:['guego','juego','luego'],rule:'Empieza por "ju" con J.'},
+          {id:'j52',word:'juez',options:['guez','juez','jues'],rule:'Empieza por "ju" con J.'},
+          {id:'j53',word:'joven',options:['goven','joven','hoben'],rule:'Empieza por "jo" con J.'},
+          {id:'j54',word:'jersey',options:['gersey','jersey','llersey'],rule:'Jersey se escribe con J.'},
+          {id:'j55',word:'jabalí',options:['gabalí','jabalí','yabalí'],rule:'Empieza por "ja" con J.'},
+          {id:'j56',word:'jarrón',options:['garrón','jarrón','xarrón'],rule:'Empieza por "ja" con J.'},
+          {id:'j57',word:'ajo',options:['ago','ajo','ayo'],rule:'Termina en "jo" con J.'},
+          {id:'j58',word:'reja',options:['rega','reja','reya'],rule:'Termina en "ja" con J.'},
+          {id:'j59',word:'espejo',options:['espego','espejo','espeyo'],rule:'Termina en "jo" con J.'},
+          {id:'j60',word:'viejo',options:['viego','viejo','biejo'],rule:'Termina en "jo" con J.'},
+          {id:'j61',word:'rojo',options:['rogo','rojo','royo'],rule:'Termina en "jo" con J.'},
+          {id:'j62',word:'aguja',options:['aguga','aguja','aguya'],rule:'Termina en "ja" con J.'},
+          {id:'j63',word:'esponja',options:['esponga','esponja','esponlla'],rule:'Termina en "ja" con J.'},
+          {id:'j64',word:'granja',options:['granga','granja','granya'],rule:'Termina en "ja" con J.'},
+          {id:'j65',word:'crujir',options:['crugir','crujir','cruxir'],rule:'Crujir se escribe con J.'}
         ]
       },
 
-      // ğŸ”µ CASTILLO DE LA B (65 palabras)
       B: {
         title: "El Castillo de la B",
-        icon: "ğŸ”µ",
+        icon: "",
         subtitle: "bra, bla, mb antes de p y b, -aba",
         words: [
-          { id: 'b1', word: 'brazo', options: ['vrazo', 'brazo', 'blazo'], rule: 'Delante de consonante (como la "r" en bra) siempre va B.' },
-          { id: 'b2', word: 'blanco', options: ['vlanco', 'blanco', 'branco'], rule: 'Delante de "l" (bla, ble...) siempre va B.' },
-          { id: 'b3', word: 'tambor', options: ['tanbor', 'tambor', 'tamvor'], rule: 'Antes de B y de P siempre se escribe M, Â¡nunca N!' },
-          { id: 'b4', word: 'bombÃ³n', options: ['bonbÃ³n', 'bombÃ³n', 'bomvÃ³n'], rule: 'Siempre se escribe M antes de B.' },
-          { id: 'b5', word: 'cantaba', options: ['cantava', 'cantaba', 'cantada'], rule: 'Las terminaciones de pasado en -aba van con B.' },
-          { id: 'b6', word: 'jugaba', options: ['jugava', 'jugaba', 'juguaba'], rule: 'TerminaciÃ³n en -aba va con B.' },
-          { id: 'b7', word: 'biblioteca', options: ['viblioteca', 'biblioteca', 'bivlioteca'], rule: 'Palabras que empiezan por biblio- van con B.' },
-          { id: 'b8', word: 'bruja', options: ['vruja', 'bruja', 'bruxa'], rule: 'Las sÃ­labas con bra, bre, bri, bro, bru van con B.' },
-          { id: 'b9', word: 'sombrero', options: ['sonbrero', 'sombrero', 'somvrero'], rule: 'Lleva M antes de B, y "bre" va con B.' },
-          { id: 'b10', word: 'barco', options: ['varco', 'barco', 'bacro'], rule: 'Barco se escribe con B.' },
-          { id: 'b11', word: 'cable', options: ['cavle', 'cable', 'crable'], rule: 'Las sÃ­labas bla, ble, bli, blo, blu van con B.' },
-          { id: 'b12', word: 'balÃ³n', options: ['valÃ³n', 'balÃ³n', 'bolÃ³n'], rule: 'BalÃ³n se escribe con B.' },
-          { id: 'b13', word: 'biberÃ³n', options: ['viverÃ³n', 'biberÃ³n', 'biverÃ³n'], rule: 'BiberÃ³n lleva las dos con B.' },
-          { id: 'b14', word: 'burbuja', options: ['vurbuja', 'burbuja', 'burvuja'], rule: 'Empieza por bur- y va con B.' },
-          { id: 'b15', word: 'sombra', options: ['somvra', 'sombra', 'sonbra'], rule: 'Antes de B siempre va M, y "bra" con B.' },
-          { id: 'b16', word: 'bombero', options: ['bonbero', 'bombero', 'bomvero'], rule: 'Antes de B siempre se escribe M.' },
-          { id: 'b17', word: 'alfombra', options: ['alfonbra', 'alfombra', 'alfomvra'], rule: 'Lleva M antes de B, y "bra" con B.' },
-          { id: 'b18', word: 'cambio', options: ['canbio', 'cambio', 'camvio'], rule: 'Siempre se escribe M antes de B.' },
-          { id: 'b19', word: 'bambÃº', options: ['banbÃº', 'bambÃº', 'bamvÃº'], rule: 'Lleva M antes de B.' },
-          { id: 'b20', word: 'rumbo', options: ['runbo', 'rumbo', 'rumvo'], rule: 'Siempre M antes de B.' },
-          { id: 'b21', word: 'tumba', options: ['tunba', 'tumba', 'tumva'], rule: 'Lleva M antes de B.' },
-          { id: 'b22', word: 'siembra', options: ['sienbra', 'siembra', 'siemvra'], rule: 'Lleva M antes de B y "bra" con B.' },
-          { id: 'b23', word: 'zumbido', options: ['zunbido', 'zumbido', 'zumvido'], rule: 'Lleva M antes de B.' },
-          { id: 'b24', word: 'saltaba', options: ['saltava', 'saltaba', 'saltada'], rule: 'Las terminaciones en -aba van con B.' },
-          { id: 'b25', word: 'bailaba', options: ['bailava', 'bailaba', 'bailable'], rule: 'TerminaciÃ³n en -aba con B.' },
-          { id: 'b26', word: 'soÃ±aba', options: ['soÃ±ava', 'soÃ±aba', 'soÃ±ada'], rule: 'TerminaciÃ³n en -aba con B.' },
-          { id: 'b27', word: 'caminaba', options: ['caminava', 'caminaba', 'caminada'], rule: 'TerminaciÃ³n en -aba con B.' },
-          { id: 'b28', word: 'miraba', options: ['mirava', 'miraba', 'mirada'], rule: 'TerminaciÃ³n en -aba con B.' },
-          { id: 'b29', word: 'escuchaba', options: ['escuchava', 'escuchaba', 'escuchada'], rule: 'TerminaciÃ³n en -aba con B.' },
-          { id: 'b30', word: 'dibujaba', options: ['dibugaba', 'dibujaba', 'dibujava'], rule: 'Lleva B y terminaciÃ³n en -aba.' },
-          { id: 'b31', word: 'estudiaba', options: ['estudiava', 'estudiaba', 'estudiada'], rule: 'TerminaciÃ³n en -aba con B.' },
-          { id: 'b32', word: 'hablaba', options: ['hablava', 'hablaba', 'ablaba'], rule: 'Lleva H, sÃ­laba "bla" y terminaciÃ³n en -aba.' },
-          { id: 'b33', word: 'bufanda', options: ['vufanda', 'bufanda', 'bufranda'], rule: 'Las palabras que empiezan por bu- van con B.' },
-          { id: 'b34', word: 'buscar', options: ['vuscar', 'buscar', 'buzcar'], rule: 'Palabras que empiezan por bus- van con B.' },
-          { id: 'b35', word: 'buzo', options: ['vuzo', 'buzo', 'buso'], rule: 'Empieza por bu- con B.' },
-          { id: 'b36', word: 'buzÃ³n', options: ['vuzÃ³n', 'buzÃ³n', 'busÃ³n'], rule: 'Empieza por bu- con B.' },
-          { id: 'b37', word: 'tabla', options: ['tavla', 'tabla', 'trabla'], rule: 'SÃ­laba "bla" siempre con B.' },
-          { id: 'b38', word: 'pueblo', options: ['puevlo', 'pueblo', 'puelbo'], rule: 'SÃ­laba "blo" siempre con B.' },
-          { id: 'b39', word: 'bloque', options: ['vloque', 'bloque', 'broque'], rule: 'SÃ­laba "blo" con B.' },
-          { id: 'b40', word: 'broma', options: ['vroma', 'broma', 'bloma'], rule: 'SÃ­laba "bro" siempre con B.' },
-          { id: 'b41', word: 'brisa', options: ['vrisa', 'brisa', 'blisa'], rule: 'SÃ­laba "bri" con B.' },
-          { id: 'b42', word: 'blusa', options: ['vlusa', 'blusa', 'brusa'], rule: 'SÃ­laba "blu" con B.' },
-          { id: 'b43', word: 'ombligo', options: ['onbligo', 'ombligo', 'omvligo'], rule: 'Lleva M antes de B y la sÃ­laba "bli".' },
-          { id: 'b44', word: 'timbre', options: ['tinbre', 'timbre', 'timvre'], rule: 'Lleva M antes de B y la sÃ­laba "bre".' },
-          { id: 'b45', word: 'libreta', options: ['livreta', 'libreta', 'libeta'], rule: 'SÃ­laba "bre" siempre con B.' },
-          { id: 'b46', word: 'sobre', options: ['sovre', 'sobre', 'soble'], rule: 'SÃ­laba "bre" con B.' },
-          { id: 'b47', word: 'botella', options: ['votella', 'botella', 'botela'], rule: 'Botella se escribe con B.' },
-          { id: 'b48', word: 'botÃ³n', options: ['votÃ³n', 'botÃ³n', 'botoÃ±'], rule: 'BotÃ³n se escribe con B.' },
-          { id: 'b49', word: 'boca', options: ['voca', 'boca', 'boqua'], rule: 'Boca se escribe con B.' },
-          { id: 'b50', word: 'bolso', options: ['volso', 'bolso', 'borso'], rule: 'Bolso se escribe con B.' },
-          { id: 'b51', word: 'caballo', options: ['cavallo', 'caballo', 'cabayo'], rule: 'Caballo se escribe con B.' },
-          { id: 'b52', word: 'abeja', options: ['aveja', 'abeja', 'abega'], rule: 'Abeja se escribe con B y con J.' },
-          { id: 'b53', word: 'Ã¡rbol', options: ['Ã¡rvol', 'Ã¡rbol', 'arboll'], rule: 'Ãrbol se escribe con B y lleva tilde.' },
-          { id: 'b54', word: 'bota', options: ['vota', 'bota', 'botta'], rule: 'Bota de calzado se escribe con B.' },
-          { id: 'b55', word: 'lobo', options: ['lovo', 'lobo', 'lobbo'], rule: 'Lobo se escribe con B.' },
-          { id: 'b56', word: 'cubo', options: ['cuvo', 'cubo', 'qubo'], rule: 'Cubo se escribe con B.' },
-          { id: 'b57', word: 'abuelo', options: ['avuelo', 'abuelo', 'abueglo'], rule: 'Abuelo se escribe con B.' },
-          { id: 'b58', word: 'nube', options: ['nuve', 'nube', 'nuble'], rule: 'Nube se escribe con B.' },
-          { id: 'b59', word: 'abrazo', options: ['avrazo', 'abrazo', 'ablazo'], rule: 'SÃ­laba "bra" con B.' },
-          { id: 'b60', word: 'brÃºjula', options: ['vrÃºjula', 'brÃºjula', 'blÃºjula'], rule: 'SÃ­laba "bru" con B.' },
-          { id: 'b61', word: 'bosque', options: ['vosque', 'bosque', 'bozque'], rule: 'Bosque se escribe con B.' },
-          { id: 'b62', word: 'bicho', options: ['vicho', 'bicho', 'bico'], rule: 'Bicho se escribe con B.' },
-          { id: 'b63', word: 'billete', options: ['villete', 'billete', 'biliete'], rule: 'Billete se escribe con B.' },
-          { id: 'b64', word: 'beso', options: ['veso', 'beso', 'bezo'], rule: 'Beso se escribe con B.' },
-          { id: 'b65', word: 'barro', options: ['varro', 'barro', 'baro'], rule: 'Barro se escribe con B.' }
+          {id:'b1',word:'brazo',options:['vrazo','brazo','blazo'],rule:'Delante de consonante siempre va B: bra.'},
+          {id:'b2',word:'blanco',options:['vlanco','blanco','branco'],rule:'Delante de "l" (bla, ble...) siempre va B.'},
+          {id:'b3',word:'tambor',options:['tanbor','tambor','tamvor'],rule:'Antes de B y de P siempre se escribe M.'},
+          {id:'b4',word:'bombón',options:['bonbón','bombón','bomvón'],rule:'Siempre se escribe M antes de B.'},
+          {id:'b5',word:'cantaba',options:['cantava','cantaba','cantada'],rule:'Terminaciones de pasado en -aba van con B.'},
+          {id:'b6',word:'jugaba',options:['jugava','jugaba','juguaba'],rule:'Terminación en -aba va con B.'},
+          {id:'b7',word:'biblioteca',options:['viblioteca','biblioteca','bivlioteca'],rule:'Palabras con biblio- van con B.'},
+          {id:'b8',word:'bruja',options:['vruja','bruja','bruxa'],rule:'Las sílabas bra, bre, bri, bro, bru van con B.'},
+          {id:'b9',word:'sombrero',options:['sonbrero','sombrero','somvrero'],rule:'Lleva M antes de B, y "bre" va con B.'},
+          {id:'b10',word:'barco',options:['varco','barco','bacro'],rule:'Barco se escribe con B.'},
+          {id:'b11',word:'cable',options:['cavle','cable','crable'],rule:'Las sílabas bla, ble, bli... van con B.'},
+          {id:'b12',word:'balón',options:['valón','balón','bolón'],rule:'Balón se escribe con B.'},
+          {id:'b13',word:'biberón',options:['viverón','biberón','biverón'],rule:'Biberón lleva las dos con B.'},
+          {id:'b14',word:'burbuja',options:['vurbuja','burbuja','burvuja'],rule:'Empieza por bur- y va con B.'},
+          {id:'b15',word:'sombra',options:['somvra','sombra','sonbra'],rule:'Antes de B siempre va M, y "bra" con B.'},
+          {id:'b16',word:'bombero',options:['bonbero','bombero','bomvero'],rule:'Antes de B siempre se escribe M.'},
+          {id:'b17',word:'alfombra',options:['alfonbra','alfombra','alfomvra'],rule:'Lleva M antes de B, y "bra" con B.'},
+          {id:'b18',word:'cambio',options:['canbio','cambio','camvio'],rule:'Siempre se escribe M antes de B.'},
+          {id:'b19',word:'bambú',options:['banbú','bambú','bamvú'],rule:'Lleva M antes de B.'},
+          {id:'b20',word:'rumbo',options:['runbo','rumbo','rumvo'],rule:'Siempre M antes de B.'},
+          {id:'b21',word:'tumba',options:['tunba','tumba','tumva'],rule:'Lleva M antes de B.'},
+          {id:'b22',word:'siembra',options:['sienbra','siembra','siemvra'],rule:'Lleva M antes de B y "bra" con B.'},
+          {id:'b23',word:'zumbido',options:['zunbido','zumbido','zumvido'],rule:'Lleva M antes de B.'},
+          {id:'b24',word:'saltaba',options:['saltava','saltaba','saltada'],rule:'Las terminaciones en -aba van con B.'},
+          {id:'b25',word:'bailaba',options:['bailava','bailaba','bailable'],rule:'Terminación en -aba con B.'},
+          {id:'b26',word:'soñaba',options:['soñava','soñaba','soñada'],rule:'Terminación en -aba con B.'},
+          {id:'b27',word:'caminaba',options:['caminava','caminaba','caminada'],rule:'Terminación en -aba con B.'},
+          {id:'b28',word:'miraba',options:['mirava','miraba','mirada'],rule:'Terminación en -aba con B.'},
+          {id:'b29',word:'escuchaba',options:['escuchava','escuchaba','escuchada'],rule:'Terminación en -aba con B.'},
+          {id:'b30',word:'dibujaba',options:['dibugaba','dibujaba','dibujava'],rule:'Lleva B y terminación en -aba.'},
+          {id:'b31',word:'estudiaba',options:['estudiava','estudiaba','estudiada'],rule:'Terminación en -aba con B.'},
+          {id:'b32',word:'hablaba',options:['hablava','hablaba','ablaba'],rule:'Lleva H, sílaba "bla" y -aba.'},
+          {id:'b33',word:'bufanda',options:['vufanda','bufanda','bufranda'],rule:'Palabras que empiezan por bu- van con B.'},
+          {id:'b34',word:'buscar',options:['vuscar','buscar','buzcar'],rule:'Palabras que empiezan por bus- van con B.'},
+          {id:'b35',word:'buzo',options:['vuzo','buzo','buso'],rule:'Empieza por bu- con B.'},
+          {id:'b36',word:'buzón',options:['vuzón','buzón','busón'],rule:'Empieza por bu- con B.'},
+          {id:'b37',word:'tabla',options:['tavla','tabla','trabla'],rule:'Sílaba "bla" siempre con B.'},
+          {id:'b38',word:'pueblo',options:['puevlo','pueblo','puelbo'],rule:'Sílaba "blo" siempre con B.'},
+          {id:'b39',word:'bloque',options:['vloque','bloque','broque'],rule:'Sílaba "blo" con B.'},
+          {id:'b40',word:'broma',options:['vroma','broma','bloma'],rule:'Sílaba "bro" siempre con B.'},
+          {id:'b41',word:'brisa',options:['vrisa','brisa','blisa'],rule:'Sílaba "bri" con B.'},
+          {id:'b42',word:'blusa',options:['vlusa','blusa','brusa'],rule:'Sílaba "blu" con B.'},
+          {id:'b43',word:'ombligo',options:['onbligo','ombligo','omvligo'],rule:'Lleva M antes de B y sílaba "bli".'},
+          {id:'b44',word:'timbre',options:['tinbre','timbre','timvre'],rule:'Lleva M antes de B y sílaba "bre".'},
+          {id:'b45',word:'libreta',options:['livreta','libreta','libeta'],rule:'Sílaba "bre" siempre con B.'},
+          {id:'b46',word:'sobre',options:['sovre','sobre','soble'],rule:'Sílaba "bre" con B.'},
+          {id:'b47',word:'botella',options:['votella','botella','botela'],rule:'Botella se escribe con B.'},
+          {id:'b48',word:'botón',options:['votón','botón','botoñ'],rule:'Botón se escribe con B.'},
+          {id:'b49',word:'boca',options:['voca','boca','boqua'],rule:'Boca se escribe con B.'},
+          {id:'b50',word:'bolso',options:['volso','bolso','borso'],rule:'Bolso se escribe con B.'},
+          {id:'b51',word:'caballo',options:['cavallo','caballo','cabayo'],rule:'Caballo se escribe con B.'},
+          {id:'b52',word:'abeja',options:['aveja','abeja','abega'],rule:'Abeja se escribe con B y con J.'},
+          {id:'b53',word:'árbol',options:['árvol','árbol','arboll'],rule:'Árbol se escribe con B.'},
+          {id:'b54',word:'bota',options:['vota','bota','botta'],rule:'Bota de calzado se escribe con B.'},
+          {id:'b55',word:'lobo',options:['lovo','lobo','lobbo'],rule:'Lobo se escribe con B.'},
+          {id:'b56',word:'cubo',options:['cuvo','cubo','qubo'],rule:'Cubo se escribe con B.'},
+          {id:'b57',word:'abuelo',options:['avuelo','abuelo','abueglo'],rule:'Abuelo se escribe con B.'},
+          {id:'b58',word:'nube',options:['nuve','nube','nuble'],rule:'Nube se escribe con B.'},
+          {id:'b59',word:'abrazo',options:['avrazo','abrazo','ablazo'],rule:'Sílaba "bra" con B.'},
+          {id:'b60',word:'brújula',options:['vrújula','brújula','blújula'],rule:'Sílaba "bru" con B.'},
+          {id:'b61',word:'bosque',options:['vosque','bosque','bozque'],rule:'Bosque se escribe con B.'},
+          {id:'b62',word:'bicho',options:['vicho','bicho','bico'],rule:'Bicho se escribe con B.'},
+          {id:'b63',word:'billete',options:['villete','billete','biliete'],rule:'Billete se escribe con B.'},
+          {id:'b64',word:'beso',options:['veso','beso','bezo'],rule:'Beso se escribe con B.'},
+          {id:'b65',word:'barro',options:['varro','barro','baro'],rule:'Barro se escribe con B.'}
         ]
       },
 
-      // ğŸŸ£ GALAXIA DE LA V (65 palabras)
       V: {
         title: "La Galaxia de la V",
-        icon: "ğŸŸ£",
-        subtitle: "nv, despuÃ©s de ol-, -ave/-eve/-ivo",
+        icon: "",
+        subtitle: "nv, después de ol-, -ave/-eve/-ivo",
         words: [
-          { id: 'v1', word: 'viento', options: ['biento', 'viento', 'vientto'], rule: 'Viento se escribe con V.' },
-          { id: 'v2', word: 'invierno', options: ['inbierno', 'invierno', 'imbierno'], rule: 'DetrÃ¡s de N siempre se escribe V (nv).' },
-          { id: 'v3', word: 'enviar', options: ['enbiar', 'enviar', 'embiar'], rule: 'Siempre va V despuÃ©s de N: enviar.' },
-          { id: 'v4', word: 'nieve', options: ['niebe', 'nieve', 'nibe'], rule: 'Nieve se escribe con V.' },
-          { id: 'v5', word: 'ventana', options: ['bentana', 'ventana', 'venttana'], rule: 'Ventana se escribe con V.' },
-          { id: 'v6', word: 'olvidar', options: ['olbidar', 'olvidar', 'orvidar'], rule: 'DetrÃ¡s de la sÃ­laba ol- siempre va V.' },
-          { id: 'v7', word: 'invento', options: ['inbento', 'invento', 'imbento'], rule: 'DetrÃ¡s de N siempre va V.' },
-          { id: 'v8', word: 'aviÃ³n', options: ['abiÃ³n', 'aviÃ³n', 'allÃ³n'], rule: 'AviÃ³n se escribe con V y lleva tilde.' },
-          { id: 'v9', word: 'verano', options: ['berano', 'verano', 'verrano'], rule: 'Verano se escribe con V.' },
-          { id: 'v10', word: 'lluvia', options: ['llubia', 'lluvia', 'yuvia'], rule: 'Lluvia se escribe con V.' },
-          { id: 'v11', word: 'tranvÃ­a', options: ['tranbÃ­a', 'tranvÃ­a', 'tramvÃ­a'], rule: 'DetrÃ¡s de N siempre va V (nv).' },
-          { id: 'v12', word: 'envolver', options: ['enbolber', 'envolver', 'embolver'], rule: 'Lleva "nv" y detrÃ¡s de ol- va V.' },
-          { id: 'v13', word: 'convertir', options: ['conbertir', 'convertir', 'comvertir'], rule: 'DetrÃ¡s de N va V.' },
-          { id: 'v14', word: 'convivencia', options: ['c
+          {id:'v1',word:'viento',options:['biento','viento','vientto'],rule:'Viento se escribe con V.'},
+          {id:'v2',word:'invierno',options:['inbierno','invierno','imbierno'],rule:'Detrás de N siempre se escribe V (nv).'},
+          {id:'v3',word:'enviar',options:['enbiar','enviar','embiar'],rule:'Siempre va V después de N: enviar.'},
+          {id:'v4',word:'nieve',options:['niebe','nieve','nibe'],rule:'Nieve se escribe con V.'},
+          {id:'v5',word:'ventana',options:['bentana','ventana','venttana'],rule:'Ventana se escribe con V.'},
+          {id:'v6',word:'olvidar',options:['olbidar','olvidar','orvidar'],rule:'Detrás de la sílaba ol- siempre va V.'},
+          {id:'v7',word:'invento',options:['inbento','invento','imbento'],rule:'Detrás de N siempre va V.'},
+          {id:'v8',word:'avión',options:['abión','avión','allón'],rule:'Avión se escribe con V y lleva tilde.'},
+          {id:'v9',word:'verano',options:['berano','verano','verrano'],rule:'Verano se escribe con V.'},
+          {id:'v10',word:'lluvia',options:['llubia','lluvia','yuvia'],rule:'Lluvia se escribe con V.'},
+          {id:'v11',word:'tranvía',options:['tranbía','tranvía','tramvía'],rule:'Detrás de N siempre va V (nv).'},
+          {id:'v12',word:'envolver',options:['enbolber','envolver','embolver'],rule:'Lleva "nv" y detrás de ol- va V.'},
+          {id:'v13',word:'convertir',options:['conbertir','convertir','comvertir'],rule:'Detrás de N va V.'},
+          {id:'v14',word:'convivencia',options:['conbibencia','convivencia','comvivencia'],rule:'Detrás de N va V.'},
+          {id:'v15',word:'invasión',options:['inbasión','invasión','imbasión'],rule:'Detrás de N va V (nv).'},
+          {id:'v16',word:'disolver',options:['disolber','disolver','dizolver'],rule:'Detrás de ol- siempre se escribe V.'},
+          {id:'v17',word:'polvo',options:['polbo','polvo','porvo'],rule:'Detrás de ol- va V.'},
+          {id:'v18',word:'pólvora',options:['pólbora','pólvora','porvora'],rule:'Detrás de ol- va V.'},
+          {id:'v19',word:'volver',options:['bolber','volver','volber'],rule:'Detrás de ol- va V.'},
+          {id:'v20',word:'revolver',options:['rebolber','revolver','revolber'],rule:'Detrás de ol- va V.'},
+          {id:'v21',word:'envoltorio',options:['enboltorio','envoltorio','emboltorio'],rule:'Lleva "nv" y detrás de ol- va V.'},
+          {id:'v22',word:'nave',options:['nabe','nave','naye'],rule:'Terminación en -ave se escribe con V.'},
+          {id:'v23',word:'llave',options:['llabe','llave','yave'],rule:'Palabras terminadas en -ave van con V.'},
+          {id:'v24',word:'suave',options:['suabe','suave','suable'],rule:'Adjetivos terminados en -ave van con V.'},
+          {id:'v25',word:'octavo',options:['octabo','octavo','otavo'],rule:'Terminación en -avo va con V.'},
+          {id:'v26',word:'pavo',options:['pabo','pavo','payo'],rule:'Terminación en -avo va con V.'},
+          {id:'v27',word:'cueva',options:['cueba','cueva','queya'],rule:'Terminación en -eva va con V.'},
+          {id:'v28',word:'nueva',options:['nueba','nueva','nueba'],rule:'Adjetivo terminado en -eva con V.'},
+          {id:'v29',word:'huevo',options:['huebo','huevo','gevo'],rule:'Terminación en -evo va con V.'},
+          {id:'v30',word:'nuevo',options:['nuebo','nuevo','nueyo'],rule:'Terminación en -evo con V.'},
+          {id:'v31',word:'creativo',options:['creatibo','creativo','creattivo'],rule:'Adjetivos terminados en -ivo van con V.'},
+          {id:'v32',word:'activa',options:['actiba','activa','ativa'],rule:'Terminación en -iva con V.'},
+          {id:'v33',word:'deportivo',options:['deportibo','deportivo','deportiwo'],rule:'Terminación en -ivo va con V.'},
+          {id:'v34',word:'festivo',options:['festibo','festivo','feztivo'],rule:'Terminación en -ivo con V.'},
+          {id:'v35',word:'pensativo',options:['pensatibo','pensativo','penzativo'],rule:'Terminación en -ivo va con V.'},
+          {id:'v36',word:'vaso',options:['baso','vaso','vazo'],rule:'Vaso de beber se escribe con V.'},
+          {id:'v37',word:'volcán',options:['bolcán','volcán','vorcán'],rule:'Volcán se escribe con V.'},
+          {id:'v38',word:'vela',options:['bela','vela','vella'],rule:'Vela de luz va con V.'},
+          {id:'v39',word:'vaca',options:['baca','vaca','vaqua'],rule:'Vaca animal se escribe con V.'},
+          {id:'v40',word:'uva',options:['uba','uva','uvba'],rule:'Uva fruta se escribe con V.'},
+          {id:'v41',word:'vino',options:['bino','vino','vinno'],rule:'Vino se escribe con V.'},
+          {id:'v42',word:'verde',options:['berde','verde','vuerde'],rule:'Color verde se escribe con V.'},
+          {id:'v43',word:'voz',options:['boz','voz','vos'],rule:'Voz se escribe con V y termina en Z.'},
+          {id:'v44',word:'selva',options:['selba','selva','serba'],rule:'Selva se escribe con V.'},
+          {id:'v45',word:'vivir',options:['bibir','vivir','bivir'],rule:'Vivir lleva las dos con V.'},
+          {id:'v46',word:'vida',options:['bida','vida','vilda'],rule:'Vida se escribe con V.'},
+          {id:'v47',word:'curva',options:['curba','curva','qurva'],rule:'Curva se escribe con V.'},
+          {id:'v48',word:'clavo',options:['clabo','clavo','crayo'],rule:'Clavo termina en -avo con V.'},
+          {id:'v49',word:'avispa',options:['abispa','avispa','avizpa'],rule:'Avispa se escribe con V.'},
+          {id:'v50',word:'violín',options:['biolín','violín','viollín'],rule:'Violín se escribe con V.'},
+          {id:'v51',word:'vestido',options:['bestido','vestido','veztido'],rule:'Vestido se escribe con V.'},
+          {id:'v52',word:'viernes',options:['biernes','viernes','vjernes'],rule:'Viernes se escribe con V.'},
+          {id:'v53',word:'vecino',options:['becino','vecino','vezino'],rule:'Vecino se escribe con V y con C.'},
+          {id:'v54',word:'veloz',options:['beloz','veloz','velos'],rule:'Veloz se escribe con V.'},
+          {id:'v55',word:'vampiro',options:['bampiro','vampiro','vamppiro'],rule:'Vampiro se escribe con V.'},
+          {id:'v56',word:'ave',options:['abe','ave','aye'],rule:'Termina en -ave con V.'},
+          {id:'v57',word:'viajero',options:['biajero','viajero','viagero'],rule:'Viajero se escribe con V y con J.'},
+          {id:'v58',word:'víbora',options:['bíbora','víbora','vívora'],rule:'Víbora empieza con V y luego lleva B.'},
+          {id:'v59',word:'velero',options:['belero','velero','vellero'],rule:'Velero se escribe con V.'},
+          {id:'v60',word:'verdad',options:['berdad','verdad','verda'],rule:'Verdad se escribe con V.'},
+          {id:'v61',word:'visita',options:['bisita','visita','vizita'],rule:'Visita se escribe con V.'},
+          {id:'v62',word:'vista',options:['bista','vista','vysta'],rule:'Vista se escribe con V.'},
+          {id:'v63',word:'venado',options:['benado','venado','venao'],rule:'Venado se escribe con V.'},
+          {id:'v64',word:'vagón',options:['bagón','vagón','baghon'],rule:'Vagón se escribe con V.'},
+          {id:'v65',word:'velocidad',options:['belocidad','velocidad','velosidad'],rule:'Velocidad se escribe con V y con C.'}
+        ]
+      }
+    };
+
+    const LETTER_NAMES = {
+      'a':'a','b':'be','c':'ce','d':'de','e':'e','f':'efe','g':'ge','h':'hache',
+      'i':'i','j':'jota','k':'ka','l':'ele','m':'eme','n':'ene','ñ':'eñe','o':'o',
+      'p':'pe','q':'cu','r':'erre','s':'ese','t':'te','u':'u','ü':'u con diéresis',
+      'v':'uve','w':'uve doble','x':'equis','y':'i griega','z':'zeta',
+      'á':'a con tilde','é':'e con tilde','í':'i con tilde','ó':'o con tilde','ú':'u con tilde'
+    };
+
+    // --- CONTROLADOR PRINCIPAL ---
+    class OrthoApp {
+      constructor() {
+        this.currentSectionKey = 'G';
+        this.currentMode = 'options';
+        this.memoryKey = 'ortho_master_v7_fixed';
+        this.memory = this.loadMemory();
+        this.currentSessionWords = [];
+        this.currentIndex = 0;
+        this.sessionScore = 0;
+        this.synth = window.speechSynthesis;
+      }
+
+      loadMemory() {
+        const saved = localStorage.getItem(this.memoryKey);
+        return saved ? JSON.parse(saved) : {};
+      }
+
+      saveMemory() {
+        localStorage.setItem(this.memoryKey, JSON.stringify(this.memory));
+      }
+
+      enterSection(secKey) {
+        this.currentSectionKey = secKey;
+        const sec = DATABASE[secKey];
+
+        document.getElementById('sec-icon').textContent = sec.icon;
+        document.getElementById('sec-title').textContent = sec.title;
+        document.getElementById('sec-subtitle').textContent = sec.subtitle;
+
+        let green = 0, yellow = 0, red = 0;
+        sec.words.forEach(w => {
+          const st = this.memory[w.id]?.status;
+          if (st === 'green') green++;
+          else if (st === 'yellow') yellow++;
+          else if (st === 'red') red++;
+        });
+        document.getElementById('sec-green').textContent = green;
+        document.getElementById('sec-yellow').textContent = yellow;
+        document.getElementById('sec-red').textContent = red;
+
+        document.getElementById('screen-main-menu').classList.add('hidden');
+        document.getElementById('screen-section-hub').classList.remove('hidden');
+      }
+
+      goToMainMenu() {
+        document.getElementById('screen-section-hub').classList.add('hidden');
+        document.getElementById('screen-result').classList.add('hidden');
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-main-menu').classList.remove('hidden');
+      }
+
+      returnToSectionHub() {
+        document.getElementById('screen-result').classList.add('hidden');
+        this.enterSection(this.currentSectionKey);
+      }
+
+      startGame(mode) {
+        this.currentMode = mode;
+        const sec = DATABASE[this.currentSectionKey];
+
+        const reds = sec.words.filter(w => this.memory[w.id]?.status === 'red');
+        const yellows = sec.words.filter(w => this.memory[w.id]?.status === 'yellow');
+        const unpracticed = sec.words.filter(w => !this.memory[w.id]);
+        const greens = sec.words.filter(w => this.memory[w.id]?.status === 'green');
+
+        const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+
+        let selected = [];
+        selected.push(...shuffle(reds));
+        selected.push(...shuffle(yellows));
+        if (selected.length < 10) selected.push(...shuffle(unpracticed));
+        if (selected.length < 10) selected.push(...shuffle(greens));
+
+        this.currentSessionWords = shuffle(selected.slice(0, 10));
+        this.currentIndex = 0;
+        this.sessionScore = 0;
+
+        document.getElementById('screen-section-hub').classList.add('hidden');
+        document.getElementById('screen-game').classList.remove('hidden');
+
+        const modeName = (mode === 'options') ? ' 3 Opciones' : ' Deletreo';
+        document.getElementById('game-tag-info').textContent = `${sec.icon} ${this.currentSectionKey} · ${modeName}`;
+
+        this.loadWord();
+      }
+
+      loadWord() {
+        const item = this.currentSessionWords[this.currentIndex];
+        document.getElementById('word-counter').textContent = `Palabra ${this.currentIndex + 1} de 10`;
+        document.getElementById('progress-fill').style.width = `${(this.currentIndex / 10) * 100}%`;
+
+        document.getElementById('phase-write').classList.remove('hidden');
+        document.getElementById('phase-options').classList.add('hidden');
+        document.getElementById('phase-spelling').classList.add('hidden');
+        document.getElementById('phase-feedback').classList.add('hidden');
+
+        setTimeout(() => this.playAudioWord(), 300);
+      }
+
+      playAudioWord() {
+        const item = this.currentSessionWords[this.currentIndex];
+        if (!item) return;
+        this.synth.cancel();
+        const u = new SpeechSynthesisUtterance(item.word);
+        u.lang = 'es-ES';
+        u.rate = 0.82;
+        this.synth.speak(u);
+      }
+
+      readyToCheck() {
+        document.getElementById('phase-write').classList.add('hidden');
+        if (this.currentMode === 'options') {
+          this.revealOptions();
+        } else {
+          this.startSpellingMode();
+        }
+      }
+
+      revealOptions() {
+        const item = this.currentSessionWords[this.currentIndex];
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        const shuffled = [...item.options].sort(() => Math.random() - 0.5);
+        shuffled.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.onclick = () => this.evaluateAnswer(opt === item.word, item);
+          container.appendChild(btn);
+        });
+
+        document.getElementById('phase-options').classList.remove('hidden');
+      }
+
+      startSpellingMode() {
+        const item = this.currentSessionWords[this.currentIndex];
+        const container = document.getElementById('spelling-tiles');
+        container.innerHTML = '';
+
+        for (let char of item.word) {
+          const tile = document.createElement('div');
+          tile.className = 'letter-tile';
+          tile.textContent = char.toUpperCase();
+          container.appendChild(tile);
+        }
+
+        document.getElementById('phase-spelling').classList.remove('hidden');
+        this.spellWordAloud();
+      }
+
+      spellWordAloud() {
+        const item = this.currentSessionWords[this.currentIndex];
+        const tiles = document.querySelectorAll('.letter-tile');
+        this.synth.cancel();
+
+        tiles.forEach(t => t.className = 'letter-tile');
+
+        let letters = item.word.toLowerCase().split('');
+        let i = 0;
+
+        const speakNextLetter = () => {
+          if (i >= letters.length) {
+            setTimeout(() => {
+              const uEnd = new SpeechSynthesisUtterance(item.word);
+              uEnd.lang = 'es-ES';
+              this.synth.speak(uEnd);
+            }, 300);
+            return;
+          }
+
+          tiles.forEach((t, idx) => {
+            if (idx === i) t.className = 'letter-tile speaking';
+            else if (idx < i) t.className = 'letter-tile completed';
+          });
+
+          const char = letters[i];
+          const spokenName = LETTER_NAMES[char] || char;
+          const u = new SpeechSynthesisUtterance(spokenName);
+          u.lang = 'es-ES';
+          u.rate = 0.9;
+
+          u.onend = () => {
+            i++;
+            setTimeout(speakNextLetter, 220);
+          };
+
+          this.synth.speak(u);
+        };
+
+        setTimeout(speakNextLetter, 300);
+      }
+
+      evaluateSpelling(isCorrect) {
+        this.synth.cancel();
+        const item = this.currentSessionWords[this.currentIndex];
+        document.getElementById('phase-spelling').classList.add('hidden');
+        this.evaluateAnswer(isCorrect, item);
+      }
+
+      evaluateAnswer(isCorrect, item) {
+        document.getElementById('phase-options').classList.add('hidden');
+        const feedbackCard = document.getElementById('feedback-card');
+        const emojiEl = document.getElementById('feedback-emoji');
+        const titleEl = document.getElementById('feedback-title');
+        const descEl = document.getElementById('feedback-desc');
+
+        let wordState = this.memory[item.id] || { status: 'new', streak: 0 };
+
+        if (isCorrect) {
+          this.sessionScore++;
+          confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+
+          feedbackCard.className = 'feedback-box feedback-correct';
+          emojiEl.textContent = ' ¡Excelente!';
+          titleEl.textContent = '¡La has escrito perfecta!';
+          descEl.textContent = `"${item.word}" está impecable. ¡Gran memoria!`;
+
+          if (wordState.status === 'red') {
+            wordState.status = 'yellow';
+            wordState.streak = 1;
+          } else if (wordState.status === 'yellow') {
+            wordState.streak += 1;
+            if (wordState.streak >= 3) wordState.status = 'green';
+          } else {
+            wordState.status = 'green';
+          }
+        } else {
+          feedbackCard.className = 'feedback-box feedback-wrong';
+          emojiEl.textContent = ' ¡Casi, casi!';
+          titleEl.textContent = '¡No te preocupes, así aprendemos!';
+          descEl.innerHTML = `La forma correcta es <b>"${item.word}"</b>.<br>${item.rule}<br><i>Rodea la palabra con lápiz verde en tu libreta.</i>`;
+
+          wordState.status = 'red';
+          wordState.streak = 0;
+        }
+
+        this.memory[item.id] = wordState;
+        this.saveMemory();
+
+        document.getElementById('phase-feedback').classList.remove('hidden');
+      }
+
+      nextWord() {
+        this.currentIndex++;
+        if (this.currentIndex < 10 && this.currentIndex < this.currentSessionWords.length) {
+          this.loadWord();
+        } else {
+          this.showFinalScreen();
+        }
+      }
+
+      showFinalScreen() {
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-result').classList.remove('hidden');
+
+        let grade = 'NOTABLE';
+        let sub = '¡Gran esfuerzo hoy! Cada sesión escribes con más seguridad.';
+        let icon = '';
+
+        if (this.sessionScore === 10) {
+          grade = 'SOBRESALIENTE +';
+          sub = '¡Impecable! ¡Has acertado todas las palabras!';
+          icon = '';
+          confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+        } else if (this.sessionScore >= 8) {
+          grade = 'SOBRESALIENTE';
+          sub = '¡Fantástico trabajo! Tu ortografía es estupenda.';
+          icon = '';
+        } else if (this.sessionScore >= 6) {
+          grade = 'NOTABLE +';
+          sub = '¡Muy buen entrenamiento! Se nota que practicas con ganas.';
+          icon = '';
+        }
+
+        document.getElementById('result-trophy').textContent = icon;
+        document.getElementById('result-grade').textContent = grade;
+        document.getElementById('result-subtitle').textContent = sub;
+      }
+    }
+
+    // Instancia global
+    const app = new OrthoApp();
+
+    // Botón de instalación PWA en Android
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('btn-pwa-install');
+      if (btn) {
+        btn.classList.remove('hidden');
+        btn.onclick = async () => {
+          btn.classList.add('hidden');
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+        };
+      }
+    });
+  </script>
+</body>
+</html>
