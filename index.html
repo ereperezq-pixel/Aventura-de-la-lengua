@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aventuras de Ortografía </title>
 
+  <!-- PWA Y COLOR MÓVIL -->
   <meta name="theme-color" content="#38BDF8">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,20 +19,16 @@
     "display": "standalone",
     "background_color": "#F0F9FF",
     "theme_color": "#38BDF8",
-    "icons": [
-      {
-        "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22></text></svg>",
-        "sizes": "192x192 512x512",
-        "type": "image/svg+xml",
-        "purpose": "any maskable"
-      }
-    ]
+    "icons": [{
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22></text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }]
   }'>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
     :root {
@@ -43,24 +40,42 @@
       --green-dark: #16A34A;
       --yellow: #FACC15;
       --red: #F87171;
-      --purple: #818CF8;
+      --purple: #A855F7;
+      --orange: #FB923C;
       --text: #1E293B;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fredoka', cursive, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 14px; }
+    body { 
+      background: linear-gradient(135deg, #E0F2FE 0%, #F0F9FF 50%, #EDE9FE 100%);
+      color: var(--text); 
+      min-height: 100vh; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      padding: 14px;
+      overflow-x: hidden;
+    }
 
     .app-card {
       background: var(--card-bg);
       width: 100%;
       max-width: 500px;
-      border-radius: 28px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      border: 4px solid #E0F2FE;
-      padding: 22px;
+      border-radius: 32px;
+      box-shadow: 0 16px 40px rgba(2, 132, 199, 0.12), 0 4px 12px rgba(0,0,0,0.04);
+      border: 4px solid #BAE6FD;
+      padding: 24px;
       text-align: center;
+      position: relative;
+      animation: floatCard 0.4s ease-out;
     }
 
+    @keyframes floatCard {
+      from { opacity: 0; transform: translateY(15px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Botones con relieve 3D estilo juego */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -69,100 +84,161 @@
       font-size: 1.15rem;
       font-weight: 700;
       border: none;
-      border-radius: 20px;
-      padding: 14px 22px;
+      border-radius: 22px;
+      padding: 14px 24px;
       cursor: pointer;
       color: white;
       width: 100%;
       margin-top: 10px;
-      box-shadow: 0 5px 0 rgba(0,0,0,0.15);
-      transition: transform 0.1s;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.18);
+      transition: all 0.12s ease;
     }
-    .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
-    .btn-primary { background: var(--primary); }
-    .btn-green { background: var(--green-dark); }
-    .btn-purple { background: var(--purple); }
-    .btn-back { background: #94A3B8; font-size: 0.95rem; padding: 8px 14px; width: auto; margin: 0; border-radius: 12px; box-shadow: none; }
+    .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.18); }
+    .btn-primary { background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%); }
+    .btn-green { background: linear-gradient(180deg, #4ADE80 0%, #16A34A 100%); }
+    .btn-purple { background: linear-gradient(180deg, #C084FC 0%, #9333EA 100%); }
+    .btn-back { background: #94A3B8; font-size: 0.95rem; padding: 8px 16px; width: auto; margin: 0; border-radius: 14px; box-shadow: 0 3px 0 #64748B; }
 
+    /* Tarjetas de Mundos */
     .world-card {
-      background: #F8FAFC;
-      border: 3px solid #E2E8F0;
-      border-radius: 22px;
+      border-radius: 24px;
       padding: 16px;
       margin-bottom: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
       text-align: left;
-      transition: all 0.2s;
+      border: 3px solid transparent;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .world-card:hover, .world-card:active { border-color: var(--primary); background: #F0F9FF; transform: scale(1.02); }
+    .world-card:active { transform: scale(0.97); }
+    .world-g { background: linear-gradient(135deg, #DCFCE7 0%, #F0FDF4 100%); border-color: #86EFAC; }
+    .world-j { background: linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%); border-color: #FDBA74; }
+    .world-b { background: linear-gradient(135deg, #E0E7FF 0%, #EEF2FF 100%); border-color: #A5B4FC; }
+    .world-v { background: linear-gradient(135deg, #F3E8FF 0%, #FAF5FF 100%); border-color: #D8B4FE; }
 
+    /* Tarjetas de Elección de Juego */
     .game-choice-card {
       background: #FFFFFF;
       border: 3px solid #E2E8F0;
-      border-radius: 20px;
+      border-radius: 22px;
       padding: 18px;
       margin: 14px 0;
       cursor: pointer;
       text-align: left;
       transition: all 0.2s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.03);
     }
-    .game-choice-card:hover, .game-choice-card:active { border-color: var(--primary-dark); background: #F0FDF4; transform: translateY(-2px); }
+    .game-choice-card:hover, .game-choice-card:active { 
+      border-color: var(--primary-dark); 
+      background: #F0FDF4; 
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.1);
+    }
 
-    .btn-audio { background: #818CF8; border-radius: 50%; width: 72px; height: 72px; font-size: 2.1rem; margin: 12px auto; }
-    .progress-bar { background: #E2E8F0; border-radius: 12px; height: 14px; overflow: hidden; margin-bottom: 16px; }
-    .progress-fill { background: var(--green); height: 100%; width: 0%; transition: width 0.3s; }
+    .btn-audio { 
+      background: linear-gradient(180deg, #818CF8 0%, #4F46E5 100%); 
+      border-radius: 50%; 
+      width: 76px; 
+      height: 76px; 
+      font-size: 2.2rem; 
+      margin: 14px auto;
+      box-shadow: 0 6px 0 #3730A3, 0 10px 20px rgba(99, 102, 241, 0.3);
+      animation: pulseBtn 2s infinite ease-in-out;
+    }
+    @keyframes pulseBtn {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
 
-    .options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .progress-bar { background: #E2E8F0; border-radius: 14px; height: 16px; overflow: hidden; margin-bottom: 16px; border: 2px solid #CBD5E1; }
+    .progress-fill { background: linear-gradient(90deg, #4ADE80 0%, #22C55E 100%); height: 100%; width: 0%; transition: width 0.35s ease-out; }
+
+    .options-grid { display: flex; flex-direction: column; gap: 11px; margin-top: 14px; }
     .option-btn {
       background: #F8FAFC;
       border: 3px solid #CBD5E1;
-      border-radius: 16px;
-      padding: 14px;
-      font-size: 1.5rem;
+      border-radius: 18px;
+      padding: 15px;
+      font-size: 1.55rem;
       font-weight: 700;
       cursor: pointer;
+      box-shadow: 0 4px 0 #94A3B8;
+      transition: all 0.15s;
     }
-    .option-btn:hover { background: #F1F5F9; border-color: var(--primary); }
+    .option-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #94A3B8; }
+    .option-btn:hover { background: #F0F9FF; border-color: var(--primary); }
 
-    .spelling-board { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 16px 0; }
+    /* Fichas de deletreo */
+    .spelling-board { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0; }
     .letter-tile {
-      width: 44px;
-      height: 50px;
-      background: #F1F5F9;
+      width: 45px;
+      height: 52px;
+      background: #F8FAFC;
       border: 3px solid #94A3B8;
-      border-radius: 12px;
-      font-size: 1.6rem;
+      border-radius: 14px;
+      font-size: 1.65rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #334155;
+      box-shadow: 0 3px 0 #94A3B8;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .letter-tile.speaking { background: #FEF08A; border-color: #EAB308; transform: scale(1.15) translateY(-3px); }
-    .letter-tile.completed { background: #DCFCE7; border-color: #22C55E; color: #15803D; }
+    .letter-tile.speaking { 
+      background: #FEF08A; 
+      border-color: #EAB308; 
+      transform: scale(1.22) translateY(-6px); 
+      box-shadow: 0 8px 16px rgba(234, 179, 8, 0.4); 
+    }
+    .letter-tile.completed { background: #DCFCE7; border-color: #22C55E; color: #15803D; box-shadow: 0 3px 0 #22C55E; }
 
     .traffic-pill {
       display: flex;
       justify-content: space-around;
-      padding: 8px 12px;
+      padding: 10px 14px;
       background: #F1F5F9;
-      border-radius: 18px;
-      font-size: 0.9rem;
+      border-radius: 20px;
+      font-size: 0.95rem;
       font-weight: 600;
-      margin: 12px 0;
+      margin: 14px 0;
+      border: 2px solid #E2E8F0;
     }
-    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; vertical-align: middle; }
+    .dot { width: 13px; height: 13px; border-radius: 50%; display: inline-block; vertical-align: middle; box-shadow: 0 0 4px rgba(0,0,0,0.2); }
     .dot-green { background: var(--green-dark); }
     .dot-yellow { background: var(--yellow); }
     .dot-red { background: var(--red); }
 
-    .feedback-box { border-radius: 20px; padding: 18px; margin: 16px 0; }
-    .feedback-correct { background: #DCFCE7; border: 3px solid #86EFAC; color: #166534; }
-    .feedback-wrong { background: #FEF2F2; border: 3px solid #FECACA; color: #991B1B; }
+    /* Cajas de feedback con animación elástica */
+    .feedback-box { 
+      border-radius: 24px; 
+      padding: 20px; 
+      margin: 18px 0; 
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .feedback-correct { background: #DCFCE7; border: 3px solid #4ADE80; color: #166534; box-shadow: 0 8px 20px rgba(74, 222, 128, 0.25); }
+    .feedback-wrong { background: #FEF2F2; border: 3px solid #FCA5A5; color: #991B1B; box-shadow: 0 8px 20px rgba(248, 113, 113, 0.2); }
+
+    /* Lluvia de caramelos y guirnaldas animada */
+    .candy-particle {
+      position: fixed;
+      top: -40px;
+      z-index: 99999;
+      pointer-events: none;
+      animation: fallDown 2.6s linear forwards;
+    }
+    @keyframes fallDown {
+      0% { transform: translateY(0) rotate(0deg) scale(0.7); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(105vh) rotate(540deg) scale(1.1); opacity: 0; }
+    }
 
     .hidden { display: none !important; }
   </style>
@@ -173,43 +249,43 @@
     
     <!-- 1. PANTALLA PRINCIPAL: MUNDOS -->
     <div id="screen-main-menu">
-      <div style="font-size: 3.5rem;"></div>
-      <h1 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 4px;">Elige tu Aventura</h1>
-      <p style="color: #64748B; font-size: 0.95rem; margin-bottom: 14px;">65 retos por mundo · 260 palabras en total</p>
+      <div style="font-size: 3.8rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));"></div>
+      <h1 style="color: var(--primary-dark); font-size: 2.1rem; margin-bottom: 4px;">Elige tu Aventura</h1>
+      <p style="color: #64748B; font-size: 1rem; margin-bottom: 16px;">260 palabras para entrenar a mano </p>
       
-      <button id="btn-pwa-install" class="btn hidden" style="background: #F59E0B; font-size: 1rem; padding: 10px; margin-bottom: 12px;">
+      <button id="btn-pwa-install" class="btn hidden" style="background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%); font-size: 1rem; padding: 10px; margin-bottom: 12px;">
          Instalar app en mi móvil
       </button>
 
-      <div class="world-card" onclick="app.enterSection('G')">
-        <div style="font-size: 2.2rem;"></div>
+      <div class="world-card world-g" onclick="app.enterSection('G')">
+        <div style="font-size: 2.4rem;"></div>
         <div>
-          <h3 style="color: #1E293B;">El Mundo de la G</h3>
-          <p style="color: #64748B; font-size: 0.85rem;">ga, go, gu / gue, gui / güe, güi</p>
+          <h3 style="color: #14532D; font-size: 1.25rem;">El Mundo de la G</h3>
+          <p style="color: #166534; font-size: 0.88rem;">ga, go, gu / gue, gui / güe, güi (65 retos)</p>
         </div>
       </div>
 
-      <div class="world-card" onclick="app.enterSection('J')">
-        <div style="font-size: 2.2rem;"></div>
+      <div class="world-card world-j" onclick="app.enterSection('J')">
+        <div style="font-size: 2.4rem;"></div>
         <div>
-          <h3 style="color: #1E293B;">El Reino de la J</h3>
-          <p style="color: #64748B; font-size: 0.85rem;">ja, jo, ju, palabras en -aje, aje-/eje-</p>
+          <h3 style="color: #7C2D12; font-size: 1.25rem;">El Reino de la J</h3>
+          <p style="color: #9A3412; font-size: 0.88rem;">ja, jo, ju, palabras en -aje (65 retos)</p>
         </div>
       </div>
 
-      <div class="world-card" onclick="app.enterSection('B')">
-        <div style="font-size: 2.2rem;"></div>
+      <div class="world-card world-b" onclick="app.enterSection('B')">
+        <div style="font-size: 2.4rem;"></div>
         <div>
-          <h3 style="color: #1E293B;">El Castillo de la B</h3>
-          <p style="color: #64748B; font-size: 0.85rem;">bra, bla, mb, -aba, bu-/bur-/bus-</p>
+          <h3 style="color: #1E1B4B; font-size: 1.25rem;">El Castillo de la B</h3>
+          <p style="color: #312E81; font-size: 0.88rem;">bra, bla, mb, -aba, bu- (65 retos)</p>
         </div>
       </div>
 
-      <div class="world-card" onclick="app.enterSection('V')">
-        <div style="font-size: 2.2rem;"></div>
+      <div class="world-card world-v" onclick="app.enterSection('V')">
+        <div style="font-size: 2.4rem;"></div>
         <div>
-          <h3 style="color: #1E293B;">La Galaxia de la V</h3>
-          <p style="color: #64748B; font-size: 0.85rem;">nv, después de ol-, -ave/-eve/-ivo</p>
+          <h3 style="color: #581C87; font-size: 1.25rem;">La Galaxia de la V</h3>
+          <p style="color: #6B21A8; font-size: 0.88rem;">nv, después de ol-, -ave/-ivo (65 retos)</p>
         </div>
       </div>
     </div>
@@ -218,12 +294,12 @@
     <div id="screen-section-hub" class="hidden">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <button class="btn btn-back" onclick="app.goToMainMenu()"> Volver</button>
-        <span style="font-size: 0.85rem; color: #64748B;">Banco: 65 palabras</span>
+        <span style="font-size: 0.9rem; color: #64748B; font-weight: 600;">Banco: 65 palabras</span>
       </div>
 
-      <div id="sec-icon" style="font-size: 3rem; margin-top: 5px;"></div>
-      <h2 id="sec-title" style="color: var(--primary-dark); font-size: 1.8rem;">Mundo de la G</h2>
-      <p id="sec-subtitle" style="color: #64748B; font-size: 0.95rem; margin-bottom: 10px;">Elige a qué juego quieres jugar</p>
+      <div id="sec-icon" style="font-size: 3.2rem; margin-top: 5px;"></div>
+      <h2 id="sec-title" style="color: var(--primary-dark); font-size: 1.9rem;">Mundo de la G</h2>
+      <p id="sec-subtitle" style="color: #64748B; font-size: 0.95rem; margin-bottom: 8px;">Elige a qué juego quieres jugar</p>
 
       <div class="traffic-pill">
         <span><span class="dot dot-green"></span> <b id="sec-green">0</b> Listas</span>
@@ -232,21 +308,21 @@
       </div>
 
       <div class="game-choice-card" onclick="app.startGame('options')">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="font-size: 2rem;"></div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-size: 2.2rem;"></div>
           <div>
-            <h3 style="color: var(--text);">Juego 1: Las 3 Opciones</h3>
-            <p style="color: #64748B; font-size: 0.85rem;">Escribe a mano, elige la correcta y ¡gana confeti!</p>
+            <h3 style="color: var(--text); font-size: 1.2rem;">Juego 1: Las 3 Opciones</h3>
+            <p style="color: #64748B; font-size: 0.88rem;">Escribe a mano, elige la correcta y ¡gana fiesta de caramelos!</p>
           </div>
         </div>
       </div>
 
       <div class="game-choice-card" onclick="app.startGame('spelling')">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="font-size: 2rem;"></div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-size: 2.2rem;"></div>
           <div>
-            <h3 style="color: var(--text);">Juego 2: Súper Deletreo</h3>
-            <p style="color: #64748B; font-size: 0.85rem;">Escribe a mano y la app te canta letra por letra.</p>
+            <h3 style="color: var(--text); font-size: 1.2rem;">Juego 2: Súper Deletreo</h3>
+            <p style="color: #64748B; font-size: 0.88rem;">Escribe en la libreta y la app te canta cada letra en voz alta.</p>
           </div>
         </div>
       </div>
@@ -258,28 +334,28 @@
         <div id="progress-fill" class="progress-fill"></div>
       </div>
       
-      <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: #64748B;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: #64748B; font-weight: 600;">
         <span id="word-counter">Palabra 1 de 10</span>
         <span id="game-tag-info"> G ·  Opciones</span>
       </div>
 
       <div id="phase-write">
         <button class="btn btn-audio" onclick="app.playAudioWord()" title="Repetir audio"></button>
-        <h2 style="font-size: 1.35rem; color: var(--text);">Escribe en tu cuaderno</h2>
-        <p style="color: #64748B; font-size: 0.95rem;">Escucha con atención y escribe con lápiz.</p>
+        <h2 style="font-size: 1.45rem; color: var(--text); margin-bottom: 4px;">Escribe en tu cuaderno</h2>
+        <p style="color: #64748B; font-size: 0.95rem;">Escucha con atención y haz tu mejor letra con lápiz </p>
 
-        <button class="btn btn-primary" onclick="app.readyToCheck()" style="margin-top: 24px;">
+        <button class="btn btn-primary" onclick="app.readyToCheck()" style="margin-top: 26px;">
            ¡Ya la he escrito! Comprobar
         </button>
       </div>
 
       <div id="phase-options" class="hidden">
-        <h3 style="color: #475569; margin: 10px 0; font-size: 1.15rem;">¿Cómo la has escrito en tu cuaderno?</h3>
+        <h3 style="color: #475569; margin: 10px 0; font-size: 1.2rem;">¿Cómo la has escrito en tu cuaderno?</h3>
         <div id="options-container" class="options-grid"></div>
       </div>
 
       <div id="phase-spelling" class="hidden">
-        <h3 style="color: #475569; font-size: 1.15rem;">Comprueba letra por letra:</h3>
+        <h3 style="color: #475569; font-size: 1.2rem; margin-bottom: 4px;">Comprueba letra por letra:</h3>
         <div id="spelling-tiles" class="spelling-board"></div>
 
         <button class="btn btn-purple" onclick="app.spellWordAloud()" style="margin-bottom: 12px; font-size: 0.95rem; padding: 10px;">
@@ -291,7 +367,7 @@
           <button class="btn btn-green" onclick="app.evaluateSpelling(true)" style="margin-top: 0; font-size: 1rem;">
              ¡La tuve igual!
           </button>
-          <button class="btn" style="background: #F87171; margin-top: 0; font-size: 1rem;" onclick="app.evaluateSpelling(false)">
+          <button class="btn" style="background: linear-gradient(180deg, #F87171 0%, #DC2626 100%); margin-top: 0; font-size: 1rem;" onclick="app.evaluateSpelling(false)">
              Tuve un fallito
           </button>
         </div>
@@ -299,23 +375,23 @@
 
       <div id="phase-feedback" class="hidden">
         <div id="feedback-card" class="feedback-box">
-          <div id="feedback-emoji" style="font-size: 2.6rem;"></div>
-          <h2 id="feedback-title" style="margin: 6px 0;"></h2>
-          <p id="feedback-desc" style="font-size: 1.1rem; line-height: 1.35;"></p>
+          <div id="feedback-emoji" style="font-size: 3rem; margin-bottom: 4px;"></div>
+          <h2 id="feedback-title" style="margin: 6px 0; font-size: 1.4rem;"></h2>
+          <p id="feedback-desc" style="font-size: 1.15rem; line-height: 1.4;"></p>
         </div>
         <button class="btn btn-primary" onclick="app.nextWord()">Siguiente palabra </button>
       </div>
     </div>
 
-    <!-- 4. PANTALLA FINAL -->
+    <!-- 4. PANTALLA FINAL: NOTA POSITIVA -->
     <div id="screen-result" class="hidden">
-      <div id="result-trophy" style="font-size: 4rem; margin-top: 6px;"></div>
-      <h1 id="result-title" style="color: var(--primary-dark); font-size: 2.1rem;">¡Misión cumplida!</h1>
+      <div id="result-trophy" style="font-size: 4.5rem; margin-top: 6px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));"></div>
+      <h1 id="result-title" style="color: var(--primary-dark); font-size: 2.2rem;">¡Misión cumplida!</h1>
       <p id="result-subtitle" style="font-size: 1.15rem; color: #64748B; margin: 6px 0;"></p>
       
-      <div style="background: #FEF9C3; border: 3px dashed #FACC15; border-radius: 20px; padding: 16px; margin: 18px 0;">
-        <span style="font-size: 1rem; color: #854D0E; font-weight: 600;">Calificación de hoy:</span>
-        <h2 id="result-grade" style="color: #A16207; font-size: 2.2rem; margin-top: 4px;">SOBRESALIENTE +</h2>
+      <div style="background: #FEF9C3; border: 3px dashed #FACC15; border-radius: 22px; padding: 18px; margin: 18px 0;">
+        <span style="font-size: 1.05rem; color: #854D0E; font-weight: 600;">Calificación de hoy:</span>
+        <h2 id="result-grade" style="color: #A16207; font-size: 2.3rem; margin-top: 4px;">SOBRESALIENTE +</h2>
       </div>
 
       <button class="btn btn-green" onclick="app.returnToSectionHub()">Seguir jugando en esta sección </button>
@@ -326,7 +402,7 @@
 
   <script>
     // ==============================================================
-    // BANCO DE DATOS: 65 PALABRAS POR SECCIÓN (260 TOTALES)
+    // BANCO COMPLETO: 65 POR MUNDO (260 PALABRAS TOTALES)
     // ==============================================================
     const DATABASE = {
       G: {
@@ -630,12 +706,64 @@
       'á':'a con tilde','é':'e con tilde','í':'i con tilde','ó':'o con tilde','ú':'u con tilde'
     };
 
+    // --- EFECTOS DE SONIDO NATIVOS (SIN ARCHIVOS EXTERNOS) ---
+    function playChimeSound(success) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (success) {
+          // Tríada feliz de campanas (Do - Mi - Sol)
+          [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.08);
+            osc.stop(ctx.currentTime + i * 0.08 + 0.35);
+          });
+        } else {
+          // Sonido suave y cariñoso de ánimo
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(260, ctx.currentTime + 0.22);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.28);
+        }
+      } catch(e) {}
+    }
+
+    // --- LLUVIA REAL DE CARAMELOS Y GUIRNALDAS ---
+    function launchCandyRain() {
+      const items = ['', '', '', '', '', '', '', ''];
+      for (let i = 0; i < 35; i++) {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'candy-particle';
+          el.textContent = items[Math.floor(Math.random() * items.length)];
+          el.style.left = (Math.random() * 95) + 'vw';
+          el.style.fontSize = (Math.random() * 20 + 24) + 'px';
+          el.style.animationDuration = (Math.random() * 1.2 + 1.8) + 's';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 2600);
+        }, i * 45);
+      }
+    }
+
     // --- CONTROLADOR PRINCIPAL ---
     class OrthoApp {
       constructor() {
         this.currentSectionKey = 'G';
         this.currentMode = 'options';
-        this.memoryKey = 'ortho_master_v7_fixed';
+        this.memoryKey = 'ortho_master_v8_animated';
         this.memory = this.loadMemory();
         this.currentSessionWords = [];
         this.currentIndex = 0;
@@ -842,12 +970,13 @@
 
         if (isCorrect) {
           this.sessionScore++;
-          confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+          launchCandyRain();
+          playChimeSound(true);
 
           feedbackCard.className = 'feedback-box feedback-correct';
-          emojiEl.textContent = ' ¡Excelente!';
+          emojiEl.textContent = ' ¡Bravo!';
           titleEl.textContent = '¡La has escrito perfecta!';
-          descEl.textContent = `"${item.word}" está impecable. ¡Gran memoria!`;
+          descEl.textContent = `"${item.word}" está impecable. ¡Tienes una memoria fantástica!`;
 
           if (wordState.status === 'red') {
             wordState.status = 'yellow';
@@ -859,9 +988,11 @@
             wordState.status = 'green';
           }
         } else {
+          playChimeSound(false);
+
           feedbackCard.className = 'feedback-box feedback-wrong';
-          emojiEl.textContent = ' ¡Casi, casi!';
-          titleEl.textContent = '¡No te preocupes, así aprendemos!';
+          emojiEl.textContent = ' ¡Casi!';
+          titleEl.textContent = '¡No pasa nada, aprendemos juntos!';
           descEl.innerHTML = `La forma correcta es <b>"${item.word}"</b>.<br>${item.rule}<br><i>Rodea la palabra con lápiz verde en tu libreta.</i>`;
 
           wordState.status = 'red';
@@ -895,11 +1026,14 @@
           grade = 'SOBRESALIENTE +';
           sub = '¡Impecable! ¡Has acertado todas las palabras!';
           icon = '';
-          confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+          launchCandyRain();
+          playChimeSound(true);
         } else if (this.sessionScore >= 8) {
           grade = 'SOBRESALIENTE';
           sub = '¡Fantástico trabajo! Tu ortografía es estupenda.';
           icon = '';
+          launchCandyRain();
+          playChimeSound(true);
         } else if (this.sessionScore >= 6) {
           grade = 'NOTABLE +';
           sub = '¡Muy buen entrenamiento! Se nota que practicas con ganas.';
@@ -912,10 +1046,8 @@
       }
     }
 
-    // Instancia global
     const app = new OrthoApp();
 
-    // Botón de instalación PWA en Android
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
