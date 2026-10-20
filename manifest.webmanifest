@@ -1,0 +1,17 @@
+{
+  "name": "El Mundo de Nublo",
+  "short_name": "Nublo",
+  "description": "Academia del Búho Nublo: ortografía, Papá Noel y el Corral Matemático.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EEF2FF",
+  "theme_color": "#4338CA",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
