@@ -424,6 +424,17 @@
     .dr-vert-btn.done { cursor:default; opacity:.5; }
     .dr-vert-btn.done.right { opacity:1; border-color:#86EFAC; box-shadow:0 0 14px #22C55E; }
     .dr-vert-btn.done.wrong { opacity:1; border-color:#FCA5A5; box-shadow:0 0 14px #EF4444; animation:gentle-wobble .5s ease-in-out 2; }
+    #screen-dr-vert-menu { width:100%; min-width:0; flex:0 0 auto; }
+    .dr-quiz-card { background:radial-gradient(circle at 50% 20%,#4C1D95,#1E1B4B 75%); border:4px solid #8B5CF6; border-radius:26px; padding:14px 12px 16px; margin:6px 0 10px; }
+    .dr-quiz-meter { text-align:center; color:#FDE68A; font-weight:700; font-size:.85rem; margin-bottom:10px; }
+    .dr-quiz-qrow { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .dr-quiz-q { flex:1; color:#fff; font-size:1.2rem; font-weight:700; line-height:1.3; text-align:left; }
+    .dr-quiz-opts { display:flex; flex-direction:column; gap:10px; }
+    .dr-q-btn { width:100%; padding:14px 12px; border-radius:16px; border:3px solid transparent; background:linear-gradient(135deg,#8B5CF6,#6D28D9); color:#fff; font-family:inherit; font-size:1.05rem; font-weight:700; text-align:left; cursor:pointer; box-shadow:0 4px 0 #4C1D95; }
+    .dr-q-btn:active:not(.done) { transform:translateY(3px); box-shadow:0 1px 0 #4C1D95; }
+    .dr-q-btn.done { cursor:default; opacity:.5; }
+    .dr-q-btn.done.right { opacity:1; border-color:#86EFAC; box-shadow:0 0 14px #22C55E; background:linear-gradient(135deg,#16A34A,#15803D); }
+    .dr-q-btn.done.wrong { opacity:1; border-color:#FCA5A5; box-shadow:0 0 14px #EF4444; background:linear-gradient(135deg,#DC2626,#B91C1C); animation:gentle-wobble .5s ease-in-out 2; }
     /* Menú de la Academia: los juegos de Lengua pasan a la "Isla de las Palabras" (se ocultan aquí, no se borran) */
     #screen-academy > .academy-card[onclick*="enterOrthographyAdventure"],
     #screen-academy > .academy-card[onclick*="enterSantaAdventure"],
@@ -432,6 +443,41 @@
     .academy-card.le-card h3 { color:#4338CA; }
     .le-eyebrow { background:#E0E7FF; color:#4338CA; }
     #screen-lengua { width:100%; min-width:0; flex:0 0 auto; }
+    /* ===== Diplomas ===== */
+    .dp-overlay { position:fixed; inset:0; z-index:100002; display:none; align-items:center; justify-content:center; padding:14px; background:rgba(30,27,75,.72); backdrop-filter:blur(3px); overflow:auto; }
+    .dp-overlay.dp-open { display:flex; }
+    .dp-card { position:relative; width:100%; max-width:420px; margin:auto; padding:22px 18px; text-align:center; background:linear-gradient(160deg,#fff,#EEF2FF); border:4px solid #FCD34D; border-radius:28px; box-shadow:0 0 40px rgba(253,224,71,.5); }
+    .dp-card h2 { color:#4338CA; font-size:1.55rem; margin:6px 0; }
+    .dp-card p { color:#475569; margin:6px 0; }
+    .dp-card .btn { width:100%; margin-top:10px; }
+    .dp-big { font-size:3.4rem; animation:dp-pop 1s ease-in-out infinite alternate; }
+    .dp-sub { font-weight:700; color:#B45309 !important; }
+    .dp-pics { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:10px 0; }
+    .dp-pics img { width:23%; border-radius:50%; background:#FEF3C7; animation:dp-pop .9s ease-in-out infinite alternate; }
+    .dp-pics img:nth-child(even) { animation-delay:.3s; }
+    .dp-input { width:100%; box-sizing:border-box; padding:14px; border:3px solid #A5B4FC; border-radius:16px; font:inherit; font-size:1.3rem; text-align:center; color:#4338CA; margin-top:8px; }
+    .dp-err { color:#DC2626; min-height:1.2em; font-size:.9rem; margin-top:4px; }
+    .dp-view { max-width:520px; padding:14px 12px 16px; }
+    .dp-paper svg { display:block; width:100%; height:auto; border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,.25); }
+    .dp-x { position:absolute; top:8px; right:10px; z-index:2; width:34px; height:34px; border-radius:50%; border:none; background:#fff; color:#4338CA; font-size:1.1rem; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+    .dp-actions { margin-top:6px; }
+    .dp-fall { position:fixed; z-index:100003; top:-160px; width:min(110px,26vw); border-radius:50%; pointer-events:none; animation:dp-fall 4s linear forwards; }
+    @keyframes dp-fall { to { transform:translateY(120vh) rotate(360deg); } }
+    @keyframes dp-pop { from { transform:scale(1); } to { transform:scale(1.12); } }
+    .dp-list { display:flex; flex-direction:column; gap:8px; margin:8px 0 14px; }
+    .dp-item { display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; border-radius:18px; border:3px solid #E2E8F0; background:#F8FAFC; font-family:inherit; text-align:left; cursor:pointer; color:#475569; }
+    .dp-item small { color:#64748B; font-size:.8rem; }
+    .dp-ico { font-size:2rem; min-width:42px; text-align:center; }
+    .dp-item.dp-has { border-color:#FCD34D; background:linear-gradient(135deg,#FFFBEB,#FEF3C7); color:#92400E; box-shadow:0 3px 0 #FDE68A; }
+    .dp-item.dp-ready { border-color:#86EFAC; background:#F0FDF4; color:#166534; animation:dp-pop .8s ease-in-out infinite alternate; }
+    .dp-item.dp-locked { opacity:.7; }
+    @media print {
+      body > *:not(#dp-overlay) { display:none !important; }
+      #dp-overlay { position:static; display:block; background:none; padding:0; }
+      .dp-card { border:none; box-shadow:none; max-width:none; background:none; padding:0; }
+      .dp-actions, .dp-x { display:none !important; }
+      .dp-paper svg { box-shadow:none; width:100%; max-height:100vh; }
+    }
   </style>
 </head>
 <body>
@@ -878,15 +924,30 @@
         </div>
       </div>
 
-      <div class="world-card" onclick="app.startVertGame()">
+      <div class="world-card" onclick="app.openVertMenu()">
         <img class="ck-thumb" data-dragon="12" alt="Dragón veterinario">
         <div>
           <h3>Vertebrados e Invertebrados</h3>
-          <p style="color:#64748B;font-size:.85rem;">Los animales · ¿Tiene huesos y columna o no?</p>
+          <p style="color:#64748B;font-size:.85rem;">Los animales · Clasifica y responde al quiz</p>
         </div>
       </div>
 
       <div id="dr-soon-note" class="hidden feedback-box feedback-correct" style="margin-top:10px;">🐲 ¡Los dragones están preparando nuevos misterios! Mientras tanto, practica con el esqueleto.</div>
+    </div>
+
+    <div id="screen-dr-vert-menu" class="hidden">
+      <div style="display:flex;justify-content:flex-start;margin-bottom:6px;"><button class="btn btn-back" onclick="app.openDragonMenu()">⬅️ Volver al valle</button></div>
+      <img class="ck-mascot" data-dragon="12" alt="Dragón veterinario">
+      <h1 style="font-size:1.6rem;margin:6px 0 4px;">🐾 Vertebrados e Invertebrados</h1>
+      <p style="color:#64748B;font-size:.95rem;margin-bottom:16px;">¿Con huesos y columna, o sin ellos? ¡Elige tu reto!</p>
+      <div class="world-card" onclick="app.startVertGame()">
+        <img class="ck-thumb" data-dragon="13" alt="Dragón piloto">
+        <div><h3>Clasifica el animal</h3><p style="color:#64748B;font-size:.85rem;">Mira el animal y di si es vertebrado o invertebrado.</p></div>
+      </div>
+      <div class="world-card" onclick="app.startQuizGame()">
+        <img class="ck-thumb" data-dragon="14" alt="Dragón científico">
+        <div><h3>El Quiz de los Animales</h3><p style="color:#64748B;font-size:.85rem;">Más de 50 preguntas. ¡Cada 10 aciertos ganas un dragoncito!</p></div>
+      </div>
     </div>
 
     <div id="screen-dr-game" class="hidden">
@@ -909,6 +970,11 @@
           <button class="dr-vert-btn v" data-a="v" onclick="app.vertAnswer('v')"><span>🦴 Vertebrado</span><small>Tiene huesos y columna vertebral</small></button>
           <button class="dr-vert-btn i" data-a="i" onclick="app.vertAnswer('i')"><span>🐛 Invertebrado</span><small>No tiene huesos ni columna</small></button>
         </div>
+      </div>
+      <div id="dr-quiz-card" class="dr-quiz-card hidden">
+        <div class="dr-quiz-meter" id="dr-quiz-meter"></div>
+        <div class="dr-quiz-qrow"><div id="dr-quiz-q" class="dr-quiz-q"></div><button class="dr-speak" onclick="app.speakBone()" aria-label="Escuchar la pregunta">🔊</button></div>
+        <div id="dr-quiz-opts" class="dr-quiz-opts"></div>
       </div>
       <div id="dr-feedback" class="hidden feedback-box"></div>
       <button id="dr-next" class="btn btn-primary hidden" onclick="app.nextBone()">Siguiente reto ➡️</button>
@@ -2732,6 +2798,85 @@
     const ANIMAL_BY_ID = Object.fromEntries(ANIMALS.map(a => [a.id, a]));
     const vertOrder = () => shuffle([...shuffle(ANIMALS.filter(a => a.v)).slice(0, 5), ...shuffle(ANIMALS.filter(a => !a.v)).slice(0, 5)]).map(a => a.id);
 
+    // ---------- Quiz de vertebrados e invertebrados (3º de Primaria) ----------
+    // [pregunta, respuesta correcta, incorrecta 1, incorrecta 2, explicación]
+    const QUIZ = [
+      ['¿Qué tienen los animales vertebrados en la espalda?', 'Una columna vertebral', 'Un caparazón blando', 'Unas antenas', 'La columna vertebral está formada por piezas llamadas vértebras.'],
+      ['¿Qué animal es invertebrado?', 'La mariposa', 'El perro', 'La gallina', 'La mariposa no tiene huesos ni columna vertebral.'],
+      ['¿Qué animal es vertebrado?', 'El gato', 'El caracol', 'La abeja', 'El gato tiene esqueleto con huesos y columna vertebral.'],
+      ['Los invertebrados son animales que…', 'no tienen columna vertebral', 'viven siempre en el agua', 'tienen plumas', 'Invertebrado significa "sin vértebras".'],
+      ['¿Cuál de estos grupos es de animales vertebrados?', 'Peces, aves y reptiles', 'Insectos, arañas y caracoles', 'Pulpos, cangrejos y medusas', 'Los vertebrados son: mamíferos, aves, reptiles, anfibios y peces.'],
+      ['¿Qué tienen en común todos los mamíferos?', 'Las crías toman la leche de su mamá', 'Ponen huevos', 'Tienen plumas', 'Mamar viene de "mamas", donde la mamá produce la leche.'],
+      ['¿Qué cubre el cuerpo de la mayoría de los mamíferos?', 'Pelo', 'Plumas', 'Escamas', 'El pelo los ayuda a mantener el calor.'],
+      ['¿Cuál de estos animales es un mamífero?', 'El delfín', 'El tiburón', 'El cocodrilo', 'Aunque vive en el mar, el delfín respira aire y da leche a sus crías.'],
+      ['¿Cómo respira una ballena?', 'Con pulmones, sube a la superficie', 'Con branquias', 'Por la piel', 'La ballena es un mamífero: necesita sacar la cabeza para respirar aire.'],
+      ['¿Cómo nacen la mayoría de los mamíferos?', 'Del vientre de su mamá', 'De un huevo', 'De una larva', 'Los animales que nacen del vientre de su madre se llaman vivíparos.'],
+      ['¿Cuál es el único mamífero que sabe volar?', 'El murciélago', 'El búho', 'La mariposa', 'El murciélago no es un ave: tiene pelo y da leche a sus crías.'],
+      ['¿Qué cubre el cuerpo de las aves?', 'Plumas', 'Escamas', 'Pelo', 'Las plumas las protegen del frío y les ayudan a volar.'],
+      ['¿Cómo nacen las aves?', 'De huevos', 'Del vientre de su mamá', 'De una oruga', 'Los animales que nacen de huevos se llaman ovíparos.'],
+      ['¿Qué ave no puede volar y es muy buena nadadora?', 'El pingüino', 'La gaviota', 'El águila', 'El pingüino usa sus alas como aletas para nadar.'],
+      ['¿Qué tienen las aves en lugar de dientes?', 'Un pico', 'Unas pinzas', 'Una trompa', 'Cada ave tiene un pico adecuado a lo que come.'],
+      ['¿Qué ave caza de noche y duerme de día?', 'El búho', 'La golondrina', 'La gallina', 'El búho es un ave nocturna, ¡como nuestro Búho Nublo!'],
+      ['¿Cómo es la piel de los reptiles?', 'Seca y con escamas', 'Húmeda y suave', 'Con mucho pelo', 'Las escamas protegen el cuerpo de serpientes, lagartos y tortugas.'],
+      ['¿Cuál de estos animales es un reptil?', 'La tortuga', 'La rana', 'El delfín', 'La tortuga tiene escamas y pone huevos.'],
+      ['¿Qué reptil no tiene patas y se arrastra?', 'La serpiente', 'El lagarto', 'El cocodrilo', 'La serpiente se desplaza reptando por el suelo.'],
+      ['¿Cómo nacen casi todos los reptiles?', 'De huevos', 'Del vientre de su mamá', 'De un renacuajo', 'Son ovíparos: ponen huevos, casi siempre en tierra.'],
+      ['¿Por qué las lagartijas toman el sol?', 'Para calentar su cuerpo', 'Para beber agua', 'Para esconderse de otros animales', 'Los reptiles necesitan el calor del sol para tener energía.'],
+      ['¿Cuál de estos animales es un anfibio?', 'La rana', 'El lagarto', 'El pez payaso', 'Los anfibios viven parte de su vida en el agua y parte en tierra.'],
+      ['¿Cómo es la piel de los anfibios?', 'Húmeda y sin escamas', 'Con plumas', 'Con pelo', 'Los anfibios necesitan tener la piel siempre húmeda.'],
+      ['¿En qué se convierte un renacuajo cuando crece?', 'En una rana', 'En un pez', 'En una serpiente', 'El renacuajo cambia de forma: le salen patas y pierde la cola.'],
+      ['¿Dónde ponen sus huevos las ranas?', 'En el agua', 'En un nido de ramas', 'Bajo la tierra seca', 'De los huevos de rana nacen los renacuajos.'],
+      ['¿Cómo respiran los peces?', 'Con branquias', 'Con pulmones', 'Con trompa', 'Las branquias sacan el oxígeno que hay en el agua.'],
+      ['¿Qué cubre el cuerpo de la mayoría de los peces?', 'Escamas', 'Plumas', 'Pelo', 'Las escamas son como pequeñas placas que protegen al pez.'],
+      ['¿Qué usan los peces para nadar?', 'Las aletas', 'Las alas', 'Las patas', 'Con las aletas y la cola se mueven y cambian de dirección.'],
+      ['El tiburón es…', 'un pez', 'un mamífero', 'un molusco', 'El tiburón respira por branquias, como los demás peces.'],
+      ['¿Cuántas patas tiene un insecto?', 'Seis', 'Cuatro', 'Ocho', 'Todos los insectos tienen seis patas.'],
+      ['¿Cuántas patas tiene una araña?', 'Ocho', 'Seis', 'Diez', 'Por eso la araña no es un insecto: es un arácnido.'],
+      ['¿Cuál de estos animales NO es un insecto?', 'El escorpión', 'La hormiga', 'El mosquito', 'El escorpión tiene ocho patas: es un arácnido.'],
+      ['¿En cuántas partes se divide el cuerpo de un insecto?', 'En tres: cabeza, tórax y abdomen', 'En dos: cabeza y cola', 'No tiene partes', 'Las patas y las alas salen del tórax.'],
+      ['¿Para qué sirven las antenas de un insecto?', 'Para tocar y oler', 'Para volar', 'Para comer', 'Con las antenas los insectos notan lo que hay a su alrededor.'],
+      ['¿Cómo se llama el cambio de una oruga a una mariposa?', 'Metamorfosis', 'Hibernación', 'Migración', 'En la metamorfosis, el animal cambia mucho de forma al crecer.'],
+      ['¿Cuántas alas tiene una mariposa?', 'Cuatro', 'Dos', 'Seis', 'Las mariposas tienen dos pares de alas.'],
+      ['¿Dónde viven las abejas?', 'En una colmena', 'En un hormiguero', 'En una madriguera', 'En la colmena trabajan juntas y fabrican la miel.'],
+      ['¿Qué animal fabrica la miel?', 'La abeja', 'La hormiga', 'La mariquita', 'Las abejas hacen la miel con el néctar de las flores.'],
+      ['¿Qué tienen los moluscos?', 'El cuerpo blando', 'Un esqueleto de huesos', 'Plumas', 'Muchos moluscos, como el caracol, tienen una concha que los protege.'],
+      ['¿Cuál de estos animales es un molusco?', 'El caracol', 'La lombriz', 'La estrella de mar', 'El caracol tiene el cuerpo blando y una concha.'],
+      ['¿Cuántos brazos tiene un pulpo?', 'Ocho', 'Seis', 'Diez', 'Es un invertebrado muy listo, ¡y no tiene ningún hueso!'],
+      ['¿Cuál de estos animales es un crustáceo?', 'El cangrejo', 'El caracol', 'La medusa', 'El cangrejo tiene un caparazón duro por fuera.'],
+      ['¿Dónde tiene el cangrejo su esqueleto duro?', 'Por fuera del cuerpo', 'Por dentro del cuerpo', 'No tiene nada duro', 'Es el caparazón: un esqueleto exterior que lo protege.'],
+      ['¿Qué animal es un gusano que vive bajo la tierra?', 'La lombriz de tierra', 'La serpiente', 'El lagarto', 'La lombriz es un invertebrado de cuerpo largo y blando.'],
+      ['¿Qué animal marino no tiene huesos y tiene tentáculos?', 'La medusa', 'La tortuga marina', 'El delfín', 'La medusa es un invertebrado casi transparente.'],
+      ['La estrella de mar es…', 'un invertebrado', 'un pez', 'una planta', 'No tiene huesos: es un invertebrado marino con forma de estrella.'],
+      ['¿Qué come un animal herbívoro?', 'Plantas', 'Carne', 'Solo insectos', 'Herbívoro significa "que come hierbas y plantas".'],
+      ['¿Cuál de estos animales es herbívoro?', 'La vaca', 'El león', 'El tiburón', 'La vaca come hierba, heno y otras plantas.'],
+      ['¿Cuál de estos animales es carnívoro?', 'El lobo', 'El conejo', 'El caballo', 'Los carnívoros comen otros animales.'],
+      ['¿Qué come un animal omnívoro?', 'De todo: plantas y carne', 'Solo plantas', 'Solo carne', 'Las personas y los osos somos omnívoros.'],
+      ['¿Cuál de estos animales es ovíparo?', 'La gallina', 'La vaca', 'El conejo', 'La gallina pone huevos, de los que salen los pollitos.'],
+      ['¿Cómo nace un delfín?', 'Del vientre de su mamá', 'De un huevo', 'De una larva', 'Es un mamífero vivíparo, como el perro o la vaca.'],
+      ['¿Cuál es el animal terrestre más grande?', 'El elefante', 'El oso', 'El caballo', 'El elefante es un mamífero vertebrado enorme.'],
+      ['¿Qué animal es el más grande del mundo?', 'La ballena azul', 'El elefante', 'El tiburón blanco', 'La ballena azul es un mamífero que vive en el mar.'],
+      ['¿Qué hacen algunos animales, como el oso, durante el invierno?', 'Hibernar: dormir mucho tiempo', 'Mudar las plumas', 'Hacer la metamorfosis', 'Al hibernar gastan poca energía mientras no hay comida.'],
+      ['Las golondrinas viajan a lugares más cálidos en invierno. ¿Cómo se llama ese viaje?', 'Migración', 'Metamorfosis', 'Hibernación', 'Migrar es viajar de un lugar a otro según la estación.'],
+      ['¿Para qué sirve el camuflaje de algunos animales?', 'Para esconderse', 'Para volar', 'Para dormir', 'Se parecen a su entorno, así los depredadores no los ven.'],
+      ['¿Cuál de estos animales es un ovíparo?', 'La tortuga', 'El perro', 'El gato', 'La tortuga pone huevos en la arena.'],
+      ['¿Qué animal NO es un vertebrado?', 'El pulpo', 'La serpiente', 'El pingüino', 'El pulpo es un molusco y no tiene columna vertebral.']
+    ];
+    const QUIZ_KEY = 'owl_academy_vert_quiz';
+    let quizState = { correct: 0, seen: [] };
+    try {
+      const v = JSON.parse(localStorage.getItem(QUIZ_KEY) || 'null');
+      if (v && Number.isInteger(v.correct) && Array.isArray(v.seen)) quizState = { correct: v.correct, seen: v.seen.filter(n => Number.isInteger(n) && n >= 0 && n < QUIZ.length) };
+    } catch (e) {}
+    const saveQuiz = () => { try { localStorage.setItem(QUIZ_KEY, JSON.stringify(quizState)); } catch (e) {} };
+    // 10 preguntas por ronda: primero las que aún no han salido; cuando se acaban, se vuelve a empezar
+    function quizOrder() {
+      let pool = shuffle([...QUIZ.keys()].filter(i => !quizState.seen.includes(i)));
+      if (pool.length >= 10) return pool.slice(0, 10);
+      const rest = shuffle([...QUIZ.keys()].filter(i => !pool.includes(i)));
+      quizState.seen = [];
+      return [...pool, ...rest].slice(0, 10);
+    }
+
     // ---------- El Valle de los Dragones (Conocimiento del Medio) ----------
     const $ = id => document.getElementById(id);
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -2743,6 +2888,7 @@
       musc: { list: MUSCLES, by: MUSC_BY_ID, svg: muscleSvg, icon: '💪', noun: 'músculo', plural: 'músculos', title: '💪 ¿Dónde está el músculo?', inst: 'Toca el músculo que se llama:', end: '🐉🏆💪', wise: '¡Dragón sabio de los músculos!' }
     };
     KINDS.vert = { list: ANIMALS, by: ANIMAL_BY_ID, plural: 'animales', title: '🐾 ¿Vertebrado o invertebrado?', inst: 'Mira el animal y elige:', end: '🐉🏆🐾', wise: '¡Dragón sabio de los animales!' };
+    KINDS.quiz = { plural: 'preguntas', title: '🧠 Quiz de los animales', inst: '', end: '🐉🏆🧠', wise: '¡Dragón sabio de los animales!' };
     const K = () => KINDS[app.dr.kind || 'bone'];
     const TOTAL = 10;
     const PRAISE = ['¡Roarrr! ¡Muy bien!', '¡Dragón sabio! ¡Correcto!', '¡Eres un dragón de los huesos!', '¡Fuego de alegría! ¡Perfecto!'];
@@ -2802,13 +2948,57 @@
       enterDragonAdventure() { app.currentSectionKey = null; app.openDragonMenu(); },
       openDragonMenu() { stopVoice(); showOnly('screen-dr-menu'); $('dr-soon-note').classList.add('hidden'); app.updateSharedRewards(); },
       showDragonSoon() { const n = $('dr-soon-note'); n.classList.remove('hidden'); n.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); },
+      openVertMenu() { stopVoice(); showOnly('screen-dr-vert-menu'); app.updateSharedRewards(); },
       startVertGame() { app.startBoneGame('vert'); },
+      startQuizGame() { app.startBoneGame('quiz'); },
+      loadQuizRound() {
+        const d = app.dr, Q = QUIZ[d.target];
+        if (!quizState.seen.includes(d.target)) { quizState.seen.push(d.target); saveQuiz(); }
+        $('dr-counter').textContent = `Pregunta ${d.i + 1} de ${d.total}`;
+        $('dr-progress').style.width = `${(d.i / d.total) * 100}%`;
+        { const k = d.dragons[d.i % DRAGONS.length]; $('dr-mascot').src = DRAGONS_ANIM[k] || DRAGONS[k]; }
+        const fb = $('dr-feedback'); fb.className = 'hidden feedback-box'; fb.innerHTML = '';
+        ['dr-next', 'dr-again'].forEach(id => $(id).classList.add('hidden'));
+        $('dr-title').textContent = K().title; $('dr-instruction').textContent = '';
+        $('dr-name-row').classList.add('hidden'); $('dr-skel-card').classList.add('hidden');
+        $('dr-quiz-card').classList.remove('hidden');
+        $('dr-quiz-q').textContent = Q[0];
+        $('dr-quiz-meter').textContent = `🐉 Aciertos para tu próximo dragón: ${quizState.correct % 10} de 10`;
+        const opts = shuffle([0, 1, 2]);
+        $('dr-quiz-opts').innerHTML = opts.map(o => `<button class="dr-q-btn" data-o="${o}">${Q[o + 1]}</button>`).join('');
+        $('dr-quiz-opts').querySelectorAll('.dr-q-btn').forEach(b => b.addEventListener('click', () => app.quizAnswer(Number(b.dataset.o))));
+        window.setTimeout(() => app.speakBone(), 250);
+      },
+      quizAnswer(o) {
+        const d = app.dr; if (d.answered) return; d.answered = true;
+        const Q = QUIZ[d.target], ok = o === 0;
+        $('dr-quiz-opts').querySelectorAll('.dr-q-btn').forEach(b => {
+          b.classList.add('done');
+          if (b.dataset.o === '0') b.classList.add('right'); else if (Number(b.dataset.o) === o) b.classList.add('wrong');
+        });
+        const fb = $('dr-feedback'); fb.classList.remove('hidden');
+        if (ok) {
+          d.score++; quizState.correct++; saveQuiz(); app.awardSharedReward(1);
+          fb.className = 'feedback-box feedback-correct';
+          fb.innerHTML = `<div style="font-size:2.2rem;">🐉🎉🔥</div><h3>${PRAISE[rnd(0, PRAISE.length - 1)]}</h3><p style="font-size:.95rem;">${Q[4]}</p>`;
+          if (quizState.correct % 10 === 0) { fb.innerHTML += `<p style="margin-top:6px;"><b>¡${quizState.correct} aciertos en total! ¡Un dragoncito nuevo para ti!</b></p>` + app.prizeBoxHtml(app.awardPrize('dragons'), 'dr-prize'); dropDragons(4); }
+          mood(true);
+        } else {
+          fb.className = 'feedback-box feedback-wrong';
+          fb.innerHTML = `<div style="font-size:2rem;">🐲💡</div><h3>¡Casi, dragoncito! Vamos a aprenderlo</h3><p style="margin-top:6px;">✅ La respuesta correcta es: <b>${Q[1]}</b>.</p><p style="margin-top:6px;">${Q[4]}</p>`;
+          mood(false);
+        }
+        $('dr-quiz-meter').textContent = `🐉 Aciertos para tu próximo dragón: ${quizState.correct % 10} de 10`;
+        $('dr-next').textContent = d.i + 1 >= d.total ? 'Ver mi resultado 🏆' : 'Siguiente pregunta ➡️';
+        $('dr-next').classList.remove('hidden');
+        fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      },
       startMuscleGame() { app.startBoneGame('musc'); },
       restartDragonGame() { app.startBoneGame(app.dr.kind || 'bone'); },
 
       startBoneGame(kind) {
-        kind = kind === 'musc' || kind === 'vert' ? kind : 'bone';
-        app.dr = { kind, i: 0, total: TOTAL, score: 0, answered: false, order: kind === 'vert' ? vertOrder() : shuffle(KINDS[kind].list.map(b => b.id)).slice(0, TOTAL), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
+        kind = kind === 'musc' || kind === 'vert' || kind === 'quiz' ? kind : 'bone';
+        app.dr = { kind, i: 0, total: TOTAL, score: 0, answered: false, order: kind === 'vert' ? vertOrder() : kind === 'quiz' ? quizOrder() : shuffle(KINDS[kind].list.map(b => b.id)).slice(0, TOTAL), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
         showOnly('screen-dr-game');
         app.loadBoneRound();
       },
@@ -2816,8 +3006,9 @@
       loadBoneRound() {
         const d = app.dr; d.answered = false;
         d.target = d.order[d.i];
-        $('dr-vert-card').classList.add('hidden');
+        $('dr-vert-card').classList.add('hidden'); $('dr-quiz-card').classList.add('hidden');
         if (d.kind === 'vert') return app.loadVertRound();
+        if (d.kind === 'quiz') return app.loadQuizRound();
         // 2 distractores: nunca el "compañero" del hueso (radio/cúbito, tibia/peroné) para no confundir al tocar
         const pool = shuffle(K().list.map(b => b.id).filter(id => id !== d.target && id !== MATES[d.target]));
         const c1 = pool[0], c2 = pool.find(id => id !== c1 && id !== MATES[c1]);
@@ -2882,7 +3073,7 @@
       speakBone() {
         const d = app.dr; if (!window.speechSynthesis || !d.target) return;
         stopVoice();
-        const u = new SpeechSynthesisUtterance(d.kind === 'vert' ? `${K().by[d.target].name}. ¿Vertebrado o invertebrado?` : `Toca ${K().by[d.target].name}.`); u.lang = 'es-ES'; u.rate = .88;
+        const u = new SpeechSynthesisUtterance(d.kind === 'quiz' ? QUIZ[d.target][0] : d.kind === 'vert' ? `${K().by[d.target].name}. ¿Vertebrado o invertebrado?` : `Toca ${K().by[d.target].name}.`); u.lang = 'es-ES'; u.rate = .88;
         window.speechSynthesis.speak(u);
       },
 
@@ -2925,14 +3116,14 @@
         const d = app.dr; d.i++;
         if (d.i < d.total) { app.loadBoneRound(); return; }
         $('dr-progress').style.width = '100%'; $('dr-counter').textContent = 'Fin';
-        $('dr-name-row').classList.add('hidden'); $('dr-skel-card').classList.add('hidden'); $('dr-vert-card').classList.add('hidden');
+        $('dr-name-row').classList.add('hidden'); $('dr-skel-card').classList.add('hidden'); $('dr-vert-card').classList.add('hidden'); $('dr-quiz-card').classList.add('hidden');
         $('dr-next').classList.add('hidden'); $('dr-again').classList.remove('hidden');
         $('dr-instruction').textContent = ''; $('dr-title').textContent = '🐉 ¡Fin del reto!';
         const pct = d.score / d.total;
         const title = pct >= .9 ? K().wise : pct >= .6 ? '¡Muy buen trabajo, dragoncito!' : '¡Sigue practicando, dragoncito valiente!';
         const fb = $('dr-feedback'); fb.className = 'feedback-box feedback-correct';
-        fb.innerHTML = `<div style="font-size:2.6rem;">${K().end}</div><h3>${title}</h3><p>Has acertado ${d.score} de ${d.total} ${K().plural}.</p><p style="font-size:.92rem;margin-top:6px;">¡Cada acierto te ha dado una estrella! ⭐</p>`;
-        if (pct >= .8) fb.innerHTML += app.prizeBoxHtml(app.awardPrize('dragons'), 'dr-prize');
+        fb.innerHTML = `<div style="font-size:2.6rem;">${K().end}</div><h3>${title}</h3><p>Has acertado ${d.score} de ${d.total} ${K().plural}.</p>${d.kind === 'quiz' ? `<p style="margin-top:6px;">🐉 Llevas <b>${quizState.correct % 10} de 10</b> aciertos para tu próximo dragoncito.</p>` : ''}<p style="font-size:.92rem;margin-top:6px;">¡Cada acierto te ha dado una estrella! ⭐</p>`;
+        if (d.kind !== 'quiz' && pct >= .8) fb.innerHTML += app.prizeBoxHtml(app.awardPrize('dragons'), 'dr-prize');
         mood(true); dropDragons(4);
         fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
@@ -2942,6 +3133,7 @@
     const academyBeforeDragons = app.goToAcademyMenu.bind(app);
     app.goToAcademyMenu = function () {
       stopVoice();
+      document.querySelectorAll('[id^="screen-dr-"]').forEach(el => el.classList.add('hidden'));
       document.body.classList.remove('dragon-theme');
       return academyBeforeDragons();
     };
@@ -2961,6 +3153,175 @@
         const orig = app[name].bind(app);
         app[name] = function () { hub().classList.add('hidden'); return orig.apply(app, arguments); };
       });
+    })();
+  </script>
+  <script>
+    (function () {
+      // ---------- Diplomas: se consiguen al completar una colección de premios (y un Gran Diploma con las tres) ----------
+      const COLS = window.NUBLO_COLLECTIONS || {};
+      const NAME_KEY = 'owl_academy_student_name', DIP_KEY = 'owl_academy_diplomas';
+      const AREAS = {
+        chicks: { area: 'Matemáticas', place: 'El Corral Matemático', icon: '🐥', lead: 'Los números están en todas partes: en la ciencia, la arquitectura, la cocina y hasta en el espacio.' },
+        santa: { area: 'Lengua', place: 'El Reto de Papá Noel', icon: '🎅', lead: 'Las palabras te ayudarán a contar historias, a enseñar, a convencer y a ser quien tú quieras.' },
+        dragons: { area: 'Conocimiento del Medio', place: 'El Valle de los Dragones', icon: '🐉', lead: 'Conocer el cuerpo humano y a los animales te acerca a ser médico, veterinaria, científico o exploradora.' }
+      };
+      const ORDER = ['chicks', 'santa', 'dragons'];
+      const MSG = 'Gracias a todo lo que has aprendido, y a lo que aprenderás en el futuro, podrás elegir la profesión que más te guste: médica, astronauta, cocinero, piloto, artista, científica… Si te esfuerzas y sigues aprendiendo, ¡puedes dedicarte a lo que sueñes!';
+      const $ = id => document.getElementById(id);
+      const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const rd = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+      const wr = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+      let dips = rd(DIP_KEY); if (!dips || typeof dips !== 'object') dips = {};
+      const isDone = id => id === 'all' ? ORDER.every(isDone) : !!COLS[id] && COLS[id].have.length >= COLS[id].items.length;
+      const today = () => new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      let timers = [];
+      const clearTimers = () => { timers.forEach(t => { clearInterval(t); clearTimeout(t); }); timers = []; document.querySelectorAll('.dp-fall').forEach(e => e.remove()); };
+
+      function wrapText(t, n) {
+        const out = []; let cur = '';
+        t.split(' ').forEach(w => { if ((cur + ' ' + w).trim().length > n) { out.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); });
+        if (cur) out.push(cur); return out;
+      }
+      function certSvg(id, name) {
+        const all = id === 'all', A = AREAS[id], n = all ? 0 : COLS[id].items.length;
+        const owl = (document.querySelector('#screen-academy .owl-mascot') || {}).src || '';
+        const fs = Math.max(34, Math.min(70, Math.floor(600 / Math.max(4, name.length * 0.52))));
+        const sub = all
+          ? ['por haber superado todos los retos de Lengua,', 'Matemáticas y Conocimiento del Medio y haber', 'conseguido TODOS los premios de la Academia.']
+          : wrapText(`por haber superado los retos de ${A.area} y haber conseguido los ${n} premios de ${A.place}.`, 54);
+        const lead = wrapText((all ? '' : A.lead + ' ') + MSG, 64);
+        let y = 696; const leadTxt = lead.map((l, i) => `<text x="400" y="${y + i * 27}" text-anchor="middle" font-size="19.5" fill="#374151">${esc(l)}</text>`).join('');
+        return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="dp-svg" viewBox="0 0 800 1100" font-family="Georgia, 'Times New Roman', serif">
+          <rect width="800" height="1100" fill="#FFFBEB"/>
+          <rect x="24" y="24" width="752" height="1052" rx="22" fill="none" stroke="#4338CA" stroke-width="10"/>
+          <rect x="42" y="42" width="716" height="1016" rx="14" fill="none" stroke="#D4A017" stroke-width="4"/>
+          <text x="70" y="96" font-size="34" fill="#D4A017">✦</text><text x="730" y="96" font-size="34" fill="#D4A017" text-anchor="end">✦</text>
+          
+          ${owl ? `<image x="320" y="62" width="160" height="160" preserveAspectRatio="xMidYMid meet" xlink:href="${owl}" href="${owl}"/>` : ''}
+          <text x="400" y="262" text-anchor="middle" font-size="26" letter-spacing="3" fill="#4338CA">ACADEMIA DEL BÚHO NUBLO</text>
+          <text x="400" y="344" text-anchor="middle" font-size="${all ? 62 : 78}" font-weight="700" letter-spacing="6" fill="#B45309">${all ? 'GRAN DIPLOMA' : 'DIPLOMA'}</text>
+          <line x1="190" y1="372" x2="610" y2="372" stroke="#D4A017" stroke-width="3"/>
+          <text x="400" y="426" text-anchor="middle" font-size="24" font-style="italic" fill="#6B7280">se otorga con mucho orgullo a</text>
+          <text x="400" y="${500 + (70 - fs) / 4}" text-anchor="middle" font-size="${fs}" font-style="italic" font-weight="700" fill="#4338CA">${esc(name)}</text>
+          <line x1="150" y1="522" x2="650" y2="522" stroke="#A5B4FC" stroke-width="2"/>
+          ${sub.map((l, i) => `<text x="400" y="${566 + i * 30}" text-anchor="middle" font-size="22" fill="#111827">${esc(l)}</text>`).join('')}
+          ${leadTxt}
+          <circle cx="400" cy="898" r="58" fill="#FDE68A" stroke="#D4A017" stroke-width="6"/><circle cx="400" cy="898" r="47" fill="none" stroke="#D4A017" stroke-width="2" stroke-dasharray="4 5"/>
+          <text x="400" y="916" text-anchor="middle" font-size="48">${all ? '🏆' : A.icon}</text>
+          <text x="400" y="982" text-anchor="middle" font-size="18" fill="#6B7280" font-style="italic">¡Lo conseguiste!</text>
+          <text x="130" y="1008" text-anchor="middle" font-size="16" fill="#111827">${esc(today_for(id))}</text><line x1="60" y1="1016" x2="200" y2="1016" stroke="#6B7280" stroke-width="2"/><text x="130" y="1038" text-anchor="middle" font-size="15" fill="#6B7280">Fecha</text>
+          <text x="670" y="1008" text-anchor="middle" font-size="26" font-style="italic" fill="#4338CA">El Búho Nublo</text><line x1="600" y1="1016" x2="740" y2="1016" stroke="#6B7280" stroke-width="2"/><text x="670" y="1038" text-anchor="middle" font-size="15" fill="#6B7280">Director de la Academia</text>
+        </svg>`;
+      }
+      const today_for = id => (dips[id] && dips[id].date) || today();
+
+      // ----- ventana (overlay) -----
+      function overlay() {
+        let o = $('dp-overlay');
+        if (!o) { o = document.createElement('div'); o.id = 'dp-overlay'; o.className = 'dp-overlay'; document.body.appendChild(o); }
+        o.classList.add('dp-open'); return o;
+      }
+      function closeAll() {
+        clearTimers(); const o = $('dp-overlay'); if (o) { o.classList.remove('dp-open'); o.innerHTML = ''; }
+        // si ya están los tres diplomas, llega el Gran Diploma
+        if (ORDER.every(c => dips[c]) && !dips.all && isDone('all')) window.setTimeout(() => app.startDiploma('all'), 400);
+        if ($('screen-ck-gallery') && !$('screen-ck-gallery').classList.contains('hidden')) app.renderChickGallery();
+      }
+      function party(id) {
+        const all = id === 'all', c = all ? null : COLS[id];
+        const o = overlay(); clearTimers();
+        const pic = c ? c.items[c.items.length - 1] : '';
+        o.innerHTML = `<div class="dp-card dp-party">
+          <div class="dp-big">🎉🏆🎉</div>
+          <h2>${all ? '¡¡HAS COMPLETADO TODA LA ACADEMIA!!' : '¡¡LO HAS CONSEGUIDO!!'}</h2>
+          <p>${all ? 'Has ganado todos los premios de Lengua, Matemáticas y Conocimiento del Medio.' : `Has ganado <b>todos los premios</b> de ${AREAS[id].place}.`}</p>
+          ${all ? '' : `<div class="dp-pics">${c.items.slice(0, 6).map(s => `<img src="${s}" alt="">`).join('')}</div>`}
+          <p class="dp-sub">¡Te has ganado un diploma muy especial!</p>
+          <button class="btn btn-primary" id="dp-go">🎓 ¡Quiero mi diploma!</button>
+        </div>`;
+        $('dp-go').onclick = () => nameStep(id);
+        // fiesta: confeti sin parar durante unos segundos y lluvia de premios
+        const items = all ? ORDER.flatMap(k => COLS[k].items) : c.items;
+        const burst = () => { if (typeof confetti === 'function') { confetti({ particleCount: 70, angle: 60, spread: 70, origin: { x: 0, y: .7 } }); confetti({ particleCount: 70, angle: 120, spread: 70, origin: { x: 1, y: .7 } }); confetti({ particleCount: 40, spread: 100, origin: { x: .5, y: .3 } }); } };
+        burst(); let n = 0; timers.push(setInterval(() => { burst(); if (++n > 9) clearInterval(timers[0]); }, 500));
+        const drop = () => { const im = document.createElement('img'); im.className = 'dp-fall'; im.src = items[Math.floor(Math.random() * items.length)]; im.style.left = (2 + Math.random() * 82) + 'vw'; im.style.animationDuration = (3 + Math.random() * 2.5) + 's'; document.body.appendChild(im); im.addEventListener('animationend', () => im.remove(), { once: true }); };
+        let k = 0; timers.push(setInterval(() => { drop(); if (++k > 22) clearInterval(timers[1]); }, 260));
+      }
+      function nameStep(id) {
+        clearTimers(); const o = overlay(); let saved = ''; try { saved = localStorage.getItem(NAME_KEY) || ''; } catch (e) {}
+        o.innerHTML = `<div class="dp-card">
+          <div class="dp-big">✍️</div><h2>¿Cómo te llamas?</h2><p>Escribe tu nombre para que aparezca en tu diploma.</p>
+          <input id="dp-name" class="dp-input" maxlength="28" autocomplete="off" placeholder="Tu nombre" value="${esc(saved)}">
+          <div id="dp-err" class="dp-err"></div>
+          <button class="btn btn-primary" id="dp-make">🎓 Crear mi diploma</button>
+        </div>`;
+        const inp = $('dp-name'), go = () => {
+          const v = inp.value.trim().replace(/\s+/g, ' ');
+          if (!v) { $('dp-err').textContent = 'Escribe tu nombre para continuar 🙂'; inp.focus(); return; }
+          try { localStorage.setItem(NAME_KEY, v); } catch (e) {}
+          dips[id] = { name: v, date: (dips[id] && dips[id].date) || today() }; wr(DIP_KEY, dips);
+          view(id);
+        };
+        $('dp-make').onclick = go; inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }); window.setTimeout(() => inp.focus(), 60);
+      }
+      function view(id, fromGallery) {
+        clearTimers(); const o = overlay(), d = dips[id];
+        o.innerHTML = `<div class="dp-card dp-view">
+          <button class="dp-x" id="dp-x" aria-label="Cerrar">✕</button>
+          <div class="dp-paper">${certSvg(id, d.name)}</div>
+          <div class="dp-actions">
+            <button class="btn btn-green" id="dp-save">📥 Guardar imagen</button>
+            <button class="btn btn-primary" id="dp-print">🖨️ Imprimir</button>
+            <button class="btn btn-back" id="dp-rename">✏️ Cambiar nombre</button>
+            <button class="btn btn-back" id="dp-close">Seguir jugando ➡️</button>
+          </div></div>`;
+        $('dp-x').onclick = $('dp-close').onclick = closeAll;
+        $('dp-rename').onclick = () => nameStep(id);
+        $('dp-print').onclick = () => window.print();
+        $('dp-save').onclick = () => savePng(id, d.name);
+        if (!fromGallery && typeof confetti === 'function') confetti({ particleCount: 120, spread: 90, origin: { y: .4 } });
+      }
+      function savePng(id, name) {
+        const svg = $('dp-svg'); if (!svg) return;
+        const xml = new XMLSerializer().serializeToString(svg).replace('<svg ', '<svg width="1600" height="2200" ');
+        const img = new Image();
+        img.onload = () => {
+          const cv = document.createElement('canvas'); cv.width = 1600; cv.height = 2200; cv.getContext('2d').drawImage(img, 0, 0, 1600, 2200);
+          cv.toBlob(b => { if (!b) return; const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Diploma-${id}-${name.replace(/[^\wáéíóúüñÁÉÍÓÚÜÑ-]+/g, '_')}.png`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png');
+        };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+      }
+
+      app.startDiploma = function (id) { if (!isDone(id)) return; if (dips[id]) view(id, true); else party(id); };
+      app.openDiploma = function (id) { if (dips[id]) view(id, true); else if (isDone(id)) party(id); };
+
+      // Al conseguir el último premio de una colección arranca la fiesta (sin tocar el código de los juegos)
+      const origAward = app.awardPrize.bind(app);
+      app.awardPrize = function (colId) {
+        const pz = origAward(colId);
+        if (pz && pz.isNew && pz.complete && !dips[colId]) window.setTimeout(() => party(colId), 2800);
+        return pz;
+      };
+
+      // Sección "Mis diplomas" en la Galería de Premios
+      const origRender = app.renderChickGallery.bind(app);
+      app.renderChickGallery = function () {
+        const r = origRender();
+        const wrap = $('ck-gallery'); if (!wrap) return r;
+        const h = document.createElement('h3'); h.className = 'ck-col-title'; h.innerHTML = '🎓 Mis diplomas';
+        const box = document.createElement('div'); box.className = 'dp-list';
+        [...ORDER, 'all'].forEach(id => {
+          const all = id === 'all', has = !!dips[id], done = isDone(id);
+          const b = document.createElement('button'); b.className = 'dp-item' + (has ? ' dp-has' : done ? ' dp-ready' : ' dp-locked');
+          const title = all ? 'Gran Diploma de la Academia' : `Diploma de ${AREAS[id].area}`;
+          const state = has ? `Para ${dips[id].name} · ¡Tócalo para verlo!` : done ? '¡Ya lo has ganado! Toca para pedirlo 🎉' : all ? 'Consigue todos los premios de las tres aventuras' : `Consigue los ${COLS[id].items.length} premios de ${AREAS[id].place}`;
+          b.innerHTML = `<span class="dp-ico">${has || done ? (all ? '🏆' : AREAS[id].icon) : '🔒'}</span><span><b>${title}</b><br><small>${state}</small></span>`;
+          b.onclick = () => { if (has || done) app.openDiploma(id); else $('ck-gallery-info').textContent = state + '.'; };
+          box.appendChild(b);
+        });
+        wrap.prepend(h, box);
+        return r;
+      };
     })();
   </script>
   <script>
