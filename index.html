@@ -410,6 +410,28 @@
     .ck-prize-box.dr-prize h3 { color:#5B21B6; }
     .ck-prize-box.dr-prize p { color:#4C1D95; }
     .dr-skel-svg.musc .bone:not(.cand):not(.right):not(.wrong) { color:#F87171; }
+    .dr-eyebrow { display:inline-block; margin-top:4px; padding:3px 14px; border-radius:999px; background:#EDE9FE; color:#6D28D9; font-weight:700; font-size:.8rem; letter-spacing:1.5px; text-transform:uppercase; }
+    .dr-vert-card { background:radial-gradient(circle at 50% 30%,#4C1D95,#1E1B4B 70%); border:4px solid #8B5CF6; border-radius:26px; padding:18px 12px; margin:6px 0 10px; }
+    .dr-vert-emoji { font-size:7rem; line-height:1.1; text-align:center; filter:drop-shadow(0 6px 10px rgba(0,0,0,.4)); animation:dr-bob 2.2s ease-in-out infinite; }
+    @keyframes dr-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .dr-vert-btns { display:flex; gap:10px; margin-top:12px; }
+    .dr-vert-btn { flex:1; min-width:0; padding:14px 8px; border-radius:18px; border:3px solid transparent; font-family:inherit; cursor:pointer; color:#fff; display:flex; flex-direction:column; gap:4px; align-items:center; -webkit-tap-highlight-color:transparent; }
+    .dr-vert-btn span { font-size:1.1rem; font-weight:700; }
+    .dr-vert-btn small { font-size:.72rem; opacity:.9; line-height:1.2; }
+    .dr-vert-btn.v { background:linear-gradient(135deg,#8B5CF6,#6D28D9); box-shadow:0 4px 0 #4C1D95; }
+    .dr-vert-btn.i { background:linear-gradient(135deg,#2DD4BF,#0F766E); box-shadow:0 4px 0 #115E59; }
+    .dr-vert-btn:active:not(.done) { transform:translateY(3px); }
+    .dr-vert-btn.done { cursor:default; opacity:.5; }
+    .dr-vert-btn.done.right { opacity:1; border-color:#86EFAC; box-shadow:0 0 14px #22C55E; }
+    .dr-vert-btn.done.wrong { opacity:1; border-color:#FCA5A5; box-shadow:0 0 14px #EF4444; animation:gentle-wobble .5s ease-in-out 2; }
+    /* Menú de la Academia: los juegos de Lengua pasan a la "Isla de las Palabras" (se ocultan aquí, no se borran) */
+    #screen-academy > .academy-card[onclick*="enterOrthographyAdventure"],
+    #screen-academy > .academy-card[onclick*="enterSantaAdventure"],
+    #screen-academy > .academy-card[onclick*="showComingSoon"] { display:none; }
+    .academy-card.le-card { border-color:#A5B4FC; background:linear-gradient(135deg,#fff,#EEF2FF); box-shadow:0 5px 0 #C7D2FE; }
+    .academy-card.le-card h3 { color:#4338CA; }
+    .le-eyebrow { background:#E0E7FF; color:#4338CA; }
+    #screen-lengua { width:100%; min-width:0; flex:0 0 auto; }
   </style>
 </head>
 <body>
@@ -434,11 +456,14 @@
       <div class="academy-card" onclick="app.enterSantaAdventure()">
         <div class="academy-icon">🎅</div><div><h3>El Reto de Papá Noel</h3><p>Sujeto y predicado, sinónimos y antónimos. ¡Una aventura navideña llena de magia!</p></div>
       </div>
+      <div class="academy-card le-card" onclick="app.openLengua()">
+        <div class="academy-icon">📖</div><div><div class="dr-eyebrow le-eyebrow">Lengua</div><h3>La Isla de las Palabras</h3><p>Ortografía, sujeto y predicado, sinónimos y antónimos.</p></div>
+      </div>
       <div class="academy-card ck-card" onclick="app.enterChickAdventure()">
-        <div class="academy-icon"><img class="ck-icon" data-chick="13" alt="Pollito saltando en la cama elástica"></div><div><h3>El Corral Matemático</h3><p>Multiplica, compara y ordena números de 4 cifras con los pollitos.</p></div>
+        <div class="academy-icon"><img class="ck-icon" data-chick="13" alt="Pollito saltando en la cama elástica"></div><div><div class="dr-eyebrow ck-eyebrow">Matemáticas</div><h3>El Corral Matemático</h3><p>Multiplica, compara y ordena números de 4 cifras con los pollitos.</p></div>
       </div>
       <div class="academy-card dr-card" onclick="app.enterDragonAdventure()">
-        <div class="academy-icon"><img class="ck-icon" data-dragon="4" alt="Dragón mago"></div><div><h3>El Valle de los Dragones</h3><p>Conocimiento del Medio: descubre los huesos de tu cuerpo con dragoncitos.</p></div>
+        <div class="academy-icon"><img class="ck-icon" data-dragon="4" alt="Dragón mago"></div><div><div class="dr-eyebrow">Conocimiento</div><h3>El Valle de los Dragones</h3><p>Descubre los huesos, los músculos y los animales con dragoncitos.</p></div>
       </div>
       <div class="academy-card" onclick="app.openChickGallery()">
         <div class="academy-icon">🏅</div><div><h3>Galería de Premios</h3><p>Aquí guardas los premios que ganes en todas las aventuras: pollitos, Papás Noel y mucho más.</p></div>
@@ -833,8 +858,9 @@
     <div id="screen-dr-menu" class="hidden">
       <button class="back-academy" onclick="app.goToAcademyMenu()">🦉 Volver a la Academia del Búho</button>
       <img class="ck-mascot" data-dragon="4" alt="Dragón mago, mascota del valle">
-      <h1 style="font-size:1.7rem;margin:6px 0 4px;">🐉 El Valle de los Dragones</h1>
-      <p style="color:#64748B;font-size:.95rem;margin-bottom:18px;">Conocimiento del Medio: ¡descubre tu cuerpo con los dragoncitos!</p>
+      <div class="dr-eyebrow">Conocimiento</div>
+      <h1 style="font-size:1.7rem;margin:2px 0 4px;">🐉 El Valle de los Dragones</h1>
+      <p style="color:#64748B;font-size:.95rem;margin-bottom:18px;">¡Descubre tu cuerpo y a los animales con los dragoncitos!</p>
 
       <div class="world-card" onclick="app.startBoneGame()">
         <img class="ck-thumb" data-dragon="5" alt="Dragón rey">
@@ -849,6 +875,14 @@
         <div>
           <h3>Los Músculos del Cuerpo</h3>
           <p style="color:#64748B;font-size:.85rem;">El cuerpo humano · ¿Cómo se llama este músculo?</p>
+        </div>
+      </div>
+
+      <div class="world-card" onclick="app.startVertGame()">
+        <img class="ck-thumb" data-dragon="12" alt="Dragón veterinario">
+        <div>
+          <h3>Vertebrados e Invertebrados</h3>
+          <p style="color:#64748B;font-size:.85rem;">Los animales · ¿Tiene huesos y columna o no?</p>
         </div>
       </div>
 
@@ -869,9 +903,30 @@
         <button class="dr-speak" onclick="app.speakBone()" aria-label="Escuchar el nombre">🔊</button>
       </div>
       <div id="dr-skel-card" class="dr-skel-card"><div id="dr-skel-wrap"></div></div>
+      <div id="dr-vert-card" class="dr-vert-card hidden">
+        <div id="dr-vert-emoji" class="dr-vert-emoji" aria-hidden="true"></div>
+        <div class="dr-vert-btns">
+          <button class="dr-vert-btn v" data-a="v" onclick="app.vertAnswer('v')"><span>🦴 Vertebrado</span><small>Tiene huesos y columna vertebral</small></button>
+          <button class="dr-vert-btn i" data-a="i" onclick="app.vertAnswer('i')"><span>🐛 Invertebrado</span><small>No tiene huesos ni columna</small></button>
+        </div>
+      </div>
       <div id="dr-feedback" class="hidden feedback-box"></div>
       <button id="dr-next" class="btn btn-primary hidden" onclick="app.nextBone()">Siguiente reto ➡️</button>
       <button id="dr-again" class="btn btn-green hidden" onclick="app.restartDragonGame()">Jugar otra vez 🔁</button>
+    </div>
+
+    <!-- ===== LA ISLA DE LAS PALABRAS (agrupa los juegos de Lengua) ===== -->
+    <div id="screen-lengua" class="hidden">
+      <button class="back-academy" onclick="app.goToAcademyMenu()">🦉 Volver a la Academia del Búho</button>
+      <div class="dr-eyebrow le-eyebrow">Lengua</div>
+      <h1 style="font-size:1.7rem;margin:2px 0 4px;color:#4338CA;">📖 La Isla de las Palabras</h1>
+      <p style="color:#64748B;font-size:.95rem;margin-bottom:14px;">Letras, frases y palabras: ¡elige tu juego de Lengua!</p>
+      <div class="academy-card" onclick="app.enterOrthographyAdventure()">
+        <div class="academy-icon">🔤</div><div><h3>La Liga de las Letras</h3><p>Explora el Mundo de la G, el Reino de la J, el Castillo de la B y la Galaxia de la V.</p></div>
+      </div>
+      <div class="academy-card" onclick="app.enterSantaAdventure()">
+        <div class="academy-icon">🎅</div><div><h3>El Reto de Papá Noel</h3><p>Sujeto y predicado, sinónimos y antónimos. ¡Una aventura navideña llena de magia!</p></div>
+      </div>
     </div>
 
     <!-- 4. PANTALLA FINAL: NOTA POSITIVA -->
@@ -2642,6 +2697,41 @@
       </svg>`;
     }
 
+    // ---------- Vertebrados e invertebrados ----------
+    const VX = 'Es un vertebrado: tiene esqueleto con huesos y columna vertebral.', IX = 'Es un invertebrado: no tiene columna vertebral ni huesos.';
+    const ANIMALS = [
+      { id: 'perro', e: '🐶', name: 'el perro', v: true, info: `${VX} Es un mamífero: tiene pelo y las crías toman leche de su mamá.` },
+      { id: 'gato', e: '🐱', name: 'el gato', v: true, info: `${VX} Es un mamífero: tiene pelo y las crías toman leche de su mamá.` },
+      { id: 'elefante', e: '🐘', name: 'el elefante', v: true, info: `${VX} Es un mamífero, ¡y el animal terrestre más grande!` },
+      { id: 'delfin', e: '🐬', name: 'el delfín', v: true, info: `${VX} Vive en el mar, pero es un mamífero: respira aire y las crías toman leche.` },
+      { id: 'caballo', e: '🐴', name: 'el caballo', v: true, info: `${VX} Es un mamífero con cuatro patas fuertes para correr.` },
+      { id: 'leon', e: '🦁', name: 'el león', v: true, info: `${VX} Es un mamífero: tiene pelo y es un gran cazador.` },
+      { id: 'pez', e: '🐟', name: 'el pez', v: true, info: `${VX} Es un pez: vive en el agua, respira por branquias y tiene escamas.` },
+      { id: 'tiburon', e: '🦈', name: 'el tiburón', v: true, info: `${VX} Es un pez: respira por branquias y vive en el mar.` },
+      { id: 'rana', e: '🐸', name: 'la rana', v: true, info: `${VX} Es un anfibio: de pequeña vive en el agua y de mayor también en tierra.` },
+      { id: 'serpiente', e: '🐍', name: 'la serpiente', v: true, info: `${VX} Es un reptil: tiene la piel con escamas. ¡Y muchísimas vértebras!` },
+      { id: 'tortuga', e: '🐢', name: 'la tortuga', v: true, info: `${VX} Es un reptil: su caparazón protege su esqueleto.` },
+      { id: 'cocodrilo', e: '🐊', name: 'el cocodrilo', v: true, info: `${VX} Es un reptil: tiene la piel con escamas y pone huevos.` },
+      { id: 'pajaro', e: '🐦', name: 'el pájaro', v: true, info: `${VX} Es un ave: tiene plumas, pico y pone huevos.` },
+      { id: 'pinguino', e: '🐧', name: 'el pingüino', v: true, info: `${VX} Es un ave: tiene plumas y pone huevos, aunque no vuele.` },
+      { id: 'oruga', e: '🐛', name: 'la oruga', v: false, info: `${IX} Es una larva de insecto: ¡se convertirá en mariposa!` },
+      { id: 'mariposa', e: '🦋', name: 'la mariposa', v: false, info: `${IX} Es un insecto: tiene seis patas y alas.` },
+      { id: 'abeja', e: '🐝', name: 'la abeja', v: false, info: `${IX} Es un insecto: tiene seis patas, alas y hace miel.` },
+      { id: 'mariquita', e: '🐞', name: 'la mariquita', v: false, info: `${IX} Es un insecto con seis patas y el cuerpo protegido por una cubierta dura.` },
+      { id: 'hormiga', e: '🐜', name: 'la hormiga', v: false, info: `${IX} Es un insecto: tiene seis patas y vive en hormigueros.` },
+      { id: 'grillo', e: '🦗', name: 'el grillo', v: false, info: `${IX} Es un insecto con seis patas. ¡Canta frotando sus alas!` },
+      { id: 'mosquito', e: '🦟', name: 'el mosquito', v: false, info: `${IX} Es un insecto: tiene seis patas y dos alas.` },
+      { id: 'arana', e: '🕷️', name: 'la araña', v: false, info: `${IX} Es un arácnido: tiene ocho patas (no es un insecto).` },
+      { id: 'escorpion', e: '🦂', name: 'el escorpión', v: false, info: `${IX} Es un arácnido: tiene ocho patas y pinzas.` },
+      { id: 'caracol', e: '🐌', name: 'el caracol', v: false, info: `${IX} Es un molusco: tiene el cuerpo blando y una concha.` },
+      { id: 'pulpo', e: '🐙', name: 'el pulpo', v: false, info: `${IX} Es un molusco: tiene el cuerpo blando y ocho tentáculos. ¡Aunque es muy listo, no tiene huesos!` },
+      { id: 'calamar', e: '🦑', name: 'el calamar', v: false, info: `${IX} Es un molusco: tiene el cuerpo blando y tentáculos.` },
+      { id: 'cangrejo', e: '🦀', name: 'el cangrejo', v: false, info: `${IX} Es un crustáceo: su caparazón duro está por fuera del cuerpo y no tiene huesos por dentro.` },
+      { id: 'langosta', e: '🦞', name: 'la langosta', v: false, info: `${IX} Es un crustáceo: tiene un caparazón duro por fuera y pinzas.` }
+    ];
+    const ANIMAL_BY_ID = Object.fromEntries(ANIMALS.map(a => [a.id, a]));
+    const vertOrder = () => shuffle([...shuffle(ANIMALS.filter(a => a.v)).slice(0, 5), ...shuffle(ANIMALS.filter(a => !a.v)).slice(0, 5)]).map(a => a.id);
+
     // ---------- El Valle de los Dragones (Conocimiento del Medio) ----------
     const $ = id => document.getElementById(id);
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -2652,6 +2742,7 @@
       bone: { list: BONES, by: BONE_BY_ID, svg: skeletonSvg, icon: '🦴', noun: 'hueso', plural: 'huesos', title: '🦴 ¿Dónde está el hueso?', inst: 'Toca el hueso que se llama:', end: '🐉🏆🦴', wise: '¡Dragón sabio de los huesos!' },
       musc: { list: MUSCLES, by: MUSC_BY_ID, svg: muscleSvg, icon: '💪', noun: 'músculo', plural: 'músculos', title: '💪 ¿Dónde está el músculo?', inst: 'Toca el músculo que se llama:', end: '🐉🏆💪', wise: '¡Dragón sabio de los músculos!' }
     };
+    KINDS.vert = { list: ANIMALS, by: ANIMAL_BY_ID, plural: 'animales', title: '🐾 ¿Vertebrado o invertebrado?', inst: 'Mira el animal y elige:', end: '🐉🏆🐾', wise: '¡Dragón sabio de los animales!' };
     const K = () => KINDS[app.dr.kind || 'bone'];
     const TOTAL = 10;
     const PRAISE = ['¡Roarrr! ¡Muy bien!', '¡Dragón sabio! ¡Correcto!', '¡Eres un dragón de los huesos!', '¡Fuego de alegría! ¡Perfecto!'];
@@ -2711,12 +2802,13 @@
       enterDragonAdventure() { app.currentSectionKey = null; app.openDragonMenu(); },
       openDragonMenu() { stopVoice(); showOnly('screen-dr-menu'); $('dr-soon-note').classList.add('hidden'); app.updateSharedRewards(); },
       showDragonSoon() { const n = $('dr-soon-note'); n.classList.remove('hidden'); n.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); },
+      startVertGame() { app.startBoneGame('vert'); },
       startMuscleGame() { app.startBoneGame('musc'); },
       restartDragonGame() { app.startBoneGame(app.dr.kind || 'bone'); },
 
       startBoneGame(kind) {
-        kind = kind === 'musc' ? 'musc' : 'bone';
-        app.dr = { kind, i: 0, total: TOTAL, score: 0, answered: false, order: shuffle(KINDS[kind].list.map(b => b.id)).slice(0, TOTAL), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
+        kind = kind === 'musc' || kind === 'vert' ? kind : 'bone';
+        app.dr = { kind, i: 0, total: TOTAL, score: 0, answered: false, order: kind === 'vert' ? vertOrder() : shuffle(KINDS[kind].list.map(b => b.id)).slice(0, TOTAL), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
         showOnly('screen-dr-game');
         app.loadBoneRound();
       },
@@ -2724,6 +2816,8 @@
       loadBoneRound() {
         const d = app.dr; d.answered = false;
         d.target = d.order[d.i];
+        $('dr-vert-card').classList.add('hidden');
+        if (d.kind === 'vert') return app.loadVertRound();
         // 2 distractores: nunca el "compañero" del hueso (radio/cúbito, tibia/peroné) para no confundir al tocar
         const pool = shuffle(K().list.map(b => b.id).filter(id => id !== d.target && id !== MATES[d.target]));
         const c1 = pool[0], c2 = pool.find(id => id !== c1 && id !== MATES[c1]);
@@ -2745,10 +2839,50 @@
         window.setTimeout(() => app.speakBone(), 250);
       },
 
+      loadVertRound() {
+        const d = app.dr, A = ANIMAL_BY_ID[d.target];
+        $('dr-counter').textContent = `Reto ${d.i + 1} de ${d.total}`;
+        $('dr-progress').style.width = `${(d.i / d.total) * 100}%`;
+        { const k = d.dragons[d.i % DRAGONS.length]; $('dr-mascot').src = DRAGONS_ANIM[k] || DRAGONS[k]; }
+        $('dr-name').textContent = A.name.toUpperCase();
+        const fb = $('dr-feedback'); fb.className = 'hidden feedback-box'; fb.innerHTML = '';
+        ['dr-next', 'dr-again'].forEach(id => $(id).classList.add('hidden'));
+        $('dr-title').textContent = K().title; $('dr-instruction').textContent = K().inst;
+        $('dr-name-row').classList.remove('hidden'); $('dr-skel-card').classList.add('hidden');
+        $('dr-vert-card').classList.remove('hidden');
+        $('dr-vert-emoji').textContent = A.e;
+        $('dr-vert-card').querySelectorAll('.dr-vert-btn').forEach(b => b.className = 'dr-vert-btn ' + (b.dataset.a === 'v' ? 'v' : 'i'));
+        window.setTimeout(() => app.speakBone(), 250);
+      },
+
+      vertAnswer(a) {
+        const d = app.dr; if (d.answered) return; d.answered = true;
+        const A = ANIMAL_BY_ID[d.target], right = A.v ? 'v' : 'i', ok = a === right;
+        $('dr-vert-card').querySelectorAll('.dr-vert-btn').forEach(b => {
+          b.classList.add('done');
+          if (b.dataset.a === right) b.classList.add('right'); else if (b.dataset.a === a) b.classList.add('wrong');
+        });
+        const fb = $('dr-feedback'); fb.classList.remove('hidden');
+        const label = A.v ? 'vertebrado' : 'invertebrado';
+        if (ok) {
+          d.score++; app.awardSharedReward(1);
+          fb.className = 'feedback-box feedback-correct';
+          fb.innerHTML = `<div style="font-size:2.2rem;">🐉🎉🔥</div><h3>${PRAISE[rnd(0, PRAISE.length - 1)]}</h3><p>${A.name.charAt(0).toUpperCase() + A.name.slice(1)} es un <b>${label}</b>.</p><p style="font-size:.92rem;margin-top:6px;">${A.info}</p>`;
+          mood(true);
+        } else {
+          fb.className = 'feedback-box feedback-wrong';
+          fb.innerHTML = `<div style="font-size:2rem;">🐲💡</div><h3>¡Casi, dragoncito! Vamos a aprenderlo</h3><p style="margin-top:6px;">${A.name.charAt(0).toUpperCase() + A.name.slice(1)} es un <b>${label}</b> (en verde).</p><p style="margin-top:6px;">${A.info}</p>`;
+          mood(false);
+        }
+        $('dr-next').textContent = d.i + 1 >= d.total ? 'Ver mi premio 🏆' : 'Siguiente reto ➡️';
+        $('dr-next').classList.remove('hidden');
+        fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      },
+
       speakBone() {
         const d = app.dr; if (!window.speechSynthesis || !d.target) return;
         stopVoice();
-        const u = new SpeechSynthesisUtterance(`Toca ${K().by[d.target].name}.`); u.lang = 'es-ES'; u.rate = .88;
+        const u = new SpeechSynthesisUtterance(d.kind === 'vert' ? `${K().by[d.target].name}. ¿Vertebrado o invertebrado?` : `Toca ${K().by[d.target].name}.`); u.lang = 'es-ES'; u.rate = .88;
         window.speechSynthesis.speak(u);
       },
 
@@ -2791,7 +2925,7 @@
         const d = app.dr; d.i++;
         if (d.i < d.total) { app.loadBoneRound(); return; }
         $('dr-progress').style.width = '100%'; $('dr-counter').textContent = 'Fin';
-        $('dr-name-row').classList.add('hidden'); $('dr-skel-card').classList.add('hidden');
+        $('dr-name-row').classList.add('hidden'); $('dr-skel-card').classList.add('hidden'); $('dr-vert-card').classList.add('hidden');
         $('dr-next').classList.add('hidden'); $('dr-again').classList.remove('hidden');
         $('dr-instruction').textContent = ''; $('dr-title').textContent = '🐉 ¡Fin del reto!';
         const pct = d.score / d.total;
@@ -2811,6 +2945,22 @@
       document.body.classList.remove('dragon-theme');
       return academyBeforeDragons();
     };
+    })();
+  </script>
+  <script>
+    (function () {
+      // La Isla de las Palabras: pantalla nueva que agrupa La Liga de las Letras y El Reto de Papá Noel (funciones originales sin tocar)
+      const hub = () => document.getElementById('screen-lengua');
+      app.openLengua = function () {
+        document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+        hub().classList.remove('hidden');
+        document.body.classList.remove('santa-theme', 'letter-theme', 'chick-theme', 'dragon-theme');
+        app.currentSectionKey = null; app.updateSharedRewards(); window.scrollTo({ top: 0 });
+      };
+      ['enterOrthographyAdventure', 'enterSantaAdventure', 'goToAcademyMenu'].forEach(name => {
+        const orig = app[name].bind(app);
+        app[name] = function () { hub().classList.add('hidden'); return orig.apply(app, arguments); };
+      });
     })();
   </script>
   <script>
