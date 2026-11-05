@@ -985,7 +985,7 @@
       </div>
       <div class="world-card" onclick="app.startQuizGame()">
         <img class="ck-thumb" data-dragon="14" alt="Dragón científico">
-        <div><h3>El Quiz de los Animales</h3><p style="color:#64748B;font-size:.85rem;">Más de 50 preguntas. ¡Cada 10 aciertos ganas un dragoncito!</p></div>
+        <div><h3>El Quiz de los Animales</h3><p style="color:#64748B;font-size:.85rem;">Más de 50 preguntas. ¡Con 8 aciertos de 10 ganas un dragoncito!</p></div>
       </div>
     </div>
 
@@ -3069,7 +3069,7 @@
         $('dr-name-row').classList.add('hidden'); $('dr-skel-card').classList.add('hidden');
         $('dr-quiz-card').classList.remove('hidden');
         $('dr-quiz-q').textContent = Q[0];
-        $('dr-quiz-meter').textContent = `🐉 Aciertos para tu próximo dragón: ${quizState.correct % 10} de 10`;
+        $('dr-quiz-meter').textContent = `🐉 Aciertos en esta ronda: ${d.score} · con 8 de 10 ganas un dragoncito`;
         const opts = shuffle([0, 1, 2]);
         $('dr-quiz-opts').innerHTML = opts.map(o => `<button class="dr-q-btn" data-o="${o}">${Q[o + 1]}</button>`).join('');
         $('dr-quiz-opts').querySelectorAll('.dr-q-btn').forEach(b => b.addEventListener('click', () => app.quizAnswer(Number(b.dataset.o))));
@@ -3087,14 +3087,13 @@
           d.score++; quizState.correct++; saveQuiz(); app.awardSharedReward(1);
           fb.className = 'feedback-box feedback-correct';
           fb.innerHTML = `<div style="font-size:2.2rem;">🐉🎉🔥</div><h3>${PRAISE[rnd(0, PRAISE.length - 1)]}</h3><p style="font-size:.95rem;">${Q[4]}</p>`;
-          if (quizState.correct % 10 === 0) { fb.innerHTML += `<p style="margin-top:6px;"><b>¡${quizState.correct} aciertos en total! ¡Un dragoncito nuevo para ti!</b></p>` + app.prizeBoxHtml(app.awardPrize('dragons'), 'dr-prize'); dropDragons(4); }
           mood(true);
         } else {
           fb.className = 'feedback-box feedback-wrong';
           fb.innerHTML = `<div style="font-size:2rem;">🐲💡</div><h3>¡Casi, dragoncito! Vamos a aprenderlo</h3><p style="margin-top:6px;">✅ La respuesta correcta es: <b>${Q[1]}</b>.</p><p style="margin-top:6px;">${Q[4]}</p>`;
           mood(false);
         }
-        $('dr-quiz-meter').textContent = `🐉 Aciertos para tu próximo dragón: ${quizState.correct % 10} de 10`;
+        $('dr-quiz-meter').textContent = `🐉 Aciertos en esta ronda: ${d.score} · con 8 de 10 ganas un dragoncito`;
         $('dr-next').textContent = d.i + 1 >= d.total ? 'Ver mi resultado 🏆' : 'Siguiente pregunta ➡️';
         $('dr-next').classList.remove('hidden');
         fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -3228,8 +3227,8 @@
         const pct = d.score / d.total;
         const title = pct >= .9 ? K().wise : pct >= .6 ? '¡Muy buen trabajo, dragoncito!' : '¡Sigue practicando, dragoncito valiente!';
         const fb = $('dr-feedback'); fb.className = 'feedback-box feedback-correct';
-        fb.innerHTML = `<div style="font-size:2.6rem;">${K().end}</div><h3>${title}</h3><p>Has acertado ${d.score} de ${d.total} ${K().plural}.</p>${d.kind === 'quiz' ? `<p style="margin-top:6px;">🐉 Llevas <b>${quizState.correct % 10} de 10</b> aciertos para tu próximo dragoncito.</p>` : ''}<p style="font-size:.92rem;margin-top:6px;">¡Cada acierto te ha dado una estrella! ⭐</p>`;
-        if (d.kind !== 'quiz' && pct >= .8) fb.innerHTML += app.prizeBoxHtml(app.awardPrize('dragons'), 'dr-prize');
+        fb.innerHTML = `<div style="font-size:2.6rem;">${K().end}</div><h3>${title}</h3><p>Has acertado ${d.score} de ${d.total} ${K().plural}.</p><p style="font-size:.92rem;margin-top:6px;">¡Cada acierto te ha dado una estrella! ⭐</p>`;
+        if (pct >= .8) fb.innerHTML += app.prizeBoxHtml(app.awardPrize('dragons'), 'dr-prize');
         mood(true); dropDragons(4);
         fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
