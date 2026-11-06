@@ -479,6 +479,12 @@
       .dp-paper svg { box-shadow:none; width:100%; max-height:100vh; }
     }
     .dp-area { margin:8px 2px 0; font-weight:700; color:#4338CA; font-size:.95rem; text-align:left; }
+
+    .dp-pick { display:grid; grid-template-columns:repeat(auto-fill,minmax(58px,1fr)); gap:8px; max-height:210px; overflow:auto; padding:6px; margin:6px 0; background:#F1F5F9; border-radius:16px; }
+    .dp-pk { padding:3px; border:3px solid transparent; border-radius:50%; background:#FEF3C7; cursor:pointer; line-height:0; }
+    .dp-pk img { width:100%; border-radius:50%; display:block; }
+    .dp-pk.dp-on { border-color:#4338CA; box-shadow:0 0 0 3px #A5B4FC; transform:scale(1.08); }
+    .dp-pkname { min-height:1.3em; color:#B45309; font-weight:700; font-size:.95rem; }
     /* ===== Cuaderno ABN ===== */
     #screen-abn-menu, #screen-abn-game { width:100%; min-width:0; flex:0 0 auto; }
     .abn-h2 { font-size:1.2rem; color:#92400E; margin:14px 0 6px; text-align:left; }
@@ -993,6 +999,14 @@
         </div>
       </div>
 
+      <div class="world-card" onclick="app.openWorldMenu()">
+        <img class="ck-thumb" data-dragon="3" alt="Dragón explorador">
+        <div>
+          <h3>El Mundo que nos Rodea</h3>
+          <p style="color:#64748B;font-size:.85rem;">Animales, ríos, plantas y lugares · ¡Curiosidades!</p>
+        </div>
+      </div>
+
       <div id="dr-soon-note" class="hidden feedback-box feedback-correct" style="margin-top:10px;">🐲 ¡Los dragones están preparando nuevos misterios! Mientras tanto, practica con el esqueleto.</div>
     </div>
 
@@ -1011,9 +1025,20 @@
       </div>
     </div>
 
+    <div id="screen-dr-world-menu" class="hidden">
+      <div style="display:flex;justify-content:flex-start;margin-bottom:6px;"><button class="btn btn-back" onclick="app.openDragonMenu()">⬅️ Volver al valle</button></div>
+      <img class="ck-mascot" data-dragon="3" alt="Dragón explorador">
+      <h1 style="font-size:1.6rem;margin:6px 0 4px;">🌍 El Mundo que nos Rodea</h1>
+      <p style="color:#64748B;font-size:.95rem;margin-bottom:16px;">Curiosidades de animales, ríos, plantas, lugares… ¡Elige tu reto!</p>
+      <div class="world-card" onclick="app.startWorldGame()">
+        <img class="ck-thumb" data-dragon="6" alt="Dragón aventurero">
+        <div><h3>🧭 ¡El Gran Safari de las Curiosidades!</h3><p style="color:#64748B;font-size:.85rem;">150 preguntas sobre el mundo. ¡Con 8 aciertos de 10 ganas un dragoncito!</p></div>
+      </div>
+    </div>
+
     <div id="screen-dr-game" class="hidden">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <button class="btn btn-back" onclick="app.openDragonMenu()">⬅️ Volver al valle</button>
+        <button class="btn btn-back" onclick="app.backFromGame()">⬅️ Volver</button>
         <span id="dr-counter" style="font-size:.85rem;color:#64748B;">Reto 1 de 10</span>
       </div>
       <div class="progress-bar"><div id="dr-progress" class="progress-fill" style="width:0%;"></div></div>
@@ -3005,6 +3030,181 @@
       return [...pool, ...rest].slice(0, 10);
     }
 
+    // ---------- El mundo que nos rodea: quiz de curiosidades (3º de Primaria) ----------
+    // [pregunta, respuesta correcta, incorrecta 1, incorrecta 2, explicación]
+    const WORLD = [
+      // --- Animales ---
+      ['¿Cuál es el animal terrestre más grande?', 'El elefante africano', 'La jirafa', 'El rinoceronte', 'Un elefante africano puede pesar más de 6.000 kilos.'],
+      ['¿Cuál es el animal más alto del mundo?', 'La jirafa', 'El elefante', 'El avestruz', 'Una jirafa puede medir casi 6 metros de altura.'],
+      ['¿Qué animal corre más rápido en tierra?', 'El guepardo', 'El león', 'El caballo', 'El guepardo puede superar los 100 kilómetros por hora en carreras cortas.'],
+      ['¿Cuántas patas tiene una araña?', 'Ocho', 'Seis', 'Diez', 'Las arañas tienen 8 patas. Por eso no son insectos: los insectos tienen 6.'],
+      ['¿Cuántas patas tiene un insecto?', 'Seis', 'Cuatro', 'Ocho', 'Todos los insectos tienen 6 patas.'],
+      ['¿Cuál es el animal más grande que existe en el planeta?', 'La ballena azul', 'El elefante', 'El tiburón blanco', 'La ballena azul es mayor que cualquier dinosaurio.'],
+      ['¿Qué animal duerme colgado boca abajo?', 'El murciélago', 'El loro', 'El búho', 'Los murciélagos cuelgan de sus patas para descansar en las cuevas.'],
+      ['¿Qué come casi todo el día el oso panda?', 'Bambú', 'Pescado', 'Zanahorias', 'Un panda puede comer más de 10 kilos de bambú al día.'],
+      ['¿Qué guarda el camello en su joroba?', 'Grasa', 'Agua', 'Arena', 'La grasa le sirve de reserva de energía en el desierto.'],
+      ['¿Qué animal puede cambiar de color?', 'El camaleón', 'El elefante', 'La vaca', 'El camaleón cambia de color según su estado de ánimo y la temperatura.'],
+      ['¿Cómo se llama la cría de la cabra?', 'Cabrito', 'Cordero', 'Ternero', 'La cría de la oveja es el cordero y la de la vaca, el ternero.'],
+      ['¿Cómo se llama la cría de la rana?', 'Renacuajo', 'Polluelo', 'Cachorro', 'El renacuajo vive en el agua y le salen las patas al crecer.'],
+      ['¿Cómo se llama la cría del caballo?', 'Potro', 'Ternero', 'Cabrito', 'Una potra o un potro son los hijos de la yegua.'],
+      ['¿Dónde viven los leones?', 'En la sabana africana', 'En el Polo Norte', 'En el fondo del mar', 'Los leones viven en praderas con pocos árboles llamadas sabana.'],
+      ['¿Para qué usa el elefante su trompa?', 'Para beber, oler y coger cosas', 'Solo para hacer ruido', 'Para volar', 'La trompa del elefante es nariz y mano a la vez.'],
+      ['¿Cuántos corazones tiene un pulpo?', 'Tres', 'Uno', 'Ocho', 'El pulpo tiene tres corazones y su sangre es azul.'],
+      ['¿Qué animal vive en el Polo Norte?', 'El oso polar', 'El pingüino', 'El canguro', 'Los pingüinos viven en el sur del planeta, no en el Polo Norte.'],
+      ['¿Qué ave no puede volar pero nada muy bien?', 'El pingüino', 'La paloma', 'El águila', 'Las alas del pingüino son como aletas para nadar.'],
+      ['¿Qué ave no vuela pero corre muy rápido?', 'El avestruz', 'El pato', 'El flamenco', 'El avestruz es la ave más grande y puede correr a unos 70 km/h.'],
+      ['¿Por qué son rosas los flamencos?', 'Por lo que comen', 'Porque se pintan', 'Porque nacen rosas', 'Comen gambas y algas pequeñas que les dan ese color.'],
+      ['¿Qué insecto fabrica miel?', 'La abeja', 'La hormiga', 'La mariposa', 'Las abejas hacen la miel con el néctar de las flores.'],
+      ['¿Cómo se llama la casa de las abejas?', 'Colmena', 'Madriguera', 'Hormiguero', 'En una colmena viven miles de abejas juntas.'],
+      ['¿Qué forma tienen las celdas de un panal de abejas?', 'Hexágonos', 'Círculos', 'Cuadrados', 'Los hexágonos encajan sin dejar huecos y ahorran cera.'],
+      ['¿Qué animal marino tiene ocho brazos?', 'El pulpo', 'El delfín', 'El tiburón', 'El pulpo tiene ocho brazos con ventosas.'],
+      ['¿Cuál es el único mamífero que puede volar?', 'El murciélago', 'El loro', 'La ardilla', 'Los murciélagos son mamíferos con alas de piel.'],
+      ['¿Cuántas horas al día duerme un koala?', 'Unas 20 horas', 'Unas 2 horas', 'Unas 8 horas', 'Las hojas de eucalipto le dan poca energía, así que duerme casi todo el día.'],
+      ['¿Cuál es el felino más grande del mundo?', 'El tigre', 'El león', 'El gato montés', 'El tigre es el felino más grande y es el único con rayas.'],
+      ['¿En qué países vive el lince ibérico?', 'En España y Portugal', 'En Egipto', 'En Canadá', 'El lince ibérico vive en la península ibérica y estuvo en peligro de extinción.'],
+      ['Un animal que come tanto carne como plantas es…', 'Omnívoro', 'Herbívoro', 'Carnívoro', 'El oso y las personas somos omnívoros.'],
+      ['¿Qué animal construye diques con troncos en los ríos?', 'El castor', 'El pato', 'La nutria', 'El castor corta árboles con sus dientes fuertes.'],
+      ['¿Qué animal puede esconder la cabeza dentro de su caparazón?', 'La tortuga', 'El cangrejo', 'La rana', 'La tortuga mete la cabeza y las patas dentro para protegerse.'],
+      ['¿Cuántos años puede vivir una tortuga gigante?', 'Más de 100 años', 'Unos 10 años', 'Unos 25 años', 'Las tortugas gigantes están entre los animales que más viven.'],
+      ['¿Qué insecto brilla en la oscuridad?', 'La luciérnaga', 'La mariquita', 'El saltamontes', 'La luciérnaga produce luz en su cuerpo para comunicarse.'],
+      ['¿Qué animal es muy lento y vive colgado de los árboles?', 'El perezoso', 'La liebre', 'El delfín', 'El perezoso se mueve tan despacio que le crecen algas en el pelo.'],
+      ['¿Qué animal produce la seda?', 'El gusano de seda', 'La abeja', 'La hormiga', 'Con el capullo del gusano de seda se hace un hilo muy fino.'],
+      ['¿De qué animal sacamos la lana?', 'De la oveja', 'De la vaca', 'De la gallina', 'La lana de la oveja se esquila y se usa para hacer ropa.'],
+      ['¿En qué se convierte una oruga?', 'En una mariposa', 'En un escarabajo', 'En una hormiga', 'La oruga se encierra en una crisálida y sale convertida en mariposa.'],
+      ['¿Qué animal puede volver a hacerse crecer la cola?', 'La lagartija', 'El perro', 'El gato', 'La lagartija suelta la cola para escapar y le vuelve a crecer.'],
+      ['¿Qué ave simboliza la paz?', 'La paloma blanca', 'El águila', 'El búho', 'La paloma con una rama de olivo es símbolo de paz.'],
+      // --- Ríos, mares y geografía ---
+      ['¿Cuál es el río más largo de la península ibérica?', 'El Tajo', 'El Guadalquivir', 'El Segura', 'El Tajo nace en Teruel y desemboca en Lisboa.'],
+      ['¿Qué río pasa por la ciudad de Sevilla?', 'El Guadalquivir', 'El Ebro', 'El Duero', 'El Guadalquivir es el río más importante de Andalucía.'],
+      ['¿Qué río pasa por Zaragoza?', 'El Ebro', 'El Tajo', 'El Segura', 'El Ebro es el río más caudaloso de España.'],
+      ['¿Qué río pasa por Madrid?', 'El Manzanares', 'El Ebro', 'El Duero', 'El Manzanares es un río pequeño que cruza la capital.'],
+      ['¿Qué río pasa por París?', 'El Sena', 'El Támesis', 'El Nilo', 'El Sena cruza París y desemboca en el mar.'],
+      ['¿Qué río pasa por Londres?', 'El Támesis', 'El Sena', 'El Ebro', 'El Támesis es el río más famoso de Inglaterra.'],
+      ['¿Qué río pasa por Egipto y es famoso por las pirámides?', 'El Nilo', 'El Amazonas', 'El Tajo', 'El Nilo es uno de los ríos más largos del mundo.'],
+      ['¿Cuál es el río con más agua del mundo?', 'El Amazonas', 'El Ebro', 'El Támesis', 'El Amazonas recorre la selva de Sudamérica y lleva muchísima agua.'],
+      ['¿Cuál es el océano más grande?', 'El Pacífico', 'El Atlántico', 'El Índico', 'El océano Pacífico ocupa casi un tercio de la Tierra.'],
+      ['¿Cuántos océanos hay en la Tierra?', 'Cinco', 'Tres', 'Siete', 'Son el Pacífico, el Atlántico, el Índico, el Ártico y el Antártico.'],
+      ['¿En qué continente está Egipto?', 'En África', 'En Asia', 'En Europa', 'Egipto está en el norte de África.'],
+      ['¿Cuál es la montaña más alta de España?', 'El Teide', 'El Mulhacén', 'El Aneto', 'El Teide es un volcán de la isla de Tenerife, con 3.715 metros.'],
+      ['¿Cuál es la montaña más alta del mundo?', 'El Everest', 'El Teide', 'El Mont Blanc', 'El Everest está en el Himalaya y mide casi 8.850 metros.'],
+      ['¿Qué mar baña la costa este de España?', 'El mar Mediterráneo', 'El mar Negro', 'El mar Rojo', 'El Mediterráneo baña Cataluña, Valencia, Murcia y Andalucía.'],
+      ['¿Cómo se llama el mar del norte de España?', 'El mar Cantábrico', 'El mar Mediterráneo', 'El mar Muerto', 'Baña Galicia, Asturias, Cantabria y el País Vasco.'],
+      ['¿Cuántas comunidades autónomas tiene España?', '17', '10', '25', 'Además hay dos ciudades autónomas: Ceuta y Melilla.'],
+      ['¿Cómo se llaman las islas de España que están en el océano Atlántico?', 'Las Islas Canarias', 'Las Islas Baleares', 'Las Islas Cíes', 'Las Canarias están frente a la costa de África.'],
+      ['¿Cuál es la isla más grande de las Islas Baleares?', 'Mallorca', 'Ibiza', 'Menorca', 'Mallorca es la mayor de las Baleares.'],
+      ['¿Qué es una isla?', 'Tierra rodeada de agua por todas partes', 'Un río muy ancho', 'Una montaña muy alta', 'Una isla puede ser enorme, como Groenlandia, o muy pequeña.'],
+      ['¿Qué es una península?', 'Tierra rodeada de agua casi por todas partes', 'Una isla muy pequeña', 'Un lago grande', 'España y Portugal forman la península ibérica.'],
+      ['¿Cuál es el país más grande del mundo?', 'Rusia', 'España', 'Brasil', 'Rusia ocupa una parte de Europa y otra de Asia.'],
+      ['¿Cuál es el desierto cálido más grande del mundo?', 'El Sáhara', 'El Gobi', 'El Atacama', 'El Sáhara está en el norte de África.'],
+      ['¿En qué continente está el Polo Sur?', 'En la Antártida', 'En África', 'En Australia', 'La Antártida está cubierta de hielo casi todo el año.'],
+      ['¿Cuál es la capital de Francia?', 'París', 'Roma', 'Madrid', 'París es famosa por la Torre Eiffel.'],
+      ['¿Cuál es la capital de Italia?', 'Roma', 'París', 'Lisboa', 'En Roma está el Coliseo.'],
+      ['¿Cuál es la capital de Portugal?', 'Lisboa', 'Madrid', 'Roma', 'Lisboa está junto al río Tajo, que viene de España.'],
+      ['¿Cuál es la capital de Reino Unido?', 'Londres', 'París', 'Berlín', 'En Londres está el Big Ben.'],
+      ['¿Qué país tiene forma de bota?', 'Italia', 'Portugal', 'Grecia', 'Si miras Italia en el mapa, parece una bota.'],
+      ['¿Qué país es famoso por sus molinos y sus campos de tulipanes?', 'Países Bajos', 'Egipto', 'Australia', 'También se llama Holanda y tiene muchas bicicletas.'],
+      ['¿Qué idioma se habla en Brasil?', 'Portugués', 'Español', 'Inglés', 'Brasil fue colonia de Portugal.'],
+      // --- Plantas ---
+      ['¿Qué necesitan las plantas para fabricar su alimento?', 'Luz del sol, agua y aire', 'Solo tierra', 'Solo música', 'Las hojas fabrican el alimento de la planta con la luz del sol.'],
+      ['¿Cómo se llama el proceso por el que las plantas fabrican su alimento?', 'Fotosíntesis', 'Digestión', 'Evaporación', 'Foto significa "luz": las plantas se alimentan gracias a la luz.'],
+      ['¿Qué gas sueltan las plantas que nosotros necesitamos para respirar?', 'Oxígeno', 'Humo', 'Helio', 'Las plantas limpian el aire y nos regalan oxígeno.'],
+      ['¿Qué parte de la planta la sujeta a la tierra y absorbe el agua?', 'La raíz', 'La hoja', 'La flor', 'Las raíces también absorben sales minerales del suelo.'],
+      ['¿Qué parte de la planta se convierte en fruto?', 'La flor', 'La raíz', 'El tallo', 'Cuando la flor se poliniza, se forma el fruto con las semillas.'],
+      ['¿Qué hay dentro de un fruto?', 'Las semillas', 'Las raíces', 'El tronco', 'De las semillas pueden nacer nuevas plantas.'],
+      ['¿Qué árbol da bellotas?', 'La encina', 'El pino', 'El olivo', 'Las encinas y los robles dan bellotas, la comida de los cerdos ibéricos.'],
+      ['¿Qué árbol da aceitunas?', 'El olivo', 'El naranjo', 'El almendro', 'De las aceitunas se saca el aceite de oliva.'],
+      ['¿Qué árbol da piñones?', 'El pino piñonero', 'El olivo', 'El abeto', 'Los piñones están dentro de las piñas.'],
+      ['¿Qué fruto da la vid?', 'La uva', 'La aceituna', 'La manzana', 'Con las uvas se hace el zumo, el vino y las pasas.'],
+      ['¿Qué parte de la planta es la zanahoria?', 'La raíz', 'La hoja', 'El fruto', 'La zanahoria es una raíz que crece bajo la tierra.'],
+      ['¿Qué parte de la planta comemos en la lechuga?', 'Las hojas', 'Las raíces', 'Las flores', 'Comemos sus hojas verdes.'],
+      ['El tomate, ¿qué es?', 'Un fruto', 'Una raíz', 'Una hoja', 'El tomate tiene semillas dentro, por eso es un fruto.'],
+      ['¿De qué planta se saca el chocolate?', 'Del cacao', 'Del trigo', 'De la caña', 'Las semillas del cacao se tuestan y se muelen para hacer chocolate.'],
+      ['¿De qué planta se saca el azúcar?', 'De la caña de azúcar', 'Del maíz', 'Del trigo', 'También se saca azúcar de la remolacha.'],
+      ['¿Qué planta guarda agua en su tallo para vivir en el desierto?', 'El cactus', 'El helecho', 'El girasol', 'Las espinas del cactus son sus hojas transformadas.'],
+      ['¿Qué planta atrapa insectos?', 'La dionea', 'El cactus', 'La rosa', 'La dionea cierra sus hojas como una trampa.'],
+      ['¿Qué árbol es de los más altos del mundo, con más de 100 metros?', 'La secuoya', 'El pino', 'El olivo', 'Las secuoyas viven en California y pueden vivir miles de años.'],
+      ['¿Qué hacen los árboles de hoja caduca en otoño?', 'Pierden las hojas', 'Les salen flores', 'Se hacen más pequeños', 'Se preparan para el invierno sin hojas.'],
+      ['¿Cuál de estos árboles mantiene sus hojas todo el año?', 'El pino', 'El chopo', 'El castaño', 'Los pinos son de hoja perenne: siempre verdes.'],
+      ['¿Qué hacen las abejas en las flores?', 'Recogen néctar y polen', 'Las pintan', 'Duermen', 'Al viajar de flor en flor ayudan a que haya frutos.'],
+      ['¿Hacia dónde gira el girasol?', 'Hacia la luz del sol', 'Hacia la sombra', 'Hacia el norte siempre', 'Las flores jóvenes siguen al sol durante el día.'],
+      // --- Lugares y monumentos ---
+      ['¿En qué país está la Torre Eiffel?', 'En Francia', 'En Italia', 'En España', 'La Torre Eiffel está en París.'],
+      ['¿En qué país está la Gran Muralla?', 'En China', 'En Japón', 'En Egipto', 'La Gran Muralla china mide miles de kilómetros.'],
+      ['¿En qué país están las pirámides de Giza?', 'En Egipto', 'En México', 'En Grecia', 'Las pirámides de Giza tienen más de 4.000 años.'],
+      ['¿En qué ciudad está el Coliseo?', 'En Roma', 'En Atenas', 'En París', 'En el Coliseo romano luchaban los gladiadores.'],
+      ['¿Qué país regaló la Estatua de la Libertad a Estados Unidos?', 'Francia', 'España', 'Alemania', 'Está en Nueva York.'],
+      ['¿En qué ciudad está la Sagrada Familia?', 'En Barcelona', 'En Sevilla', 'En Madrid', 'La diseñó el arquitecto Antoni Gaudí.'],
+      ['¿En qué ciudad española está la Alhambra?', 'En Granada', 'En Burgos', 'En Valencia', 'La Alhambra es un palacio y fortaleza árabe.'],
+      ['¿Quién construyó el acueducto de Segovia?', 'Los romanos', 'Los dinosaurios', 'Los vikingos', 'Lo hicieron hace unos 2.000 años para llevar agua a la ciudad.'],
+      ['¿En qué país están las ruinas de Machu Picchu?', 'En Perú', 'En España', 'En Egipto', 'Es una ciudad inca en lo alto de los Andes.'],
+      ['¿En qué ciudad está el Big Ben?', 'En Londres', 'En París', 'En Madrid', 'El Big Ben es la campana de una torre con un gran reloj.'],
+      ['¿En qué país está el Taj Mahal?', 'En la India', 'En Egipto', 'En México', 'El Taj Mahal es un palacio de mármol blanco.'],
+      ['¿A qué ciudad llega el Camino de Santiago?', 'A Santiago de Compostela', 'A Valencia', 'A Toledo', 'Santiago de Compostela está en Galicia.'],
+      ['¿En qué isla está el Parque Nacional del Teide?', 'En Tenerife', 'En Mallorca', 'En Ibiza', 'El Teide es un volcán que se ve desde muy lejos.'],
+      ['¿En qué ciudad está el Museo del Prado?', 'En Madrid', 'En Barcelona', 'En Bilbao', 'En el Prado se guardan cuadros de Velázquez y Goya.'],
+      ['¿En qué país está el monte Fuji?', 'En Japón', 'En Egipto', 'En Perú', 'El Fuji es un volcán nevado, símbolo de Japón.'],
+      ['¿Qué ciudad italiana tiene una torre inclinada famosa?', 'Pisa', 'Roma', 'Venecia', 'La torre de Pisa se inclina porque el suelo cedió.'],
+      ['¿Qué ciudad italiana tiene calles de agua llamadas canales?', 'Venecia', 'Roma', 'Milán', 'En Venecia se viaja en barcos llamados góndolas.'],
+      ['¿Dónde está la Gran Barrera de Coral?', 'En Australia', 'En España', 'En Canadá', 'Es el arrecife de coral más grande del mundo.'],
+      ['¿En qué país viven los canguros?', 'En Australia', 'En Brasil', 'En Marruecos', 'Los canguros llevan a sus crías en una bolsa.'],
+      ['¿En qué país viven los pandas gigantes?', 'En China', 'En Kenia', 'En Argentina', 'Los pandas viven en los bosques de bambú de China.'],
+      ['¿En qué ciudad española está la Mezquita-Catedral?', 'En Córdoba', 'En Salamanca', 'En Oviedo', 'Tiene un famoso bosque de columnas con arcos rojos y blancos.'],
+      // --- La Tierra, el cielo y el planeta ---
+      ['¿Cuál es el planeta más grande del Sistema Solar?', 'Júpiter', 'Marte', 'La Tierra', 'Júpiter es tan grande que cabrían más de mil Tierras dentro.'],
+      ['¿Cuál es el planeta más cercano al Sol?', 'Mercurio', 'Marte', 'Neptuno', 'Mercurio es pequeño y muy caliente de día.'],
+      ['¿Qué planeta se conoce como el planeta rojo?', 'Marte', 'Venus', 'Saturno', 'Marte es rojizo por el óxido de su suelo.'],
+      ['¿Qué planeta tiene unos anillos muy famosos?', 'Saturno', 'Marte', 'Mercurio', 'Los anillos de Saturno son de hielo y roca.'],
+      ['¿Qué es el Sol?', 'Una estrella', 'Un planeta', 'Un satélite', 'El Sol es la estrella más cercana a la Tierra.'],
+      ['¿Cuántos planetas tiene el Sistema Solar?', 'Ocho', 'Nueve', 'Cinco', 'Son Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno.'],
+      ['¿Qué es la Luna?', 'El satélite natural de la Tierra', 'Una estrella', 'Un planeta', 'La Luna da vueltas alrededor de la Tierra.'],
+      ['¿Cuánto tarda la Tierra en dar una vuelta al Sol?', 'Un año', 'Un día', 'Un mes', 'Son 365 días y unas 6 horas, por eso hay un año bisiesto cada cuatro años.'],
+      ['¿Cuánto tarda la Tierra en girar sobre sí misma?', 'Un día', 'Un año', 'Una semana', 'Por eso hay día y noche: unas 24 horas.'],
+      ['¿Quién fue la primera persona que pisó la Luna?', 'Neil Armstrong', 'Cristóbal Colón', 'Yuri Gagarin', 'Fue en el año 1969.'],
+      ['¿Cuántos colores tiene el arcoíris?', 'Siete', 'Cinco', 'Diez', 'Rojo, naranja, amarillo, verde, azul, añil y violeta.'],
+      ['¿Qué cubre la mayor parte de la superficie de la Tierra?', 'El agua', 'La arena', 'El hielo', 'Los océanos cubren más de dos tercios del planeta.'],
+      ['¿Qué pasa cuando el sol calienta el agua del mar?', 'Se evapora y sube al cielo', 'Se convierte en piedra', 'Se vuelve dulce', 'El vapor forma las nubes y después llueve: es el ciclo del agua.'],
+      ['¿Cómo se llama el agua cuando está congelada?', 'Hielo', 'Vapor', 'Niebla', 'El agua se congela a 0 grados.'],
+      ['¿A cuántos grados hierve el agua?', 'A 100 grados', 'A 50 grados', 'A 0 grados', 'A 100 grados el agua hierve y se convierte en vapor.'],
+      ['¿Qué aparato sirve para medir la temperatura?', 'El termómetro', 'El reloj', 'La brújula', 'La brújula, en cambio, señala el norte.'],
+      ['¿Qué energía producen los molinos modernos llamados aerogeneradores?', 'Energía del viento (eólica)', 'Energía del sol', 'Energía del agua', 'La energía eólica es limpia y no se acaba.'],
+      ['¿Qué energía producen las placas de los tejados que miran al sol?', 'Energía solar', 'Energía eólica', 'Energía del carbón', 'Las placas solares convierten la luz en electricidad.'],
+      ['¿De qué color es el contenedor del papel y el cartón?', 'Azul', 'Amarillo', 'Verde', 'El amarillo es para envases y el verde para el vidrio.'],
+      ['¿De qué color es el contenedor del vidrio?', 'Verde', 'Azul', 'Amarillo', 'Las botellas y los tarros de cristal van al contenedor verde.'],
+      ['¿A qué contenedor van las latas y las botellas de plástico?', 'Al amarillo', 'Al azul', 'Al verde', 'Los envases de plástico, latas y briks van al contenedor amarillo.'],
+      ['¿Qué es un volcán?', 'Una montaña por donde sale lava', 'Un río subterráneo', 'Una nube grande', 'La lava es roca derretida que sale del interior de la Tierra.'],
+      ['¿Qué es un terremoto?', 'Un temblor del suelo', 'Una tormenta de viento', 'Una ola gigante', 'El suelo se mueve porque las placas de la Tierra chocan.'],
+      ['¿Qué estación del año viene después del invierno?', 'La primavera', 'El verano', 'El otoño', 'Las estaciones son primavera, verano, otoño e invierno.'],
+      // --- Curiosidades ---
+      ['¿Cuántos días tiene un año bisiesto?', '366 días', '365 días', '360 días', 'El día extra es el 29 de febrero.'],
+      ['¿Cada cuántos años hay un año bisiesto?', 'Cada cuatro años', 'Cada dos años', 'Cada diez años', 'Así se ajusta el calendario con lo que tarda la Tierra en dar la vuelta al Sol.'],
+      ['¿Qué alimento fabrican las abejas y puede conservarse durante miles de años?', 'La miel', 'El queso', 'El pan', 'Se han encontrado tarros de miel de Egipto que aún se podían comer.'],
+      ['¿Qué hacen los osos pardos durante el invierno?', 'Duermen mucho tiempo (hibernan)', 'Nadan en el mar', 'Vuelan al sur', 'Hibernar es dormir mucho para ahorrar energía cuando hace frío.'],
+      ['¿Qué fruta tiene las semillas por fuera?', 'La fresa', 'La manzana', 'La naranja', 'Los puntitos de la fresa son los verdaderos frutos pequeñitos.'],
+      ['¿Qué animal puede dormir de pie?', 'El caballo', 'El gato', 'El delfín', 'Los caballos tienen unos músculos que les ayudan a no caerse.'],
+      ['¿Qué animal tiene una lengua muy larga y azulada que usa para alcanzar las hojas?', 'La jirafa', 'El cerdo', 'La cebra', 'La lengua de la jirafa mide unos 45 centímetros.'],
+      ['¿De qué se alimentan las ballenas azules, las más grandes del mundo?', 'De bichitos muy pequeños llamados krill', 'De tiburones', 'De plantas', 'Pueden tragar millones de krill cada día.'],
+      ['¿Cuál es el órgano que usan los peces para respirar en el agua?', 'Las branquias', 'Los pulmones', 'La nariz', 'Las branquias sacan el oxígeno que hay en el agua.'],
+      ['¿Qué animal es el mayor de los reptiles?', 'El cocodrilo marino', 'La tortuga', 'El lagarto', 'El cocodrilo marino puede medir más de 5 metros.'],
+      ['¿Qué hacen las hormigas para avisarse de dónde hay comida?', 'Dejan un rastro con olor', 'Silban', 'Dibujan en el suelo', 'Las demás hormigas siguen ese rastro hasta la comida.'],
+      ['¿Por qué se oye el trueno después de ver el relámpago?', 'Porque la luz viaja más rápido que el sonido', 'Porque el trueno va más rápido', 'Porque el cielo está lejos', 'La luz llega casi al instante y el sonido tarda más.'],
+      ['¿Qué animal vive en la sabana y tiene una melena?', 'El león macho', 'La cebra', 'El elefante', 'Solo los leones machos tienen melena.'],
+      ['¿Qué pasa con el agua del mar cuando se evapora?', 'La sal se queda', 'Se lleva la sal', 'Se vuelve azul', 'Por eso se hacen salinas: el agua se evapora y queda la sal.']
+    ];
+    const WORLD_KEY = 'owl_academy_world_quiz';
+    let worldState = { correct: 0, seen: [] };
+    try {
+      const v = JSON.parse(localStorage.getItem(WORLD_KEY) || 'null');
+      if (v && Number.isInteger(v.correct) && Array.isArray(v.seen)) worldState = { correct: v.correct, seen: v.seen.filter(n => Number.isInteger(n) && n >= 0 && n < WORLD.length) };
+    } catch (e) {}
+    const saveWorld = () => { try { localStorage.setItem(WORLD_KEY, JSON.stringify(worldState)); } catch (e) {} };
+    function worldOrder() {
+      let pool = shuffle([...WORLD.keys()].filter(i => !worldState.seen.includes(i)));
+      if (pool.length >= 10) return pool.slice(0, 10);
+      const rest = shuffle([...WORLD.keys()].filter(i => !pool.includes(i)));
+      worldState.seen = [];
+      return [...pool, ...rest].slice(0, 10);
+    }
+
     // ---------- El Valle de los Dragones (Conocimiento del Medio) ----------
     const $ = id => document.getElementById(id);
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -3017,9 +3217,14 @@
     };
     KINDS.vert = { list: ANIMALS, by: ANIMAL_BY_ID, plural: 'animales', title: '🐾 ¿Vertebrado o invertebrado?', inst: 'Mira el animal y elige:', end: '🐉🏆🐾', wise: '¡Dragón sabio de los animales!' };
     KINDS.quiz = { plural: 'preguntas', title: '🧠 Quiz de los animales', inst: '', end: '🐉🏆🧠', wise: '¡Dragón sabio de los animales!' };
+    KINDS.world = { plural: 'preguntas', title: '🌍 ¡Explora el mundo!', inst: '', end: '🐉🏆🌍', wise: '¡Dragón explorador del mundo!' };
     const K = () => KINDS[app.dr.kind || 'bone'];
+    const isQ = k => k === 'quiz' || k === 'world';
+    const QS = () => app.dr.kind === 'world' ? WORLD : QUIZ;
+    const QST = () => app.dr.kind === 'world' ? worldState : quizState;
+    const QSAVE = () => app.dr.kind === 'world' ? saveWorld() : saveQuiz();
     const TOTAL = 10;
-    const PRAISE = ['¡Roarrr! ¡Muy bien!', '¡Dragón sabio! ¡Correcto!', '¡Eres un dragón de los huesos!', '¡Fuego de alegría! ¡Perfecto!'];
+    const PRAISE = ['¡Roarrr! ¡Muy bien!', '¡Dragón sabio! ¡Correcto!', '¡Eres un dragón muy sabio!', '¡Fuego de alegría! ¡Perfecto!'];
 
     // Colección de premios para la galería de la Academia
     const DRAGON_KEY = 'owl_academy_dragon_prizes';
@@ -3079,9 +3284,11 @@
       openVertMenu() { stopVoice(); showOnly('screen-dr-vert-menu'); app.updateSharedRewards(); },
       startVertGame() { app.startBoneGame('vert'); },
       startQuizGame() { app.startBoneGame('quiz'); },
+      startWorldGame() { app.startBoneGame('world'); },
+      openWorldMenu() { stopVoice(); showOnly('screen-dr-world-menu'); app.updateSharedRewards(); },
       loadQuizRound() {
-        const d = app.dr, Q = QUIZ[d.target];
-        if (!quizState.seen.includes(d.target)) { quizState.seen.push(d.target); saveQuiz(); }
+        const d = app.dr, Q = QS()[d.target];
+        if (!QST().seen.includes(d.target)) { QST().seen.push(d.target); QSAVE(); }
         $('dr-counter').textContent = `Pregunta ${d.i + 1} de ${d.total}`;
         $('dr-progress').style.width = `${(d.i / d.total) * 100}%`;
         { const k = d.dragons[d.i % DRAGONS.length]; $('dr-mascot').src = DRAGONS_ANIM[k] || DRAGONS[k]; }
@@ -3099,14 +3306,14 @@
       },
       quizAnswer(o) {
         const d = app.dr; if (d.answered) return; d.answered = true;
-        const Q = QUIZ[d.target], ok = o === 0;
+        const Q = QS()[d.target], ok = o === 0;
         $('dr-quiz-opts').querySelectorAll('.dr-q-btn').forEach(b => {
           b.classList.add('done');
           if (b.dataset.o === '0') b.classList.add('right'); else if (Number(b.dataset.o) === o) b.classList.add('wrong');
         });
         const fb = $('dr-feedback'); fb.classList.remove('hidden');
         if (ok) {
-          d.score++; quizState.correct++; saveQuiz(); app.awardSharedReward(1);
+          d.score++; QST().correct++; QSAVE(); app.awardSharedReward(1);
           fb.className = 'feedback-box feedback-correct';
           fb.innerHTML = `<div style="font-size:2.2rem;">🐉🎉🔥</div><h3>${PRAISE[rnd(0, PRAISE.length - 1)]}</h3><p style="font-size:.95rem;">${Q[4]}</p>`;
           mood(true);
@@ -3123,9 +3330,11 @@
       startMuscleGame() { app.startBoneGame('musc'); },
       restartDragonGame() { app.startBoneGame(app.dr.kind || 'bone'); },
 
+      backFromGame() { const k = app.dr && app.dr.kind; if (k === 'world') app.openWorldMenu(); else app.openDragonMenu(); },
+
       startBoneGame(kind) {
-        kind = kind === 'musc' || kind === 'vert' || kind === 'quiz' ? kind : 'bone';
-        app.dr = { kind, i: 0, total: TOTAL, score: 0, answered: false, order: kind === 'vert' ? vertOrder() : kind === 'quiz' ? quizOrder() : shuffle(KINDS[kind].list.map(b => b.id)).slice(0, TOTAL), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
+        kind = kind === 'musc' || kind === 'vert' || kind === 'quiz' || kind === 'world' ? kind : 'bone';
+        app.dr = { kind, i: 0, total: TOTAL, score: 0, answered: false, order: kind === 'vert' ? vertOrder() : kind === 'quiz' ? quizOrder() : kind === 'world' ? worldOrder() : shuffle(KINDS[kind].list.map(b => b.id)).slice(0, TOTAL), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
         showOnly('screen-dr-game');
         app.loadBoneRound();
       },
@@ -3135,7 +3344,7 @@
         d.target = d.order[d.i];
         $('dr-vert-card').classList.add('hidden'); $('dr-quiz-card').classList.add('hidden');
         if (d.kind === 'vert') return app.loadVertRound();
-        if (d.kind === 'quiz') return app.loadQuizRound();
+        if (isQ(d.kind)) return app.loadQuizRound();
         // 2 distractores: nunca el "compañero" del hueso (radio/cúbito, tibia/peroné) para no confundir al tocar
         const pool = shuffle(K().list.map(b => b.id).filter(id => id !== d.target && id !== MATES[d.target]));
         const c1 = pool[0], c2 = pool.find(id => id !== c1 && id !== MATES[c1]);
@@ -3200,7 +3409,7 @@
       speakBone() {
         const d = app.dr; if (!window.speechSynthesis || !d.target) return;
         stopVoice();
-        const u = new SpeechSynthesisUtterance(d.kind === 'quiz' ? QUIZ[d.target][0] : d.kind === 'vert' ? `${K().by[d.target].name}. ¿Vertebrado o invertebrado?` : `Toca ${K().by[d.target].name}.`); u.lang = 'es-ES'; u.rate = .88;
+        const u = new SpeechSynthesisUtterance(isQ(d.kind) ? QS()[d.target][0] : d.kind === 'vert' ? `${K().by[d.target].name}. ¿Vertebrado o invertebrado?` : `Toca ${K().by[d.target].name}.`); u.lang = 'es-ES'; u.rate = .88;
         window.speechSynthesis.speak(u);
       },
 
@@ -3563,6 +3772,7 @@
         { id: 'bone', col: 'dragons', name: 'Los Huesos del Cuerpo', icon: '🦴', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'bone' },
         { id: 'musc', col: 'dragons', name: 'Los Músculos del Cuerpo', icon: '💪', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'musc' },
         { id: 'vert', col: 'dragons', name: 'Vertebrados e Invertebrados', icon: '🐾', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'vert' },
+        { id: 'world', col: 'dragons', need: 15, name: 'El Gran Safari de las Curiosidades', icon: '🧭', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'world' },
         { id: 'quiz', col: 'dragons', name: 'El Quiz de los Animales', icon: '🧠', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'quiz' }
       ];
       window.NUBLO_GAMES = GAMES;
@@ -3574,7 +3784,7 @@
       function info(id) {
         if (id === 'all') return { all: true, n: 0 };
         const g = GAME_BY_ID(id);
-        if (g) { const A = AREAS[g.col]; return { game: g, col: g.col, area: A.area, icon: g.icon, name: g.name, lead: A.lead, n: COLS[g.col].items.length }; }
+        if (g) { const A = AREAS[g.col]; return { game: g, col: g.col, area: A.area, icon: g.icon, name: g.name, lead: A.lead, n: g.need || COLS[g.col].items.length }; }
         const A = AREAS[id]; return { legacy: true, col: id, area: A.area, icon: A.icon, name: A.place, lead: A.lead, n: COLS[id].items.length };
       }
       const LIGADA_B64 = '';
@@ -3587,7 +3797,7 @@
       let wins = rd(WINS_KEY); if (!wins || typeof wins !== 'object') wins = {};
       const nWins = id => wins[id] || 0;
       const isDone = id => id === 'all' ? GAMES.every(g => dips[g.id]) : GAME_BY_ID(id) ? nWins(id) >= info(id).n : !!dips[id];
-      const today = () => new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      const today = () => new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
       let timers = [];
       const clearTimers = () => { timers.forEach(t => { clearInterval(t); clearTimeout(t); }); timers = []; document.querySelectorAll('.dp-fall').forEach(e => e.remove()); };
 
@@ -3621,12 +3831,24 @@
           <line x1="150" y1="522" x2="650" y2="522" stroke="#A5B4FC" stroke-width="2"/>
           ${sub.map((l, i) => `<text x="400" y="${566 + i * 32}" text-anchor="middle" font-size="21" fill="#111827">${esc(l)}</text>`).join('')}
           ${leadTxt}
-          <circle cx="400" cy="898" r="58" fill="#FDE68A" stroke="#D4A017" stroke-width="6"/><circle cx="400" cy="898" r="47" fill="none" stroke="#D4A017" stroke-width="2" stroke-dasharray="4 5"/>
-          <text x="400" y="916" text-anchor="middle" font-size="48">${all ? '🏆' : I.icon}</text>
-          <text x="400" y="982" text-anchor="middle" font-size="19" fill="#6B7280">¡Lo conseguiste!</text>
+          ${medal(id)}
+          <text x="400" y="996" text-anchor="middle" font-size="19" fill="#6B7280">¡Lo conseguiste!</text>
           <text x="130" y="1008" text-anchor="middle" font-size="16" fill="#111827">${esc(today_for(id))}</text><line x1="60" y1="1016" x2="200" y2="1016" stroke="#6B7280" stroke-width="2"/><text x="130" y="1038" text-anchor="middle" font-size="15" fill="#6B7280">Fecha</text>
           <text x="655" y="1008" text-anchor="middle" font-size="21" fill="#4338CA">El Búho Nublo</text><line x1="585" y1="1016" x2="725" y2="1016" stroke="#6B7280" stroke-width="2"/><text x="655" y="1038" text-anchor="middle" font-size="15" fill="#6B7280">Director de la Academia</text>
         </svg>`;
+      }
+      // ----- premio elegido para el diploma (imagen de la galería de premios) -----
+      const pickOf = id => { const d = dips[id], k = d && d.pick; if (k && COLS[k.c] && COLS[k.c].items[k.i]) return k; return null; };
+      function medal(id) {
+        const I = info(id), pk = pickOf(id), src = pk && COLS[pk.c].items[pk.i];
+        if (!src) return `<circle cx="400" cy="898" r="58" fill="#FDE68A" stroke="#D4A017" stroke-width="6"/><circle cx="400" cy="898" r="47" fill="none" stroke="#D4A017" stroke-width="2" stroke-dasharray="4 5"/><text x="400" y="916" text-anchor="middle" font-size="48">${I.all ? '🏆' : I.icon}</text>`;
+        return `<defs><clipPath id="dp-clip"><circle cx="400" cy="906" r="66"/></clipPath></defs><circle cx="400" cy="906" r="72" fill="#FDE68A" stroke="#D4A017" stroke-width="6"/><image x="334" y="840" width="132" height="132" preserveAspectRatio="xMidYMid slice" clip-path="url(#dp-clip)" xlink:href="${src}" href="${src}"/><circle cx="400" cy="906" r="66" fill="none" stroke="#D4A017" stroke-width="2"/>`;
+      }
+      // premios que se pueden elegir: los ganados de la colección del juego (todas las colecciones en el Gran Diploma)
+      function choices(id) {
+        const I = info(id), cols = I.all ? AREA_ORDER : [I.col], out = [];
+        cols.forEach(c => { const C = COLS[c]; if (!C) return; const have = (C.have || []).slice().sort((a, b) => a - b); (have.length ? have : C.items.map((_, i) => i)).forEach(i => out.push({ c, i })); });
+        return out;
       }
       const today_for = id => (dips[id] && dips[id].date) || today();
 
@@ -3663,17 +3885,23 @@
       }
       function nameStep(id) {
         clearTimers(); const o = overlay(); let saved = ''; try { saved = localStorage.getItem(NAME_KEY) || ''; } catch (e) {}
+        const opts = choices(id); let sel = pickOf(id) || opts[0] || null;
+        const same = (x, y) => x && y && x.c === y.c && x.i === y.i;
         o.innerHTML = `<div class="dp-card">
           <div class="dp-big">✍️</div><h2>¿Cómo te llamas?</h2><p>Escribe tu nombre para que aparezca en tu diploma.</p>
           <input id="dp-name" class="dp-input" maxlength="28" autocomplete="off" placeholder="Tu nombre" value="${esc(saved)}">
           <div id="dp-err" class="dp-err"></div>
+          ${opts.length ? `<p class="dp-sub">⭐ Elige el premio que saldrá en tu diploma</p><div class="dp-pick" id="dp-pick">${opts.map((q, n) => `<button type="button" class="dp-pk${same(q, sel) ? ' dp-on' : ''}" data-n="${n}" aria-label="${esc((COLS[q.c].names || [])[q.i] || 'Premio')}"><img src="${COLS[q.c].items[q.i]}" alt=""></button>`).join('')}</div><div class="dp-pkname" id="dp-pkname"></div>` : ''}
           <button class="btn btn-primary" id="dp-make">🎓 Crear mi diploma</button>
         </div>`;
+        const nm = () => { const e = $('dp-pkname'); if (e) e.textContent = sel ? ((COLS[sel.c].names || [])[sel.i] || '') : ''; }; nm();
+        const pk = $('dp-pick');
+        if (pk) pk.onclick = e => { const b = e.target.closest('.dp-pk'); if (!b) return; sel = opts[Number(b.dataset.n)]; pk.querySelectorAll('.dp-pk').forEach(x => x.classList.toggle('dp-on', x === b)); nm(); };
         const inp = $('dp-name'), go = () => {
           const v = inp.value.trim().replace(/\s+/g, ' ');
           if (!v) { $('dp-err').textContent = 'Escribe tu nombre para continuar 🙂'; inp.focus(); return; }
           try { localStorage.setItem(NAME_KEY, v); } catch (e) {}
-          dips[id] = { name: v, date: (dips[id] && dips[id].date) || today() }; wr(DIP_KEY, dips);
+          dips[id] = { name: v, date: (dips[id] && dips[id].date) || today(), pick: sel }; wr(DIP_KEY, dips);
           view(id);
         };
         $('dp-make').onclick = go; inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }); window.setTimeout(() => inp.focus(), 60);
