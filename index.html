@@ -426,6 +426,12 @@
     .dr-vert-btn.done.right { opacity:1; border-color:#86EFAC; box-shadow:0 0 14px #22C55E; }
     .dr-vert-btn.done.wrong { opacity:1; border-color:#FCA5A5; box-shadow:0 0 14px #EF4444; animation:gentle-wobble .5s ease-in-out 2; }
     #screen-dr-vert-menu { width:100%; min-width:0; flex:0 0 auto; }
+    .rn-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:10px 0 14px; }
+    .rn-lv { background:linear-gradient(160deg,#EDE9FE,#DDD6FE); border:3px solid #8B5CF6; border-radius:18px; padding:10px 8px; text-align:center; cursor:pointer; font-family:inherit; color:#3B0764; }
+    .rn-lv b { display:block; font-size:1.05rem; } .rn-lv small { display:block; font-size:.78rem; color:#5B21B6; margin-top:2px; }
+    .rn-lv.done { background:linear-gradient(160deg,#DCFCE7,#BBF7D0); border-color:#16A34A; color:#14532D; } .rn-lv.done small { color:#166534; }
+    .rn-lv.lock { background:#F1F5F9; border-color:#CBD5E1; color:#94A3B8; cursor:not-allowed; } .rn-lv.lock small { color:#94A3B8; }
+    .rn-next { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
     .dr-quiz-card { background:radial-gradient(circle at 50% 20%,#4C1D95,#1E1B4B 75%); border:4px solid #8B5CF6; border-radius:26px; padding:14px 12px 16px; margin:6px 0 10px; }
     .dr-quiz-meter { text-align:center; color:#FDE68A; font-weight:700; font-size:.85rem; margin-bottom:10px; }
     .dr-quiz-qrow { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
@@ -1057,8 +1063,20 @@
       </div>
       <div class="world-card" onclick="app.startQuizGame()">
         <img class="ck-thumb" data-dragon="14" alt="Dragón científico">
-        <div><h3>El Quiz de los Animales</h3><p style="color:#64748B;font-size:.85rem;">Más de 50 preguntas. ¡Con 8 aciertos de 10 ganas un dragoncito!</p></div>
+        <div><h3>El Quiz de los Animales</h3><p style="color:#64748B;font-size:.85rem;">Preguntas de la guía del Reino Animal y curiosidades. ¡Con 8 aciertos de 10 ganas un dragoncito!</p></div>
       </div>
+      <div class="world-card" onclick="app.openReinoMenu()">
+        <img class="ck-thumb" data-dragon="10" alt="Dragón explorador del reino animal">
+        <div><h3>🦁 El Reino Animal · por niveles</h3><p style="color:#64748B;font-size:.85rem;">100 preguntas en 10 niveles. ¡Supera cada nivel con 8 aciertos de 10!</p></div>
+      </div>
+    </div>
+
+    <div id="screen-dr-reino-menu" class="hidden">
+      <div style="display:flex;justify-content:flex-start;margin-bottom:6px;"><button class="btn btn-back" onclick="app.openVertMenu()">⬅️ Volver</button></div>
+      <img class="ck-mascot" data-dragon="10" alt="Dragón explorador del reino animal">
+      <h1 style="font-size:1.6rem;margin:6px 0 4px;">🦁 El Reino Animal</h1>
+      <p id="rn-sub" style="color:#64748B;font-size:.95rem;margin-bottom:8px;"></p>
+      <div id="rn-levels" class="rn-grid"></div>
     </div>
 
     <div id="screen-dr-world-menu" class="hidden">
@@ -1746,12 +1764,11 @@
       }
 
       loadMemory() {
-        const saved = localStorage.getItem(this.memoryKey);
-        return saved ? JSON.parse(saved) : {};
+        try { const saved = localStorage.getItem(this.memoryKey); return saved ? JSON.parse(saved) : {}; } catch (e) { return {}; }
       }
 
       saveMemory() {
-        localStorage.setItem(this.memoryKey, JSON.stringify(this.memory));
+        try { localStorage.setItem(this.memoryKey, JSON.stringify(this.memory)); } catch (e) {}
       }
 
       enterOrthographyAdventure() {
@@ -3080,6 +3097,126 @@
       ['¿Cuál de estos animales es un ovíparo?', 'La tortuga', 'El perro', 'El gato', 'La tortuga pone huevos en la arena.'],
       ['¿Qué animal NO es un vertebrado?', 'El pulpo', 'La serpiente', 'El pingüino', 'El pulpo es un molusco y no tiene columna vertebral.']
     ];
+    // ---------- El Reino Animal: 100 preguntas basadas en la guía de estudio (10 niveles de 10) ----------
+    // [pregunta, correcta, incorrecta 1, incorrecta 2, explicación]
+    const REINO_LEVELS = [
+      'Las funciones vitales', 'Vertebrados e invertebrados', 'Los grupos de invertebrados', 'Los moluscos', 'Los insectos',
+      'Mamíferos y aves', 'Reptiles, anfibios y peces', 'La importancia de los animales', 'Compara y descubre', 'El gran reto del Reino Animal'
+    ];
+    const REINO = [
+      // ===== Nivel 1 · Las funciones vitales =====
+      ['¿Cuáles son las tres funciones vitales de los animales?', 'Nutrición, relación y reproducción', 'Nutrición, movimiento y descanso', 'Alimentación, juego y reproducción', 'Los animales realizan tres funciones vitales para sobrevivir: nutrición, relación y reproducción.'],
+      ['¿Para qué sirve la función de nutrición?', 'Para obtener energía y materiales para crecer', 'Para recibir información del entorno', 'Para tener crías parecidas a sus padres', 'La nutrición permite obtener energía y materiales para crecer.'],
+      ['¿Cómo se llaman los animales que comen plantas?', 'Herbívoros', 'Carnívoros', 'Omnívoros', 'Los herbívoros comen plantas.'],
+      ['¿Cómo se llaman los animales que comen otros animales?', 'Carnívoros', 'Herbívoros', 'Omnívoros', 'Los carnívoros comen otros animales.'],
+      ['¿Qué comen los omnívoros?', 'Plantas y animales', 'Solo plantas', 'Solo otros animales', 'Los omnívoros comen plantas y animales.'],
+      ['¿Cómo toman el aire los animales de respiración pulmonar?', 'Con los pulmones', 'Con las branquias', 'Con las antenas', 'En la respiración pulmonar, los animales toman aire por los pulmones.'],
+      ['¿Qué toman los animales de respiración branquial?', 'El oxígeno disuelto en el agua, con las branquias', 'El aire con los pulmones', 'El vapor de agua con las antenas', 'En la respiración branquial se toma el oxígeno disuelto en el agua por las branquias.'],
+      ['¿Qué órganos usan los animales para captar información del entorno?', 'Los órganos de los sentidos', 'Los pulmones', 'Las branquias', 'La función de relación recibe información del entorno a través de los órganos de los sentidos.'],
+      ['¿Qué interpreta la información de los sentidos y elabora una respuesta?', 'El cerebro', 'Los pulmones', 'La piel', 'El cerebro interpreta la información y elabora una respuesta adecuada, por ejemplo huir del peligro.'],
+      ['¿Cómo se llaman los animales que nacen de un huevo?', 'Ovíparos', 'Vivíparos', 'Herbívoros', 'Los ovíparos nacen a partir de un huevo.'],
+      // ===== Nivel 2 · Vertebrados e invertebrados =====
+      ['¿Qué tienen en el interior del cuerpo los animales vertebrados?', 'Un esqueleto de huesos con columna vertebral', 'Una concha blanda', 'Una armadura de piezas articuladas', 'Los vertebrados poseen un esqueleto interno formado por huesos, con una columna vertebral.'],
+      ['¿Qué animales no tienen esqueleto interno de huesos?', 'Los invertebrados', 'Los vertebrados', 'Los mamíferos', 'Los invertebrados no poseen esqueleto interno de huesos.'],
+      ['¿Cómo nacen los animales vivíparos?', 'Crecen dentro del vientre de la madre y nacen directamente de ella', 'Nacen de un huevo', 'Primero son orugas y luego se transforman', 'Los vivíparos crecen dentro del vientre materno y nacen directamente de la madre.'],
+      ['¿En qué tres partes se compone el cuerpo de un vertebrado?', 'Cabeza, tronco y cola', 'Cabeza, tórax y abdomen', 'Cabeza, alas y aletas', 'El cuerpo de los vertebrados se compone de cabeza, tronco y cola.'],
+      ['¿Qué parte del cuerpo de un vertebrado alberga el cráneo y la boca?', 'La cabeza', 'El tronco', 'La cola', 'La cabeza alberga el cráneo y la boca.'],
+      ['¿Dónde nacen las extremidades (patas, alas o aletas) de un vertebrado?', 'En el tronco', 'En la cabeza', 'En la cola', 'En el tronco nacen las extremidades: patas, alas o aletas.'],
+      ['¿Cuál es el grupo de animales más abundante de la Tierra?', 'Los invertebrados', 'Los vertebrados', 'Los mamíferos', 'Los invertebrados constituyen el grupo más abundante de la Tierra.'],
+      ['¿Cuáles son los cinco grupos de animales vertebrados?', 'Mamíferos, aves, reptiles, anfibios y peces', 'Mamíferos, insectos, reptiles, moluscos y peces', 'Aves, peces, medusas, anfibios y reptiles', 'Los vertebrados son mamíferos, aves, reptiles, anfibios y peces.'],
+      ['¿Cuáles son los seis grupos principales de invertebrados?', 'Artrópodos, moluscos, esponjas, gusanos, medusas y equinodermos', 'Artrópodos, anfibios, esponjas, aves, medusas y peces', 'Moluscos, reptiles, gusanos, mamíferos, medusas y equinodermos', 'Los grupos principales de invertebrados son artrópodos, moluscos, esponjas, gusanos, medusas y equinodermos.'],
+      ['¿Para qué sirve la función de reproducción?', 'Para tener crías parecidas a sus padres', 'Para captar estímulos del entorno', 'Para obtener energía', 'La reproducción permite tener crías semejantes a los progenitores.'],
+      // ===== Nivel 3 · Los grupos de invertebrados =====
+      ['¿Qué invertebrados tienen el cuerpo protegido por una armadura de piezas articuladas y patas rígidas?', 'Los artrópodos', 'Los moluscos', 'Las medusas', 'Los artrópodos tienen una armadura de piezas articuladas y patas rígidas.'],
+      ['¿Cuál es el grupo más numeroso de los artrópodos?', 'Los insectos', 'Los gusanos', 'Las esponjas', 'El grupo más numeroso de los artrópodos son los insectos.'],
+      ['¿Qué invertebrados viven fijos al fondo marino y no se desplazan?', 'Las esponjas', 'Las medusas', 'Los equinodermos', 'Las esponjas viven fijas al fondo marino y no se desplazan.'],
+      ['¿Qué invertebrados tienen el cuerpo blando y alargado, sin patas ni caparazón?', 'Los gusanos', 'Los artrópodos', 'Los moluscos', 'Los gusanos tienen el cuerpo blando y alargado, y no tienen patas ni caparazón.'],
+      ['¿Qué forma tiene el cuerpo de una medusa?', 'De paraguas', 'De estrella', 'De espiral', 'Las medusas tienen el cuerpo transparente en forma de paraguas.'],
+      ['¿Qué tienen las medusas en su cuerpo transparente?', 'Tentáculos urticantes', 'Una armadura de piezas', 'Dos conchas', 'Las medusas tienen tentáculos urticantes.'],
+      ['¿Dónde viven las medusas?', 'En el mar', 'En la tierra seca', 'Bajo el suelo', 'Las medusas viven en el mar.'],
+      ['¿Qué tienen los equinodermos bajo la piel?', 'Un esqueleto interno de placas duras', 'Una concha en espiral', 'Una armadura de piezas articuladas', 'Los equinodermos tienen un esqueleto interno formado por placas duras bajo la piel, a menudo con espinas.'],
+      ['¿Cuál de estos animales es un equinodermo?', 'La estrella de mar', 'La medusa', 'La esponja', 'La estrella de mar y el erizo de mar son equinodermos.'],
+      ['¿Qué invertebrados tienen el cuerpo blando e irregular?', 'Las esponjas', 'Los artrópodos', 'Los equinodermos', 'Las esponjas tienen el cuerpo blando e irregular.'],
+      // ===== Nivel 4 · Los moluscos =====
+      ['¿Cómo es el cuerpo de los moluscos?', 'Blando', 'Duro y articulado', 'Transparente y en forma de paraguas', 'Los moluscos tienen el cuerpo blando.'],
+      ['¿Cómo se reproducen los moluscos?', 'Son ovíparos', 'Son vivíparos', 'Nacen ya adultos, sin larva', 'Los moluscos son ovíparos.'],
+      ['¿Qué nace del huevo de un molusco?', 'Una larva que sufre cambios', 'Un animal igual que el adulto', 'Un renacuajo con cola', 'Del huevo nace una larva que sufre cambios, como en la sepia o el caracol.'],
+      ['¿Cómo se llaman los moluscos que tienen dos conchas?', 'Bivalvos', 'Gasterópodos', 'Cefalópodos', 'Los bivalvos tienen el cuerpo protegido por dos conchas, llamadas valvas.'],
+      ['¿Dónde viven los bivalvos?', 'Todos viven en el agua', 'Todos viven en la tierra', 'Todos viven en los árboles', 'Los bivalvos son todos acuáticos.'],
+      ['¿Cuál de estos animales es un bivalvo?', 'La almeja', 'El caracol', 'El pulpo', 'Los mejillones, almejas, ostras y coquinas son bivalvos.'],
+      ['¿Qué tipo de concha tienen los gasterópodos?', 'Una concha en espiral', 'Dos conchas', 'Una concha interna', 'Los gasterópodos se protegen con una concha en espiral.'],
+      ['¿Qué gasterópodo no tiene concha?', 'La babosa', 'El mejillón', 'La sepia', 'Las babosas son gasterópodos que no presentan concha.'],
+      ['¿Qué tienen los cefalópodos alrededor de la boca para cazar?', 'Tentáculos con ventosas', 'Dos valvas', 'Una concha en espiral', 'Los cefalópodos tienen tentáculos con ventosas rodeando la boca para cazar.'],
+      ['¿Qué cefalópodo no tiene concha?', 'El pulpo', 'El calamar', 'La sepia', 'El calamar y la sepia tienen una concha interna; el pulpo no tiene concha.'],
+      // ===== Nivel 5 · Los insectos =====
+      ['¿Qué proceso de transformación sufre la larva de un insecto hasta ser adulto?', 'La metamorfosis', 'La hibernación', 'La migración', 'La larva sufre un proceso de transformación llamado metamorfosis.'],
+      ['Al nacer, la larva de un insecto también se llama…', 'Oruga', 'Renacuajo', 'Alevín', 'Al nacer, la larva (u oruga) sufre metamorfosis hasta convertirse en adulto.'],
+      ['¿Cómo se reproducen los insectos?', 'Son ovíparos', 'Son vivíparos', 'Se dividen en dos', 'Los insectos son invertebrados ovíparos.'],
+      ['¿En cuántas partes se divide el cuerpo adulto de un insecto?', 'En tres', 'En dos', 'En cinco', 'El cuerpo adulto de un insecto se divide en tres partes.'],
+      ['¿Cuáles son las tres partes del cuerpo de un insecto?', 'Cabeza, tórax y abdomen', 'Cabeza, tronco y cola', 'Cabeza, cola y alas', 'El cuerpo de un insecto se divide en cabeza, tórax y abdomen.'],
+      ['¿Cuántas patas articuladas tiene un insecto?', 'Seis', 'Cuatro', 'Ocho', 'Los insectos tienen 6 patas articuladas.'],
+      ['¿Cuántas antenas tiene un insecto?', 'Dos', 'Cuatro', 'Seis', 'Los insectos tienen 2 antenas.'],
+      ['¿Qué cubre las cuatro alas grandes de las mariposas?', 'Escamas de colores', 'Plumas', 'Pelo', 'Las mariposas tienen 4 alas grandes recubiertas de escamas de colores.'],
+      ['¿Para qué usan las moscas y los mosquitos los balancines?', 'Para mantener el equilibrio', 'Para atrapar comida', 'Para respirar', 'Las moscas y mosquitos tienen 2 alas y 2 pequeñas estructuras, los balancines, para mantener el equilibrio.'],
+      ['¿Cómo se llaman las alas exteriores duras de los escarabajos?', 'Élitros', 'Balancines', 'Valvas', 'Los escarabajos tienen 2 alas exteriores duras, los élitros, que protegen otras 2 alas finas de vuelo.'],
+      // ===== Nivel 6 · Mamíferos y aves =====
+      ['¿Qué cubre la piel de los mamíferos?', 'Pelo', 'Plumas', 'Escamas', 'Los mamíferos tienen la piel con pelo.'],
+      ['¿Cómo respiran los mamíferos?', 'Por pulmones', 'Por branquias', 'Por la piel húmeda', 'Los mamíferos tienen respiración pulmonar.'],
+      ['¿Cómo nacen los mamíferos?', 'Son vivíparos', 'Son ovíparos', 'Salen de un huevo', 'Los mamíferos son vivíparos: crecen en el vientre materno.'],
+      ['¿De qué se alimentan al nacer las crías de los mamíferos?', 'De la leche de las mamas', 'De insectos', 'De plantas', 'Al nacer, los mamíferos se alimentan de la leche de las mamas.'],
+      ['¿Cuál de estos animales es un mamífero volador?', 'El murciélago', 'La mariposa', 'El ánade', 'Entre los mamíferos hay voladores, como los murciélagos.'],
+      ['¿Qué mamífero es acuático?', 'El delfín', 'El murciélago', 'El tiburón', 'Los delfines son mamíferos acuáticos.'],
+      ['¿Cómo se llaman los mamíferos que tienen pezuñas?', 'Ungulados', 'Primates', 'Carnívoros', 'Los ungulados son los mamíferos con pezuñas.'],
+      ['¿Qué cubre el cuerpo de las aves?', 'Plumas', 'Pelo', 'Escamas', 'Las aves tienen el cuerpo con plumas.'],
+      ['¿Cómo se reproducen las aves?', 'Son ovíparas', 'Son vivíparas', 'Sufren metamorfosis', 'Las aves son ovíparas y cuidan de sus huevos y polluelos.'],
+      ['¿Qué son las extremidades superiores de las aves?', 'Alas', 'Aletas', 'Pezuñas', 'En las aves, las extremidades superiores son alas.'],
+      // ===== Nivel 7 · Reptiles, anfibios y peces =====
+      ['¿Qué cubre la piel de los reptiles?', 'Escamas', 'Pelo', 'Plumas', 'Los reptiles tienen la piel con escamas.'],
+      ['¿Qué reptiles no tienen patas y se desplazan reptando?', 'Las serpientes', 'Los lagartos', 'Los cocodrilos', 'Los reptiles tienen 4 patas, excepto las serpientes, que reptan.'],
+      ['¿Cuál de estos animales es un reptil?', 'La tortuga', 'La rana', 'El delfín', 'Los lagartos, las tortugas y los cocodrilos son reptiles.'],
+      ['¿Cómo respiran los reptiles?', 'Por pulmones', 'Por branquias', 'Primero por branquias y luego por pulmones', 'Los reptiles tienen respiración pulmonar.'],
+      ['¿Cómo es la piel de los anfibios?', 'Desnuda y húmeda', 'Con escamas', 'Con pelo', 'Los anfibios tienen la piel desnuda y húmeda.'],
+      ['¿Cómo se llaman las crías de los anfibios?', 'Renacuajos', 'Alevines', 'Polluelos', 'Las crías de los anfibios son los renacuajos y viven en el agua.'],
+      ['¿Cómo respiran los renacuajos?', 'Por branquias', 'Por pulmones', 'Por las patas', 'Los renacuajos respiran por branquias; los adultos, por pulmones.'],
+      ['¿Cuál de estos anfibios tiene cola de adulto?', 'La salamandra', 'La rana', 'El sapo', 'Las salamandras conservan la cola; las ranas y los sapos no tienen cola.'],
+      ['¿Cómo respiran los peces?', 'Por branquias', 'Por pulmones', 'Por la piel, sin ningún órgano', 'Los peces tienen respiración branquial.'],
+      ['¿Cómo se llaman las crías de los peces?', 'Alevines', 'Renacuajos', 'Polluelos', 'Las crías de los peces son los alevines.'],
+      // ===== Nivel 8 · La importancia de los animales =====
+      ['¿Qué hacen las abejas por las plantas?', 'Transportan el polen y permiten que se reproduzcan', 'Les dan agua', 'Las abonan con sus restos', 'Insectos como las abejas permiten que las plantas se reproduzcan al transportar polen.'],
+      ['¿Cómo se llama el proceso por el que los insectos transportan el polen entre las plantas?', 'Polinización', 'Metamorfosis', 'Respiración', 'La polinización permite que las plantas se reproduzcan.'],
+      ['¿Qué animales consumen restos orgánicos y mantienen limpio el medio?', 'Los carroñeros', 'Los herbívoros', 'Los vivíparos', 'Los carroñeros consumen restos orgánicos y mantienen limpio el entorno.'],
+      ['¿Cuáles son ejemplos de animales carroñeros?', 'Los buitres y las hienas', 'Las abejas y las mariposas', 'Los delfines y los tiburones', 'Los buitres y las hienas son carroñeros.'],
+      ['¿Qué hacen las lombrices de tierra por el suelo?', 'Lo enriquecen', 'Lo polinizan', 'Lo dejan sin nutrientes', 'Las lombrices de tierra enriquecen el suelo.'],
+      ['¿Qué alimentos nos proporcionan los animales?', 'Carne, leche, huevos y miel', 'Solo carne', 'Lana, seda y cuero', 'Los animales nos proporcionan alimentos directa e indirectamente: carne, leche, huevos y miel.'],
+      ['¿Qué materias primas para tejidos nos dan los animales?', 'Lana y seda', 'Carne y leche', 'Miel y huevos', 'Los animales suministran materias primas textiles, como la lana y la seda.'],
+      ['Además de alimentos y materias primas, ¿qué más nos dan los animales?', 'Compañía (mascotas) y ayuda en labores ganaderas o de defensa', 'Herramientas para escribir', 'Predicciones del tiempo', 'Los animales brindan compañía y auxilio en labores ganaderas o de defensa.'],
+      ['¿En qué labores nos auxilian los animales?', 'Ganaderas y de defensa', 'De escritura y matemáticas', 'De construcción de casas', 'Los animales nos auxilian en labores ganaderas o de defensa.'],
+      ['¿Cuál de estas es una importancia de los animales en la naturaleza?', 'La polinización', 'La metamorfosis', 'La respiración branquial', 'En la naturaleza, los animales intervienen en la polinización y en la limpieza del entorno.'],
+      // ===== Nivel 9 · Compara y descubre =====
+      ['¿Qué tienen en común los mamíferos, las aves y los reptiles?', 'Respiran por pulmones', 'Todos son vivíparos', 'Tienen la piel desnuda y húmeda', 'Mamíferos, aves y reptiles tienen respiración pulmonar.'],
+      ['¿Qué tienen en común las aves, los reptiles, los anfibios y los peces?', 'Todos son ovíparos', 'Todos son vivíparos', 'Todos tienen pelo', 'Aves, reptiles, anfibios y peces son ovíparos.'],
+      ['¿Cuál es el único grupo de vertebrados vivíparos?', 'Los mamíferos', 'Los reptiles', 'Las aves', 'Los mamíferos son vivíparos; aves, reptiles, anfibios y peces son ovíparos.'],
+      ['¿Qué grupo de vertebrados sufre metamorfosis?', 'Los anfibios', 'Los peces', 'Los reptiles', 'Los anfibios son ovíparos y sufren metamorfosis.'],
+      ['¿Qué dos grupos de vertebrados tienen la piel con escamas?', 'Reptiles y peces', 'Mamíferos y aves', 'Anfibios y aves', 'Los reptiles y los peces tienen la piel con escamas.'],
+      ['¿Qué grupo de vertebrados puede tener el esqueleto óseo o cartilaginoso?', 'Los peces', 'Las aves', 'Los anfibios', 'El esqueleto de los peces puede ser óseo (huesos) o cartilaginoso (cartílago flexible).'],
+      ['¿Qué animal tiene un esqueleto cartilaginoso?', 'El tiburón', 'El delfín', 'La salamandra', 'Las rayas y los tiburones tienen esqueleto cartilaginoso.'],
+      ['Los insectos pertenecen al grupo de los…', 'Artrópodos', 'Moluscos', 'Equinodermos', 'Los insectos son los artrópodos más numerosos.'],
+      ['¿Cómo son las alas de una mariposa?', 'Cuatro alas grandes con escamas de colores', 'Dos alas duras', 'Dos alas y dos balancines', 'Las mariposas tienen 4 alas grandes recubiertas de escamas de colores.'],
+      ['¿Cuál es la diferencia entre ovíparos y vivíparos?', 'Los ovíparos nacen de un huevo y los vivíparos nacen directamente de la madre', 'Los ovíparos comen plantas y los vivíparos carne', 'Los ovíparos respiran por branquias y los vivíparos por pulmones', 'Ovíparos: nacen de un huevo. Vivíparos: crecen dentro del vientre materno y nacen directamente de ella.'],
+      // ===== Nivel 10 · El gran reto del Reino Animal =====
+      ['Un animal tiene la piel desnuda y húmeda, y de cría respira por branquias. ¿Qué es?', 'Un anfibio', 'Un reptil', 'Un pez', 'Los anfibios tienen la piel desnuda y húmeda; los renacuajos respiran por branquias y los adultos por pulmones.'],
+      ['Un animal tiene pelo, nace del vientre de su madre y toma leche de las mamas. ¿Qué es?', 'Un mamífero', 'Un ave', 'Un reptil', 'Los mamíferos tienen pelo, son vivíparos y se alimentan de la leche de las mamas.'],
+      ['Un animal tiene el cuerpo blando, una concha en espiral y la cabeza con tentáculos. ¿Qué es?', 'Un gasterópodo', 'Un bivalvo', 'Un cefalópodo', 'Los gasterópodos se protegen con una concha en espiral y tienen cabeza con tentáculos.'],
+      ['Un animal marino tiene tentáculos con ventosas alrededor de la boca y no tiene concha. ¿Qué es?', 'Un pulpo', 'Un calamar', 'Una sepia', 'El calamar y la sepia tienen concha interna; el pulpo no tiene concha.'],
+      ['Un animal tiene el cuerpo dividido en cabeza, tórax y abdomen, seis patas y dos antenas. ¿Qué es?', 'Un insecto', 'Un molusco', 'Un vertebrado', 'Estas son las características del cuerpo de un insecto.'],
+      ['Un animal tiene plumas, pico duro y cuida de sus polluelos. ¿Qué es?', 'Un ave', 'Un reptil', 'Un mamífero', 'Las aves tienen plumas y pico duro, y cuidan de sus huevos y polluelos.'],
+      ['Un animal tiene esqueleto de huesos, cuatro patas, piel con escamas, pone huevos y es carnívoro terrestre. ¿Qué es?', 'Un reptil', 'Un anfibio', 'Un mamífero', 'La mayoría de los reptiles son carnívoros terrestres, ovíparos, con escamas y 4 patas.'],
+      ['Un animal tiene el cuerpo transparente en forma de paraguas y tentáculos urticantes. ¿Qué es?', 'Una medusa', 'Una esponja', 'Un gusano', 'Así son las medusas, invertebrados que viven en el mar.'],
+      ['Un animal respira con branquias, tiene aletas y la piel con escamas. ¿Qué es?', 'Un pez', 'Un anfibio', 'Un reptil', 'Los peces tienen escamas, respiración branquial y se desplazan con aletas.'],
+      ['¿Qué pasaría si desaparecieran las abejas?', 'Muchas plantas tendrían problemas para reproducirse, porque nadie transportaría su polen', 'Los suelos perderían nutrientes', 'Los carroñeros se quedarían sin comida', 'Las abejas permiten que las plantas se reproduzcan al transportar el polen (polinización).']
+    ];
+    const REINO_START = QUIZ.length;
+    REINO.forEach(q => QUIZ.push(q));   // las preguntas del Reino Animal también salen en el Quiz de los Animales
     const QUIZ_KEY = 'owl_academy_vert_quiz';
     let quizState = { correct: 0, seen: [] };
     try {
@@ -3089,11 +3226,15 @@
     const saveQuiz = () => { try { localStorage.setItem(QUIZ_KEY, JSON.stringify(quizState)); } catch (e) {} };
     // 10 preguntas por ronda: primero las que aún no han salido; cuando se acaban, se vuelve a empezar
     function quizOrder() {
-      let pool = shuffle([...QUIZ.keys()].filter(i => !quizState.seen.includes(i)));
-      if (pool.length >= 10) return pool.slice(0, 10);
-      const rest = shuffle([...QUIZ.keys()].filter(i => !pool.includes(i)));
-      quizState.seen = [];
-      return [...pool, ...rest].slice(0, 10);
+      // 7 preguntas de la guía del Reino Animal + 3 curiosidades de animales de «El mundo que nos rodea»
+      const ids = [...QUIZ.keys()].filter(i => i >= REINO_START && i < REINO_START + REINO.length);
+      let pool = shuffle(ids.filter(i => !quizState.seen.includes(i)));
+      if (pool.length < 7) {   // se acabaron las nuevas: se vuelve a empezar con las de la guía
+        quizState.seen = quizState.seen.filter(i => i < REINO_START || i >= REINO_START + REINO.length);
+        pool = [...pool, ...shuffle(ids.filter(i => !pool.includes(i)))];
+      }
+      const extra = shuffle([...Array(QUIZ.length - EXTRA_START).keys()].map(k => EXTRA_START + k)).slice(0, 3);
+      return shuffle([...pool.slice(0, 7), ...extra]);
     }
 
     // ---------- El mundo que nos rodea: quiz de curiosidades (3º de Primaria) ----------
@@ -3256,6 +3397,8 @@
       ['¿Qué animal vive en la sabana y tiene una melena?', 'El león macho', 'La cebra', 'El elefante', 'Solo los leones machos tienen melena.'],
       ['¿Qué pasa con el agua del mar cuando se evapora?', 'La sal se queda', 'Se lleva la sal', 'Se vuelve azul', 'Por eso se hacen salinas: el agua se evapora y queda la sal.']
     ];
+    const EXTRA_START = QUIZ.length;   // curiosidades de animales de «El mundo que nos rodea» que amplían el Quiz de los Animales
+    WORLD.slice(0, 39).forEach(q => QUIZ.push(q));
     const WORLD_KEY = 'owl_academy_world_quiz';
     let worldState = { correct: 0, seen: [] };
     try {
@@ -3530,6 +3673,55 @@
         fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     });
+
+    // ---------- El Reino Animal: niveles de 10 preguntas (se juegan con el mismo quiz de siempre) ----------
+    const REINO_KEY = 'owl_academy_reino_v1', REINO_NEED = 8;
+    let reino = { best: {} };
+    try { const v = JSON.parse(localStorage.getItem(REINO_KEY) || 'null'); if (v && v.best && typeof v.best === 'object') reino = { best: v.best }; } catch (e) {}
+    const saveReino = () => { try { localStorage.setItem(REINO_KEY, JSON.stringify(reino)); } catch (e) {} };
+    const reinoOpen = () => { let n = 1; while (n < REINO_LEVELS.length && (reino.best[n] || 0) >= REINO_NEED) n++; return n; };   // último nivel disponible
+    Object.assign(app, {
+      openReinoMenu() {
+        stopVoice(); showOnly('screen-dr-reino-menu');
+        const open = reinoOpen(), done = REINO_LEVELS.filter((_, i) => (reino.best[i + 1] || 0) >= REINO_NEED).length;
+        $('rn-sub').textContent = done >= REINO_LEVELS.length ? '🏆 ¡Has superado los 10 niveles! Eres un dragón sabio del Reino Animal.' : `Niveles superados: ${done} de ${REINO_LEVELS.length}. Saca ${REINO_NEED} de 10 para abrir el siguiente.`;
+        $('rn-levels').innerHTML = REINO_LEVELS.map((name, i) => {
+          const n = i + 1, b = reino.best[n], ok = (b || 0) >= REINO_NEED, lock = n > open;
+          return `<button class="rn-lv ${ok ? 'done' : ''} ${lock ? 'lock' : ''}" ${lock ? 'disabled' : `onclick="app.startReinoLevel(${n})"`}><b>${lock ? '🔒' : ok ? '✅' : '🐉'} Nivel ${n}</b><small>${name}</small><small>${lock ? 'Bloqueado' : b != null ? 'Mejor: ' + b + ' de 10' : '¡A jugar!'}</small></button>`;
+        }).join('');
+        app.updateSharedRewards();
+      },
+      startReinoLevel(n) {
+        if (n < 1 || n > REINO_LEVELS.length || n > reinoOpen()) return app.openReinoMenu();
+        const first = REINO_START + (n - 1) * 10;
+        app.dr = { kind: 'quiz', reino: n, i: 0, total: 10, score: 0, answered: false, order: shuffle([...Array(10).keys()].map(k => first + k)), dragons: shuffle([...Array(DRAGONS.length).keys()]) };
+        showOnly('screen-dr-game'); app.loadBoneRound();
+      }
+    });
+    const reinoMeter = () => { const d = app.dr; if (d && d.reino) { $('dr-counter').textContent = `Nivel ${d.reino} · Pregunta ${Math.min(d.i + 1, d.total)} de ${d.total}`; $('dr-quiz-meter').textContent = `🐉 Aciertos en este nivel: ${d.score} · con ${REINO_NEED} de 10 pasas de nivel`; } };
+    ['loadQuizRound', 'quizAnswer'].forEach(name => { const orig = app[name].bind(app); app[name] = function () { const r = orig.apply(app, arguments); reinoMeter(); return r; }; });
+    { const orig = app.nextBone.bind(app);
+      app.nextBone = function () {
+        const d = app.dr, last = !!(d && d.reino && d.i + 1 >= d.total);
+        const r = orig();
+        if (last) {
+          const n = d.reino, score = d.score;
+          if (!(reino.best[n] >= score)) { reino.best[n] = score; saveReino(); }
+          const pass = score >= REINO_NEED, fb = $('dr-feedback');
+          $('dr-title').textContent = `🦁 Fin del nivel ${n}`;
+          fb.innerHTML += pass
+            ? `<p style="margin-top:8px;"><b>🔓 ¡Nivel ${n} superado!</b> ${n < REINO_LEVELS.length ? `Has abierto el nivel ${n + 1}.` : '¡Has completado los 10 niveles del Reino Animal! 🏆'}</p>`
+            : `<p style="margin-top:8px;"><b>Para pasar de nivel necesitas ${REINO_NEED} aciertos.</b> Repasa la guía y vuelve a intentarlo.</p>`;
+          fb.innerHTML += `<div class="rn-next">${pass && n < REINO_LEVELS.length ? `<button class="btn btn-primary" onclick="app.startReinoLevel(${n + 1})">Nivel ${n + 1} ➡️</button>` : ''}<button class="btn btn-back" onclick="app.openReinoMenu()">🗺️ Todos los niveles</button></div>`;
+          $('dr-again').textContent = 'Repetir este nivel 🔁';
+        }
+        return r;
+      };
+    }
+    { const orig = app.restartDragonGame.bind(app); app.restartDragonGame = function () { const d = app.dr; return d && d.reino ? app.startReinoLevel(d.reino) : orig(); }; }
+    { const orig = app.backFromGame.bind(app); app.backFromGame = function () { const d = app.dr; return d && d.reino ? app.openReinoMenu() : orig(); }; }
+    // al jugar el quiz normal, el botón "otra vez" vuelve a su texto de siempre
+    { const orig = app.startBoneGame.bind(app); app.startBoneGame = function () { $('dr-again').textContent = 'Jugar otra vez 🔁'; return orig.apply(app, arguments); }; }
 
     // Al volver a la Academia (función existente) se ocultan también las pantallas de los dragones.
     const academyBeforeDragons = app.goToAcademyMenu.bind(app);
