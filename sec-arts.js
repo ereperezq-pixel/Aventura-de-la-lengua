@@ -1,0 +1,366 @@
+/* Arts: Colorea tus premios. Convierte cualquier premio ganado de la Galería en un dibujo para colorear por números
+   (A4 para imprimir). Lee las colecciones de window.NUBLO_COLLECTIONS, así que los premios nuevos aparecen solos. */
+(function () {
+  const $ = id => document.getElementById(id);
+  // tarjeta en la Academia (delante de la Galería de premios) y pantallas de la sección
+  registrarSeccion({
+    antes: '.academy-card[onclick*="openChickGallery"]',
+    tarjeta: `      <div class="academy-card arts-entry" onclick="app.openArts()">
+        <div class="academy-icon">🎨</div><div><div class="dr-eyebrow le-eyebrow">Arts</div><h3>Colorea tus premios</h3><p>Convierte tus premios en dibujos con números para imprimir y colorear.</p></div>
+      </div>`,
+    pantallas: `    <!-- ===== ARTS: COLOREA TUS PREMIOS ===== -->
+    <div id="screen-arts-menu" class="hidden">
+      <button class="back-academy" onclick="app.goToAcademyMenu()">🦉 Volver a la Academia del Búho</button>
+      <div class="dr-eyebrow le-eyebrow">Arts</div>
+      <h1 style="font-size:1.7rem;margin:2px 0 4px;color:#4338CA;">🎨 Colorea tus premios</h1>
+      <p style="color:#64748B;font-size:.95rem;margin-bottom:6px;">Elige un premio que hayas ganado: lo convertimos en un dibujo con números para imprimirlo y colorearlo con lápices.</p>
+      <div id="arts-grid"></div>
+    </div>
+    <div id="screen-arts-view" class="hidden">
+      <div style="display:flex;justify-content:flex-start;margin-bottom:6px;"><button class="btn btn-back" onclick="app.openArts()">⬅️ Mis premios</button></div>
+      <h1 id="arts-title" style="font-size:1.45rem;margin:4px 0 8px;color:#4338CA;"></h1>
+      <div class="arts-levels">
+        <button id="arts-lv-1" class="arts-lv" onclick="app.artsLevel(1)">⭐ Fácil</button>
+        <button id="arts-lv-2" class="arts-lv" onclick="app.artsLevel(2)">⭐⭐ Medio</button>
+        <button id="arts-lv-3" class="arts-lv" onclick="app.artsLevel(3)">⭐⭐⭐ Difícil</button>
+      </div>
+      <div id="arts-sheet" class="arts-sheet"></div>
+      <p id="arts-info" class="arts-tip" style="text-align:center;margin:0 0 8px;"></p>
+      <button class="btn btn-primary arts-btn" onclick="app.artsPrint()">🖨️ Imprimir (A4)</button>
+      <button class="btn btn-primary arts-btn" onclick="app.artsSavePng()">📥 Guardar como imagen</button>
+      <button id="arts-sol-btn" class="btn btn-back arts-btn" onclick="app.artsToggleSolution()"></button>
+      <button id="arts-done-btn" class="btn btn-back arts-btn" onclick="app.artsToggleDone()"></button>
+      <p class="arts-tip">💡 Colorea cada zona con el color de su número. Las zonas sin número se dejan en blanco. Cuanto más difícil, más zonas pequeñas.</p>
+    </div>`
+  });
+  const KEY = 'owl_academy_arts_v1';
+
+  // Lápices: el número de cada color es siempre el mismo.
+  const PAL = [null, ['Amarillo', '#FACC15'], ['Naranja', '#FB923C'], ['Rojo', '#EF4444'], ['Rosa', '#F472B6'], ['Morado', '#A855F7'],
+    ['Azul', '#3B82F6'], ['Celeste', '#38BDF8'], ['Verde', '#22C55E'], ['Marrón', '#A16207'], ['Gris', '#9CA3AF'], ['Negro', '#1F2937']];
+  // Niveles: W = casillas del lado largo, K = máximo de colores, mm = diámetro mínimo de una zona, zmax = máximo de zonas
+  const LEVELS = { 1: { name: 'Fácil', W: 130, K: 6, mm: 6, zmax: 60 }, 2: { name: 'Medio', W: 170, K: 8, mm: 4.8, zmax: 110 }, 3: { name: 'Difícil', W: 220, K: 10, mm: 3.8, zmax: 190 } };
+
+  // ---------- color ----------
+  const hex = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
+  function lab(r, g, b) {
+    const f = c => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    const R = f(r), G = f(g), B = f(b);
+    const X = (R * 0.4124 + G * 0.3576 + B * 0.1805) / 0.95047, Y = R * 0.2126 + G * 0.7152 + B * 0.0722, Z = (R * 0.0193 + G * 0.1192 + B * 0.9505) / 1.08883;
+    const h = t => t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116;
+    const fx = h(X), fy = h(Y), fz = h(Z);
+    return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+  }
+  const PLAB = PAL.map(p => p ? lab.apply(null, hex(p[1])) : null);
+  const d2 = (a, b) => (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]) + (a[2] - b[2]) * (a[2] - b[2]);
+  function nearest(l, allowed) { let best = 0, bd = 1e9; for (const k of allowed) { const d = d2(l, PLAB[k]); if (d < bd) { bd = d; best = k; } } return best; }
+
+  // lápiz que corresponde a un color: se decide por el tono, para que un verde oscuro siga siendo verde
+  function classify(r, g, b) {
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx / 255, s = mx ? (mx - mn) / mx : 0;
+    if (v < 0.2) return 11;
+    if (s < 0.2) return 10;
+    let h; const dd = mx - mn;
+    if (mx === r) h = 60 * (((g - b) / dd + 6) % 6); else if (mx === g) h = 60 * ((b - r) / dd + 2); else h = 60 * ((r - g) / dd + 4);
+    if (h < 15 || h >= 345) return (v > 0.8 && s < 0.55) ? 4 : (v < 0.35 ? 9 : 3);
+    if (h < 40) return v < 0.6 ? 9 : 2;
+    if (h < 70) return v < 0.55 ? 9 : 1;
+    if (h < 165) return 8;
+    if (h < 200) return 7;
+    if (h < 255) return (v > 0.75 && s < 0.6) ? 7 : 6;
+    if (h < 290) return 5;
+    return 4;
+  }
+
+  // ---------- conversión de la imagen en zonas ----------
+  function components(L, w, h) {
+    const n = w * h, id = new Int32Array(n).fill(-1), st = new Int32Array(n), regs = [];
+    for (let s = 0; s < n; s++) {
+      if (id[s] >= 0) continue;
+      const c = L[s], rid = regs.length; let sp = 0, cnt = 0; st[sp++] = s; id[s] = rid;
+      while (sp) {
+        const p = st[--sp]; cnt++; const x = p % w;
+        if (x > 0 && id[p - 1] < 0 && L[p - 1] === c) { id[p - 1] = rid; st[sp++] = p - 1; }
+        if (x < w - 1 && id[p + 1] < 0 && L[p + 1] === c) { id[p + 1] = rid; st[sp++] = p + 1; }
+        if (p >= w && id[p - w] < 0 && L[p - w] === c) { id[p - w] = rid; st[sp++] = p - w; }
+        if (p < n - w && id[p + w] < 0 && L[p + w] === c) { id[p + w] = rid; st[sp++] = p + w; }
+      }
+      regs.push({ c, n: cnt, best: s, bd: -1 });
+    }
+    return { id, regs };
+  }
+  // distancia (en tercios de casilla) de cada casilla al borde de su zona
+  function distance(id, w, h) {
+    const n = w * h, d = new Int32Array(n), INF = 1e7;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const p = y * w + x, a = id[p];
+      d[p] = (x === 0 || y === 0 || x === w - 1 || y === h - 1 || id[p - 1] !== a || id[p + 1] !== a || id[p - w] !== a || id[p + w] !== a) ? 0 : INF;
+    }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const p = y * w + x; let v = d[p]; if (!v) continue;
+      if (x > 0) v = Math.min(v, d[p - 1] + 3);
+      if (y > 0) { v = Math.min(v, d[p - w] + 3); if (x > 0) v = Math.min(v, d[p - w - 1] + 4); if (x < w - 1) v = Math.min(v, d[p - w + 1] + 4); }
+      d[p] = v;
+    }
+    for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+      const p = y * w + x; let v = d[p]; if (!v) continue;
+      if (x < w - 1) v = Math.min(v, d[p + 1] + 3);
+      if (y < h - 1) { v = Math.min(v, d[p + w] + 3); if (x < w - 1) v = Math.min(v, d[p + w + 1] + 4); if (x > 0) v = Math.min(v, d[p + w - 1] + 4); }
+      d[p] = v;
+    }
+    return d;
+  }
+  // suaviza bordes: cada casilla toma el color más frecuente de su entorno 3x3
+  function smooth(L, w, h) {
+    const o = new Uint8Array(L.length), cnt = new Uint8Array(16);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      cnt.fill(0);
+      for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < w && yy < h) cnt[L[yy * w + xx]]++; }
+      let b = L[y * w + x], bc = cnt[b]; for (let k = 0; k < 12; k++) if (cnt[k] > bc) { bc = cnt[k]; b = k; }
+      o[y * w + x] = b;
+    }
+    return o;
+  }
+
+  // casillas de fondo conectadas al borde (o a las semillas que se indiquen)
+  function flood(bg, w, h, seed) {
+    const n = w * h, m = new Uint8Array(n), st = new Int32Array(n); let sp = 0;
+    for (let p = 0; p < n; p++) if (bg[p] && seed(p)) { m[p] = 1; st[sp++] = p; }
+    while (sp) {
+      const p = st[--sp], x = p % w;
+      if (x > 0 && bg[p - 1] && !m[p - 1]) { m[p - 1] = 1; st[sp++] = p - 1; }
+      if (x < w - 1 && bg[p + 1] && !m[p + 1]) { m[p + 1] = 1; st[sp++] = p + 1; }
+      if (p >= w && bg[p - w] && !m[p - w]) { m[p - w] = 1; st[sp++] = p - w; }
+      if (p < n - w && bg[p + w] && !m[p + w]) { m[p + w] = 1; st[sp++] = p + w; }
+    }
+    return m;
+  }
+
+  function convert(img, lv) {
+    const cfg = LEVELS[lv];
+    // se dibuja el premio entero en un lienzo de tamaño conocido (las imágenes vectoriales no admiten bien recortes directos)
+    const nw = img.naturalWidth || img.width || 150, nh = img.naturalHeight || img.height || 150, vec = /^data:image\/svg/.test(img.src);
+    const bs = (vec ? 600 : Math.min(1000, Math.max(nw, nh))) / Math.max(nw, nh);
+    const base = document.createElement('canvas'); base.width = Math.max(1, Math.round(nw * bs)); base.height = Math.max(1, Math.round(nh * bs));
+    base.getContext('2d').drawImage(img, 0, 0, base.width, base.height);
+    const iw = base.width, ih = base.height;
+    const grab = (sx, sy, sw, sh, w, h) => {
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const c = cv.getContext('2d', { willReadFrequently: true }); c.imageSmoothingQuality = 'medium'; c.drawImage(base, sx, sy, sw, sh, 0, 0, w, h);
+      return c.getImageData(0, 0, w, h).data;
+    };
+    // 1) análisis rápido: colores del fondo (los del borde) y recuadro donde está el dibujo
+    const as = 100 / Math.max(iw, ih), aw = Math.max(8, Math.round(iw * as)), ah = Math.max(8, Math.round(ih * as));
+    const ap = grab(0, 0, iw, ih, aw, ah), reps = [], bk = new Map(); let nb = 0;
+    const isEdge = p => { const x = p % aw, y = (p / aw) | 0; return x < 2 || y < 2 || x >= aw - 2 || y >= ah - 2; };
+    const clear = p => ap[p * 4 + 3] < 128;
+    // borde del dibujo: el de la imagen, o el que linda con una zona transparente (p. ej. un premio redondo con esquinas vacías)
+    const rim = p => isEdge(p) || clear(p - 1) || clear(p + 1) || clear(p - aw) || clear(p + aw);
+    for (let p = 0; p < aw * ah; p++) {
+      if (!rim(p) || clear(p)) continue;
+      const l = lab(ap[p * 4], ap[p * 4 + 1], ap[p * 4 + 2]), k = Math.round(l[0] / 10) + ',' + Math.round(l[1] / 8) + ',' + Math.round(l[2] / 8);
+      const e = bk.get(k) || { n: 0, s: [0, 0, 0] }; e.n++; e.s[0] += l[0]; e.s[1] += l[1]; e.s[2] += l[2]; bk.set(k, e); nb++;
+    }
+    [...bk.values()].filter(e => e.n > nb * 0.06).sort((a, b) => b.n - a.n).slice(0, 3).forEach(e => reps.push([e.s[0] / e.n, e.s[1] / e.n, e.s[2] / e.n]));
+    const isBg = (d, i) => {
+      if (d[i + 3] < 128) return 1;
+      const l = lab(d[i], d[i + 1], d[i + 2]);
+      if (l[0] > 82 && Math.hypot(l[1], l[2]) < 10) return 1;
+      for (const r of reps) if (d2(l, r) < 900) return 1;
+      return 0;
+    };
+    const bgA = new Uint8Array(aw * ah); for (let p = 0; p < aw * ah; p++) bgA[p] = isBg(ap, p * 4);
+    let mA = flood(bgA, aw, ah, isEdge);
+    // si al quitar el fondo casi no queda dibujo (fondo del mismo color que el personaje), no se usa el color del fondo
+    let fg = 0, solid = 0; for (let p = 0; p < aw * ah; p++) { if (!clear(p)) solid++; if (!mA[p]) fg++; }
+    if (reps.length && fg < 0.2 * solid) { reps.length = 0; for (let p = 0; p < aw * ah; p++) bgA[p] = isBg(ap, p * 4); mA = flood(bgA, aw, ah, isEdge); }
+    let x0 = aw, y0 = ah, x1 = -1, y1 = -1;
+    for (let p = 0; p < aw * ah; p++) if (!mA[p]) { const x = p % aw, y = (p / aw) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    let sx = 0, sy = 0, sw = iw, sh = ih;
+    if (x1 >= x0 && (x1 - x0 + 1) * (y1 - y0 + 1) > 25) {          // recortar al dibujo (con un margen)
+      const pad = 0.04 * Math.max(x1 - x0 + 1, y1 - y0 + 1);
+      const ax0 = Math.max(0, x0 - pad), ay0 = Math.max(0, y0 - pad), ax1 = Math.min(aw, x1 + 1 + pad), ay1 = Math.min(ah, y1 + 1 + pad);
+      sx = ax0 / aw * iw; sy = ay0 / ah * ih; sw = (ax1 - ax0) / aw * iw; sh = (ay1 - ay0) / ah * ih;
+    }
+    // 2) la imagen recortada, a la resolución del nivel
+    const sc = cfg.W / Math.max(sw, sh), w = Math.max(8, Math.round(sw * sc)), h = Math.max(8, Math.round(sh * sc)), n = w * h;
+    const px = grab(sx, sy, sw, sh, w, h), bgF = new Uint8Array(n);
+    for (let p = 0; p < n; p++) bgF[p] = isBg(px, p * 4);
+    const mF = flood(bgF, w, h, p => {
+      const x = p % w, y = (p / w) | 0;
+      if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1) return true;
+      const ax = Math.min(aw - 1, Math.floor((sx + (x + 0.5) / w * sw) / iw * aw)), ay = Math.min(ah - 1, Math.floor((sy + (y + 0.5) / h * sh) / ih * ah));
+      return !!mA[ay * aw + ax];
+    });
+    const labs = new Array(n), cls = new Uint8Array(n), ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
+    const count = new Array(PAL.length).fill(0); let opaque = 0;
+    for (let i = 0; i < n; i++) {
+      if (mF[i]) { labs[i] = null; continue; }
+      const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
+      if (px[i * 4 + 3] < 128 || (l[0] > 90 && Math.hypot(l[1], l[2]) < 12)) { labs[i] = null; continue; }   // blanco: se deja sin colorear
+      labs[i] = l; cls[i] = classify(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); count[cls[i]]++; opaque++;
+    }
+    const keep = ALL.filter(k => count[k] > opaque * 0.008).sort((a, b) => count[b] - count[a]).slice(0, cfg.K);
+    if (!keep.length) keep.push(1);
+    let L = new Uint8Array(n);
+    for (let i = 0; i < n; i++) L[i] = labs[i] ? (keep.indexOf(cls[i]) >= 0 ? cls[i] : nearest(labs[i], keep)) : 0;
+    L = smooth(L, w, h); if (lv === 1) L = smooth(L, w, h);
+
+    // tamaño en la hoja: 1 casilla = cellMm milímetros
+    const s = Math.min(900 / w, 950 / h), cellMm = s * 0.21;
+    let rmin = Math.max(1.6, (cfg.mm / 2) / cellMm), comp, dist, regs;
+    for (let round = 0; round < 8; round++) {
+      for (let it = 0; it < 12; it++) {
+        comp = components(L, w, h); regs = comp.regs; dist = distance(comp.id, w, h);
+        for (let p = 0; p < n; p++) { const r = regs[comp.id[p]]; if (dist[p] > r.bd) { r.bd = dist[p]; r.best = p; } }
+        const small = []; regs.forEach((r, i) => { if (r.c ? (r.bd / 3 + 0.5 < rmin) : r.n < 6) small.push(i); });
+        if (!small.length) break;
+        // vecino con el que comparte más borde
+        const adj = new Map(), R = regs.length;
+        const add = (a, b) => { if (a !== b) { const k = a * R + b; adj.set(k, (adj.get(k) || 0) + 1); } };
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const p = y * w + x, a = comp.id[p]; if (x < w - 1) { add(a, comp.id[p + 1]); add(comp.id[p + 1], a); } if (y < h - 1) { add(a, comp.id[p + w]); add(comp.id[p + w], a); } }
+        const best = new Map();
+        adj.forEach((v, k) => { const a = Math.floor(k / R), b = k % R, cur = best.get(a); if (!cur || v > cur.v) best.set(a, { b, v }); });
+        const par = regs.map((r, i) => i), find = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
+        small.sort((a, b) => regs[a].n - regs[b].n).forEach(a => { const t = best.get(a); if (t && find(a) !== find(t.b)) par[find(a)] = find(t.b); });
+        for (let p = 0; p < n; p++) L[p] = regs[find(comp.id[p])].c;
+      }
+      if (regs.filter(r => r.c).length <= cfg.zmax) break;
+      rmin *= 1.22;
+    }
+    // zonas, números y bordes
+    const used = new Set(), labels = [], capCells = 7 / cellMm;
+    regs.forEach(r => {
+      if (!r.c) return; used.add(r.c);
+      const rad = r.bd / 3 + 0.5, fs = Math.min(rad * 1.6, capCells) / (r.c > 9 ? 1.35 : 1);
+      labels.push([(r.best % w) + 0.5, Math.floor(r.best / w) + 0.5, Math.round(fs * 10) / 10, r.c]);
+    });
+    let d = '';
+    for (let y = 1; y < h; y++) { let x = 0; while (x < w) { if (L[y * w + x] !== L[(y - 1) * w + x]) { let e = x; while (e < w && L[y * w + e] !== L[(y - 1) * w + e]) e++; d += `M${x} ${y}h${e - x}`; x = e; } else x++; } }
+    for (let x = 1; x < w; x++) { let y = 0; while (y < h) { if (L[y * w + x] !== L[y * w + x - 1]) { let e = y; while (e < h && L[e * w + x] !== L[e * w + x - 1]) e++; d += `M${x} ${y}v${e - y}`; y = e; } else y++; } }
+    // vista previa coloreada
+    const pv = document.createElement('canvas'); pv.width = w; pv.height = h; const pc = pv.getContext('2d'), im = pc.createImageData(w, h);
+    for (let i = 0; i < n; i++) { const c = L[i] ? hex(PAL[L[i]][1]) : [255, 255, 255]; im.data[i * 4] = c[0]; im.data[i * 4 + 1] = c[1]; im.data[i * 4 + 2] = c[2]; im.data[i * 4 + 3] = 255; }
+    pc.putImageData(im, 0, 0);
+    return { crop: [sx, sy, sw, sh], w, h, s, cellMm, d, labels, used: [...used].sort((a, b) => a - b), zones: labels.length, preview: pv.toDataURL('image/png') };
+  }
+
+  // ---------- hoja A4 (proporción 1000 x 1414) ----------
+  const FONT = 'Arial, Helvetica, sans-serif';
+  const esc = t => String(t).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+  function pageSvg(r, title, solution) {
+    const ox = 500 - r.w * r.s / 2, oy = 140 + (950 - r.h * r.s) / 2, sw = Math.round(Math.max(0.12, 0.35 / r.cellMm) * 100) / 100;
+    let g = '';
+    if (solution) g += `<image href="${r.preview}" x="0" y="0" width="${r.w}" height="${r.h}" preserveAspectRatio="none" style="image-rendering:pixelated"/>`;
+    g += `<path d="${r.d}" fill="none" stroke="#222" stroke-width="${sw}" stroke-linecap="square"/>`;
+    r.labels.forEach(l => { g += `<text x="${l[0]}" y="${l[1]}" font-size="${l[2]}" text-anchor="middle" dominant-baseline="central" font-family="${FONT}" font-weight="700" fill="#1f2937"${solution ? ` stroke="#fff" stroke-width="${Math.round(l[2] * 8) / 100}" paint-order="stroke"` : ''}>${l[3]}</text>`; });
+    let leg = ''; const perRow = 4, cw = 225, x0 = 500 - (Math.min(r.used.length, perRow) * cw) / 2;
+    r.used.forEach((c, i) => {
+      const row = Math.floor(i / perRow), k = i % perRow, x = x0 + k * cw, y = 1112 + row * 76;
+      leg += `<rect x="${x}" y="${y}" width="56" height="56" rx="10" fill="${PAL[c][1]}" stroke="#222" stroke-width="2.5"/>` +
+        `<text x="${x + 28}" y="${y + 29}" font-size="${c > 9 ? 28 : 34}" text-anchor="middle" dominant-baseline="central" font-family="${FONT}" font-weight="700" fill="#111" stroke="#fff" stroke-width="4" paint-order="stroke">${c}</text>` +
+        `<text x="${x + 66}" y="${y + 29}" font-size="28" dominant-baseline="central" font-family="${FONT}" fill="#222">${PAL[c][0]}</text>`;
+    });
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1414" width="1000" height="1414" preserveAspectRatio="xMidYMid meet">` +
+      `<rect width="1000" height="1414" fill="#fff"/>` +
+      `<text x="500" y="78" font-size="56" text-anchor="middle" font-family="${FONT}" font-weight="700" fill="#4338CA">${esc(title)}</text>` +
+      `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
+      `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
+      `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts</text></svg>`;
+  }
+
+  // ---------- progreso ----------
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || { done: {} }; } catch (e) { return { done: {} }; } };
+  const save = d => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
+
+  // ---------- pantallas ----------
+  let cur = null, level = 1, showSolution = false, token = 0; const cache = new Map();
+  const hideAll = () => {
+    document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+    document.body.classList.remove('santa-theme', 'letter-theme', 'chick-theme', 'dragon-theme');
+    window.scrollTo({ top: 0 });
+  };
+  // (los Papá Noel tienen el fondo del mismo color que el traje y no se convierten bien: se dejan fuera)
+  const SKIP = ['santa'];
+  const cols = () => Object.entries(window.NUBLO_COLLECTIONS || {}).filter(([id, c]) => !SKIP.includes(id) && c && c.items && c.have && c.have.length);
+  function renderMenu() {
+    const d = load(); let h = '', total = 0;
+    cols().forEach(([id, c]) => {
+      h += `<h2 class="arts-h2">${c.title}</h2><div class="arts-grid">`;
+      [...new Set(c.have)].sort((a, b) => a - b).forEach(i => {
+        total++; const nm = (c.names && c.names[i]) || 'Premio', ok = d.done[id + ':' + i];
+        h += `<button class="arts-card${ok ? ' done' : ''}" onclick="app.artsOpen('${id}',${i})"><img src="${c.items[i]}" alt=""><span class="arts-name">${nm}</span>${ok ? '<span class="arts-badge">✅ Coloreado</span>' : ''}</button>`;
+      });
+      h += '</div>';
+    });
+    $('arts-grid').innerHTML = total ? h : '<div class="feedback-box" style="margin-top:12px;">🏅 Todavía no tienes premios para colorear. ¡Juega en las aventuras y gana premios para tu galería!</div>';
+  }
+  app.openArts = function () {
+    hideAll(); $('screen-arts-menu').classList.remove('hidden'); renderMenu();
+    app.currentSectionKey = null; if (app.updateSharedRewards) app.updateSharedRewards();
+  };
+  function refreshButtons() {
+    [1, 2, 3].forEach(k => $('arts-lv-' + k).classList.toggle('on', k === level));
+    const ok = load().done[cur.col + ':' + cur.i];
+    $('arts-sol-btn').textContent = showSolution ? '🙈 Ocultar cómo queda' : '👀 Ver cómo queda coloreado';
+    $('arts-done-btn').textContent = ok ? '✅ ¡Ya lo he coloreado! (toca para quitar)' : '🎨 ¡Ya lo he coloreado!';
+    $('arts-done-btn').classList.toggle('on', !!ok);
+  }
+  function render() {
+    const my = ++token, key = cur.col + ':' + cur.i + ':' + level;
+    refreshButtons();
+    const show = r => { if (my !== token) return; cur.r = r; $('arts-sheet').innerHTML = pageSvg(r, cur.name, showSolution); $('arts-info').textContent = r.zones + ' zonas · ' + r.used.length + ' colores'; };
+    if (cache.has(key)) return show(cache.get(key));
+    $('arts-sheet').innerHTML = '<p class="arts-wait">⏳ Preparando tu dibujo…</p>'; $('arts-info').textContent = ''; cur.r = null;
+    const img = new Image();
+    img.onload = () => setTimeout(() => {
+      try { const r = convert(img, level); cache.set(key, r); show(r); }
+      catch (e) { if (my === token) $('arts-sheet').innerHTML = '<p class="arts-wait">😕 No he podido preparar este dibujo.</p>'; }
+    }, 30);
+    img.onerror = () => { if (my === token) $('arts-sheet').innerHTML = '<p class="arts-wait">😕 No he podido abrir la imagen.</p>'; };
+    img.src = cur.src;
+  }
+  app.artsOpen = function (col, i) {
+    const c = window.NUBLO_COLLECTIONS[col];
+    cur = { col, i, src: c.items[i], name: (c.names && c.names[i]) || 'Mi premio' }; showSolution = false;
+    hideAll(); $('screen-arts-view').classList.remove('hidden'); $('arts-title').textContent = '🎨 ' + cur.name; render();
+  };
+  app.artsLevel = function (k) { level = k; showSolution = false; render(); };
+  app.artsToggleSolution = function () { showSolution = !showSolution; render(); };
+  app.artsToggleDone = function () {
+    const d = load(), k = cur.col + ':' + cur.i; if (d.done[k]) delete d.done[k]; else d.done[k] = Date.now();
+    save(d); refreshButtons();
+    if (d.done[k] && window.confetti) { try { window.confetti({ particleCount: 90, spread: 70, origin: { y: 0.7 } }); } catch (e) {} }
+  };
+  const plain = () => pageSvg(cur.r, cur.name, false);
+  // Imprimir (o guardar como PDF desde el diálogo de impresión del móvil)
+  app.artsPreparePrint = function () {
+    let el = $('arts-print'); if (!el) { el = document.createElement('div'); el.id = 'arts-print'; document.body.appendChild(el); }
+    el.innerHTML = plain(); document.body.classList.add('arts-printing');
+  };
+  app.artsPrint = function () {
+    if (!cur || !cur.r) return; app.artsPreparePrint();
+    const end = () => document.body.classList.remove('arts-printing');
+    window.addEventListener('afterprint', end, { once: true });
+    setTimeout(() => { try { window.print(); } catch (e) { end(); } }, 80);
+  };
+  // Guardar como imagen PNG de tamaño A4
+  app.artsSavePng = function () {
+    if (!cur || !cur.r) return;
+    const img = new Image(), url = URL.createObjectURL(new Blob([plain()], { type: 'image/svg+xml;charset=utf-8' }));
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = 2100; c.height = 2970; c.getContext('2d').drawImage(img, 0, 0, 2100, 2970); URL.revokeObjectURL(url);
+      c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'colorear-' + cur.col + '-' + cur.i + '.png'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }, 'image/png');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); alert('No se pudo crear la imagen. Prueba con «Imprimir».'); };
+    img.src = url;
+  };
+  // al volver a la Academia se ocultan las pantallas de Arts
+  const orig = app.goToAcademyMenu.bind(app);
+  app.goToAcademyMenu = function () {
+    ['screen-arts-menu', 'screen-arts-view'].forEach(id => { const e = $(id); if (e) e.classList.add('hidden'); });
+    return orig.apply(app, arguments);
+  };
+  window.ARTS_DEBUG = { convert, pageSvg, LEVELS };
+})();

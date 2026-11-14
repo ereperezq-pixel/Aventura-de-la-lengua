@@ -19,10 +19,8 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
-  <link rel="stylesheet" href="fuente-ligada.css">
-  <link rel="stylesheet" href="styles.css">
-  <script src="imagenes.js"></script>
-  <script src="pegatinas.js"></script>
+  <script src="lista.js"></script>
+  <script>LISTA.estilos.forEach(function(f){document.write('<link rel="stylesheet" href="'+f+'">');});</script>
 </head>
 <body>
 
@@ -677,16 +675,6 @@
 
   </div>
 
-  <script>document.querySelectorAll("img[data-img]").forEach(function(i){i.src=IMG[i.getAttribute("data-img")];});</script>
-  <script src="app.js"></script>
-  <script src="errores.js"></script>
-  <script src="corral.js"></script>
-  <script src="dragones.js"></script>
-  <script src="isla.js"></script>
-  <script src="abn.js"></script>
-  <script src="nublo-libro.js"></script>
-  <script src="diplomas.js"></script>
-<script>(function(){var f=document.querySelector("img.owl-mascot:not([data-same-owl])");if(!f)return;document.querySelectorAll("img[data-same-owl]").forEach(function(i){i.src=f.src;});})();</script>
-  <script src="pwa.js"></script>
+  <script>LISTA.scripts.forEach(function(f){document.write('<script src="'+f+'"><\/script>');});</script>
 </body>
 </html>

@@ -1,0 +1,92 @@
+EL MUNDO DE NUBLO · ARQUITECTURA DE LA APP
+(Pega este archivo al empezar un chat nuevo con Claude, junto con el archivo que quieras cambiar.
+ No hace falta darle toda la app.)
+
+================================================================
+1. QUÉ ES
+================================================================
+App web (PWA) en GitHub Pages, sin servidor. Un solo index.html "cáscara" + archivos que se cargan en orden
+desde lista.js. El progreso del niño vive en localStorage (nunca se borra al actualizar archivos).
+
+================================================================
+2. ARCHIVOS (todos en la raíz del repositorio; el prefijo indica el tipo)
+================================================================
+  index.html            Cáscara: bienvenida, menú de la Academia y las pantallas de las secciones antiguas.
+  lista.js              Lista de archivos en orden de carga. LO LEE TAMBIÉN sw.js. Para añadir algo: una línea aquí.
+  sw.js                 Service worker (uso sin conexión). Cambiar CACHE ('nublo-vN') solo para forzar limpieza.
+  manifest.webmanifest, icons/    La instalación como app.
+
+  nucleo-app.js         Clase OrthoApp: navegación, estrellas compartidas, progreso. Define `const app`.
+  nucleo-arranque.js    Pone las imágenes del HTML (img[data-img]) y define registrarSeccion().
+  nucleo-errores.js     Aviso discreto si algo falla.
+  nucleo-final.js       Mismo búho en todas las pantallas.
+  nucleo-pwa.js         Registro del service worker.
+  nucleo-estilos.css    Estilos comunes.   nucleo-fuente.css  Letra ligada incrustada.
+  nucleo-imagenes.js    window.IMG: imágenes incrustadas (búho, dragones, pollitos, Papá Noel…).
+
+  sec-corral.js         El Corral Matemático.        sec-isla.js        La Isla de las Palabras.
+  sec-dragones.js       Valle de los Dragones: quizzes, Reino Animal, mundo que nos rodea, premios.
+  sec-abn.js            Cuaderno ABN.                sec-nublo.js       Libro de Nublo (preguntas y premios).
+  sec-diplomas.js       Diplomas.
+  sec-arts.js/.css      Arts: "Colorea tus premios" (convierte premios en dibujos con números para imprimir).
+                        Esta sección lleva su HTML dentro del .js (ejemplo a copiar para secciones nuevas).
+
+  dat-pegatinas.js      window.PEGATINAS: pegatinas de Nublo (la posición = número "prize" del capítulo).
+  dat-reino.js          window.DAT_REINO: niveles y 100 preguntas del Reino Animal.
+  dat-nublo-cap1.js …   Una aventura de Nublo por archivo (20 preguntas).
+
+Las secciones antiguas (corral, isla, dragones, abn, nublo, diplomas) tienen todavía su HTML en index.html.
+Las nuevas llevan su HTML dentro de su propio sec-*.js con registrarSeccion().
+
+================================================================
+3. CÓMO SE AÑADE ALGO
+================================================================
+A) Nueva aventura de Nublo (capítulo N)
+   1. Crear dat-nublo-capN.js copiando dat-nublo-cap1.js: cambiar id, n, nombre, title, place, icon, prize, qs.
+      prize = posición de su pegatina en dat-pegatinas.js (0 = la primera, 1 = la segunda…).
+   2. Añadir la pegatina nueva al final de la lista en dat-pegatinas.js (imagen en base64).
+   3. Añadir 'dat-nublo-capN.js' a lista.js (justo detrás del anterior).
+   No se toca nada más. (El diploma pide tantos capítulos como haya en NUBLO_CAPS: ver sec-diplomas.js.)
+   Formato de pregunta: { t:'directa'|'inferencia'|'descripcion', q, ok, bad:[error1,error2], why }
+
+B) Más preguntas del Reino Animal: dat-reino.js. Formato [pregunta, correcta, mala1, mala2, explicación];
+   cada nivel son 10 preguntas seguidas (nivel 1 = las 10 primeras…).
+
+C) Sección nueva (juego)
+   1. Crear sec-nombre.js (y sec-nombre.css si hace falta), copiando la estructura de sec-arts.js:
+        registrarSeccion({
+          antes: '.academy-card[onclick*="openChickGallery"]',   // tarjeta delante de la que se coloca (opcional)
+          tarjeta: '<div class="academy-card" onclick="app.openNombre()">…</div>',
+          pantallas: '<div id="screen-nombre-menu" class="hidden">…</div>'
+        });
+   2. Definir app.openNombre() mostrando su pantalla. Para ocultar las demás pantallas:
+        document.querySelectorAll('[id^="screen-"]').forEach(e => e.classList.add('hidden'));
+      y volver con app.goToAcademyMenu() (envolverla para ocultar las pantallas propias, como hace sec-arts.js).
+   3. Añadir 'sec-nombre.js' (y su .css en "estilos") a lista.js.
+
+D) Quitar una sección: borrar su línea de lista.js (los archivos pueden quedarse).
+
+================================================================
+4. REGLAS PARA NO ROMPER NADA
+================================================================
+- Todo es JavaScript clásico (no módulos): lo declarado con const/let/function arriba del todo es global entre archivos.
+- Orden en lista.js: contenido (imagenes, dat-*) → arranque → app → secciones → final → pwa.
+- Las pantallas son <div id="screen-…" class="hidden">; se muestran quitando 'hidden'.
+- Siempre envolver localStorage en try/catch (puede estar bloqueado).
+- No editar nunca el progreso de otras secciones. Claves de localStorage usadas:
+    owl_academy_shared_stars        estrellas compartidas
+    owl_academy_dragon_prizes / owl_academy_chick_prizes / owl_academy_santa_prizes / owl_academy_nublo_prizes
+    owl_academy_nublo_book          progreso del Libro de Nublo
+    owl_academy_vert_quiz           Quiz de los Animales
+    owl_academy_reino_v1            Reino Animal por niveles ({best:{nivel:aciertos}})
+    owl_academy_arts_v1             Arts: premios ya coloreados
+- Los premios se comparten en window.NUBLO_COLLECTIONS = { chicks, santa, dragons, nublo }, cada uno con
+  { title, items:[imágenes], names:[nombres], have:[posiciones ganadas], key }. Arts los lee de ahí.
+
+================================================================
+5. SUBIR A GITHUB SIN MIEDO
+================================================================
+- Subir todos los archivos cambiados en UN SOLO commit (así la app nunca queda a medias).
+- Antes de un cambio grande: descargar index.html y sw.js actuales como copia de seguridad.
+- Si algo falla se vuelve a subir la versión anterior de esos archivos; el progreso no se pierde.
+- Si falta un archivo de lista.js, la app puede quedar en blanco: comprobar que todos están en la raíz con su nombre exacto.

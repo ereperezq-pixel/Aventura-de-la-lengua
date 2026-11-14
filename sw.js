@@ -4,14 +4,11 @@
    - Resto (iconos, tipografía, confeti): se guardan la primera vez y se usan sin conexión.
    - NO toca el progreso: este vive en localStorage, que este archivo nunca borra.
    Cambia CACHE solo si quieres forzar a vaciar la copia offline. */
-const CACHE = 'nublo-v2';
-const CORE = [
-  './', './index.html', './manifest.webmanifest',
-  './styles.css', './fuente-ligada.css',
-  './imagenes.js', './pegatinas.js',
-  './app.js', './errores.js', './corral.js', './dragones.js', './isla.js', './abn.js', './nublo-libro.js', './diplomas.js', './pwa.js',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
-];
+importScripts('lista.js');   // la lista de archivos de la app
+const CACHE = 'nublo-v4';
+const CORE = ['./', './index.html', './manifest.webmanifest', './lista.js']
+  .concat(LISTA.estilos.map(f => './' + f), LISTA.scripts.map(f => './' + f),
+    ['./icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png']);
 
 self.addEventListener('install', e => {
   // Guarda cada archivo por separado: si falta alguno, no se cancela la instalación entera.
