@@ -39,8 +39,8 @@
   const PAL = [null, ['Amarillo', '#FACC15'], ['Naranja', '#FB923C'], ['Rojo', '#EF4444'], ['Rosa', '#F472B6'], ['Morado', '#A855F7'],
     ['Azul', '#3B82F6'], ['Celeste', '#38BDF8'], ['Verde', '#22C55E'], ['Marrón', '#A16207'], ['Gris', '#9CA3AF'], ['Negro', '#1F2937'],
     ['Verde claro', '#86EFAC'], ['Verde oscuro', '#15803D'], ['Azul oscuro', '#1E40AF'], ['Beige', '#FDE0B6']];
-  // Niveles: W = casillas del lado largo, K = máximo de colores, mm = diámetro mínimo de una zona, zmax = máximo de zonas
-  const LEVELS = { 1: { name: 'Fácil', W: 110, K: 7, mm: 7, zmax: 40 }, 2: { name: 'Medio', W: 150, K: 10, mm: 5.5, zmax: 80 }, 3: { name: 'Difícil', W: 200, K: 12, mm: 5, zmax: 120 } };
+  // Niveles: W = casillas del lado largo, n = número aproximado de trozos
+  const LEVELS = { 1: { name: 'Fácil', W: 110, n: 20 }, 2: { name: 'Medio', W: 150, n: 40 }, 3: { name: 'Difícil', W: 200, n: 60 } };
 
   // ---------- color ----------
   const hex = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
@@ -198,78 +198,67 @@
       return !!mA[ay * aw + ax];
     });
     const ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
-    // 3) los colores propios de la imagen se agrupan (k-means) y cada grupo toma el lápiz más parecido
-    const idx = [], pts = [];
-    for (let i = 0; i < n; i++) {
-      if (mF[i]) continue;
-      const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
-      if (px[i * 4 + 3] < 128 || (l[0] > 90 && Math.hypot(l[1], l[2]) < 12)) continue;   // blanco: se deja sin colorear
-      idx.push(i); pts.push(l);
-    }
-    let L = new Uint8Array(n);
-    if (pts.length) {
-      const cen = kmeans(pts, cfg.K), pen = cen.map(c => nearest(c, ALL));
-      for (let j = 0; j < pts.length; j++) { let b = 0, bd = 1e9; for (let k = 0; k < cen.length; k++) { const dd = d2(pts[j], cen[k]); if (dd < bd) { bd = dd; b = k; } } L[idx[j]] = pen[b]; }
-    }
-    L = smooth(L, w, h); if (lv === 1) L = smooth(L, w, h);
-
-    // tamaño en la hoja: 1 casilla = cellMm milímetros
-    const s = Math.min(900 / w, 950 / h), cellMm = s * 0.21;
-    let rmin = Math.max(1.6, (cfg.mm / 2) / cellMm), comp, dist, regs;
-    for (let round = 0; round < 8; round++) {
+    // 3) el dibujo sin color se parte en N trozos parecidos (semillas por k-means de posiciones + reparto por cercanía dentro de la figura)
+    const fgI = []; for (let i = 0; i < n; i++) if (!mF[i] && px[i * 4 + 3] >= 128) fgI.push(i);
+    const NP = Math.max(1, Math.min(cfg.n, fgI.length >> 3));
+    const sxs = new Float32Array(NP), sys = new Float32Array(NP);
+    { let first = fgI[0]; sxs[0] = first % w; sys[0] = (first / w) | 0;
+      const md = new Float32Array(fgI.length).fill(1e9);
+      for (let k = 1; k < NP; k++) {
+        let bi = 0, bv = -1;
+        for (let j = 0; j < fgI.length; j++) { const x = fgI[j] % w, y = (fgI[j] / w) | 0, dd = (x - sxs[k - 1]) ** 2 + (y - sys[k - 1]) ** 2; if (dd < md[j]) md[j] = dd; if (md[j] > bv) { bv = md[j]; bi = j; } }
+        sxs[k] = fgI[bi] % w; sys[k] = (fgI[bi] / w) | 0;
+      }
       for (let it = 0; it < 12; it++) {
-        comp = components(L, w, h); regs = comp.regs; dist = distance(comp.id, w, h);
-        for (let p = 0; p < n; p++) { const r = regs[comp.id[p]]; if (dist[p] > r.bd) { r.bd = dist[p]; r.best = p; } }
-        const small = []; regs.forEach((r, i) => { if (r.c ? (r.bd / 3 + 0.5 < rmin) : r.n < 6) small.push(i); });
-        if (!small.length) break;
-        // vecino con el que comparte más borde
-        const adj = new Map(), R = regs.length;
-        const add = (a, b) => { if (a !== b) { const k = a * R + b; adj.set(k, (adj.get(k) || 0) + 1); } };
-        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const p = y * w + x, a = comp.id[p]; if (x < w - 1) { add(a, comp.id[p + 1]); add(comp.id[p + 1], a); } if (y < h - 1) { add(a, comp.id[p + w]); add(comp.id[p + w], a); } }
-        const best = new Map();
-        adj.forEach((v, k) => { const a = Math.floor(k / R), b = k % R, sc = d2(PL(regs[a].c), PL(regs[b].c)) - 40 * v, cur = best.get(a); if (!cur || sc < cur.sc) best.set(a, { b, sc }); });
-        const par = regs.map((r, i) => i), find = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
-        small.sort((a, b) => regs[a].n - regs[b].n).forEach(a => { const t = best.get(a); if (t && find(a) !== find(t.b)) par[find(a)] = find(t.b); });
-        for (let p = 0; p < n; p++) L[p] = regs[find(comp.id[p])].c;
+        const ax = new Float32Array(NP), ay = new Float32Array(NP), ac = new Float32Array(NP);
+        for (let j = 0; j < fgI.length; j++) { const x = fgI[j] % w, y = (fgI[j] / w) | 0; let b = 0, bd = 1e9; for (let k = 0; k < NP; k++) { const dd = (x - sxs[k]) ** 2 + (y - sys[k]) ** 2; if (dd < bd) { bd = dd; b = k; } } ax[b] += x; ay[b] += y; ac[b]++; }
+        for (let k = 0; k < NP; k++) if (ac[k]) { sxs[k] = ax[k] / ac[k]; sys[k] = ay[k] / ac[k]; }
       }
-      if (regs.filter(r => r.c).length <= cfg.zmax) break;
-      rmin *= 1.22;
     }
-    // zonas, números y bordes
+    // reparto geodésico (los trozos siempre quedan de una pieza): propagación de distancias desde las semillas
+    const cid = new Uint16Array(n), dst = new Float32Array(n).fill(1e9), isFg = new Uint8Array(n); fgI.forEach(i => isFg[i] = 1);
+    for (let k = 0; k < NP; k++) { let bi = fgI[0], bd = 1e9; for (const i of fgI) { const dd = ((i % w) - sxs[k]) ** 2 + (((i / w) | 0) - sys[k]) ** 2; if (dd < bd) { bd = dd; bi = i; } } if (dst[bi] > 0) { dst[bi] = 0; cid[bi] = k + 1; } }
+    const relax = (p, q, wt) => { if (isFg[q] && cid[q] && dst[q] + wt < dst[p]) { dst[p] = dst[q] + wt; cid[p] = cid[q]; return 1; } return 0; };
+    for (let pass = 0; pass < 200; pass++) {
+      let ch = 0;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const p = y * w + x; if (!isFg[p]) continue;
+        if (x > 0) ch |= relax(p, p - 1, 1); if (y > 0) { ch |= relax(p, p - w, 1); if (x > 0) ch |= relax(p, p - w - 1, 1.414); if (x < w - 1) ch |= relax(p, p - w + 1, 1.414); } }
+      for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) { const p = y * w + x; if (!isFg[p]) continue;
+        if (x < w - 1) ch |= relax(p, p + 1, 1); if (y < h - 1) { ch |= relax(p, p + w, 1); if (x < w - 1) ch |= relax(p, p + w + 1, 1.414); if (x > 0) ch |= relax(p, p + w - 1, 1.414); } }
+      if (!ch) break;
+    }
+    // color de cada trozo: el medio de la imagen original bajo él -> lápiz más parecido
+    const sl = new Float64Array(NP + 1), sa = new Float64Array(NP + 1), sb = new Float64Array(NP + 1), sn = new Float64Array(NP + 1);
+    for (const i of fgI) { const c = cid[i]; if (!c) continue; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); sl[c] += l[0]; sa[c] += l[1]; sb[c] += l[2]; sn[c]++; }
+    const pen = new Uint8Array(NP + 1);
+    for (let c = 1; c <= NP; c++) pen[c] = sn[c] ? nearest([sl[c] / sn[c], sa[c] / sn[c], sb[c] / sn[c]], ALL) : 1;
+    const s = Math.min(900 / w, 950 / h), cellMm = s * 0.21;
+    const dist = distance(cid, w, h), best = new Int32Array(NP + 1).fill(-1), bdv = new Int32Array(NP + 1).fill(-1);
+    for (const i of fgI) { const c = cid[i]; if (c && dist[i] > bdv[c]) { bdv[c] = dist[i]; best[c] = i; } }
     const used = new Set(), labels = [], capCells = 7 / cellMm;
-    regs.forEach(r => {
-      if (!r.c) return; used.add(r.c);
-      const rad = r.bd / 3 + 0.5, fs = Math.min(rad * 1.6, capCells) / (r.c > 9 ? 1.35 : 1);
-      labels.push([(r.best % w) + 0.5, Math.floor(r.best / w) + 0.5, Math.round(fs * 10) / 10, r.c]);
-    });
-    // bordes suaves: cada casilla se divide en F x F y toma el color que más pesa entre sus 4 vecinas (pesos bilineales)
-    const F = Math.max(3, Math.min(6, Math.ceil(cellMm / 0.4))), fw = w * F, fh = h * F, FL = new Uint8Array(fw * fh), la = [0, 0, 0, 0], wa = [0, 0, 0, 0];
-    for (let fy = 0; fy < fh; fy++) {
-      const v = (fy + 0.5) / F - 0.5, y0 = Math.floor(v), ty = v - y0, ya = Math.max(0, y0), yb = Math.min(h - 1, y0 + 1);
-      for (let fx = 0; fx < fw; fx++) {
-        const u = (fx + 0.5) / F - 0.5, x0 = Math.floor(u), tx = u - x0, xa = Math.max(0, x0), xb = Math.min(w - 1, x0 + 1);
-        la[0] = L[ya * w + xa]; wa[0] = (1 - tx) * (1 - ty); la[1] = L[ya * w + xb]; wa[1] = tx * (1 - ty);
-        la[2] = L[yb * w + xa]; wa[2] = (1 - tx) * ty; la[3] = L[yb * w + xb]; wa[3] = tx * ty;
-        let bl = la[0], bw = -1;
-        for (let i = 0; i < 4; i++) { let s = 0; for (let j = 0; j < 4; j++) if (la[j] === la[i]) s += wa[j]; if (s > bw + 1e-9) { bw = s; bl = la[i]; } }
-        FL[fy * fw + fx] = bl;
-      }
+    for (let c = 1; c <= NP; c++) {
+      if (best[c] < 0) continue; used.add(pen[c]);
+      const rad = bdv[c] / 3 + 0.5, fs = Math.max(2, Math.min(rad * 1.5, capCells)) / (pen[c] > 9 ? 1.3 : 1);
+      labels.push([(best[c] % w) + 0.5, Math.floor(best[c] / w) + 0.5, Math.round(fs * 10) / 10, pen[c]]);
     }
-    // suavizado de curvatura: moda 5x5 repetida en la malla fina (redondea esquinas y quita astillas)
-    { let A = FL, B = new Uint8Array(fw * fh); const cnt = new Uint16Array(16), R = Math.max(2, Math.round(F * 0.8));
+    // malla fina: bordes suaves (cada casilla se divide F x F; luego moda para redondear)
+    const F = Math.max(3, Math.min(6, Math.ceil(cellMm / 0.4))), fw = w * F, fh = h * F, FID = new Uint16Array(fw * fh);
+    for (let fy = 0; fy < fh; fy++) { const yy = Math.min(h - 1, (fy / F) | 0); for (let fx = 0; fx < fw; fx++) FID[fy * fw + fx] = cid[yy * w + Math.min(w - 1, (fx / F) | 0)]; }
+    { let A = FID, B = new Uint16Array(fw * fh); const cnt = new Uint16Array(NP + 1), R = Math.max(2, Math.round(F * 0.8));
       for (let pass = 0; pass < 2; pass++) {
         for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) {
-          cnt.fill(0); const y0 = Math.max(0, y - R), y1 = Math.min(fh - 1, y + R), x0 = Math.max(0, x - R), x1 = Math.min(fw - 1, x + R);
-          for (let yy = y0; yy <= y1; yy++) { const o = yy * fw; for (let xx = x0; xx <= x1; xx++) cnt[A[o + xx]]++; }
-          let bi = A[y * fw + x], bc = cnt[bi]; for (let k = 0; k < 16; k++) if (cnt[k] > bc) { bc = cnt[k]; bi = k; }
+          const y0 = Math.max(0, y - R), y1 = Math.min(fh - 1, y + R), x0 = Math.max(0, x - R), x1 = Math.min(fw - 1, x + R), seen = [];
+          for (let yy = y0; yy <= y1; yy++) { const o = yy * fw; for (let xx = x0; xx <= x1; xx++) { const v = A[o + xx]; if (!cnt[v]) seen.push(v); cnt[v]++; } }
+          let bi = A[y * fw + x], bc = cnt[bi]; for (const v of seen) { if (cnt[v] > bc) { bc = cnt[v]; bi = v; } cnt[v] = 0; }
           B[y * fw + x] = bi;
         }
         const tmp = A; A = B; B = tmp;
       }
-      if (A !== FL) FL.set(A); }
+      if (A !== FID) FID.set(A); }
+    const FL = new Uint8Array(fw * fh); for (let i = 0; i < fw * fh; i++) FL[i] = pen[FID[i]];
     let d = '';
-    for (let y = 1; y < fh; y++) { let x = 0; while (x < fw) { if (FL[y * fw + x] !== FL[(y - 1) * fw + x]) { let e = x; while (e < fw && FL[y * fw + e] !== FL[(y - 1) * fw + e]) e++; d += `M${x} ${y}h${e - x}`; x = e; } else x++; } }
-    for (let x = 1; x < fw; x++) { let y = 0; while (y < fh) { if (FL[y * fw + x] !== FL[y * fw + x - 1]) { let e = y; while (e < fh && FL[e * fw + x] !== FL[e * fw + x - 1]) e++; d += `M${x} ${y}v${e - y}`; y = e; } else y++; } }
+    for (let y = 1; y < fh; y++) { let x = 0; while (x < fw) { if (FID[y * fw + x] !== FID[(y - 1) * fw + x]) { let e = x; while (e < fw && FID[y * fw + e] !== FID[(y - 1) * fw + e]) e++; d += `M${x} ${y}h${e - x}`; x = e; } else x++; } }
+    for (let x = 1; x < fw; x++) { let y = 0; while (y < fh) { if (FID[y * fw + x] !== FID[y * fw + x - 1]) { let e = y; while (e < fh && FID[e * fw + x] !== FID[e * fw + x - 1]) e++; d += `M${x} ${y}v${e - y}`; y = e; } else y++; } }
     // vista previa coloreada
     const pv = document.createElement('canvas'); pv.width = fw; pv.height = fh; const pc = pv.getContext('2d'), im = pc.createImageData(fw, fh);
     for (let i = 0; i < fw * fh; i++) { const c = FL[i] ? hex(PAL[FL[i]][1]) : [255, 255, 255]; im.data[i * 4] = c[0]; im.data[i * 4 + 1] = c[1]; im.data[i * 4 + 2] = c[2]; im.data[i * 4 + 3] = 255; }
