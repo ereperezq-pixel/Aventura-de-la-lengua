@@ -200,7 +200,7 @@
     const ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
     // 3) el dibujo sin color se parte en N trozos parecidos (semillas por k-means de posiciones + reparto por cercanía dentro de la figura)
     const fgI = []; for (let i = 0; i < n; i++) if (!mF[i] && px[i * 4 + 3] >= 128) fgI.push(i);
-    const NP = Math.max(1, Math.min(cfg.n, fgI.length >> 3));
+    let NP2 = 0; const NP = Math.max(1, Math.min(cfg.n, fgI.length >> 3));
     const sxs = new Float32Array(NP), sys = new Float32Array(NP);
     { let first = fgI[0]; sxs[0] = first % w; sys[0] = (first / w) | 0;
       const md = new Float32Array(fgI.length).fill(1e9);
@@ -215,18 +215,44 @@
         for (let k = 0; k < NP; k++) if (ac[k]) { sxs[k] = ax[k] / ac[k]; sys[k] = ay[k] / ac[k]; }
       }
     }
-    // reparto geodésico (los trozos siempre quedan de una pieza): propagación de distancias desde las semillas
-    const cid = new Uint16Array(n), dst = new Float32Array(n).fill(1e9), isFg = new Uint8Array(n); fgI.forEach(i => isFg[i] = 1);
-    for (let k = 0; k < NP; k++) { let bi = fgI[0], bd = 1e9; for (const i of fgI) { const dd = ((i % w) - sxs[k]) ** 2 + (((i / w) | 0) - sys[k]) ** 2; if (dd < bd) { bd = dd; bi = i; } } if (dst[bi] > 0) { dst[bi] = 0; cid[bi] = k + 1; } }
-    const relax = (p, q, wt) => { if (isFg[q] && cid[q] && dst[q] + wt < dst[p]) { dst[p] = dst[q] + wt; cid[p] = cid[q]; return 1; } return 0; };
-    for (let pass = 0; pass < 200; pass++) {
-      let ch = 0;
-      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const p = y * w + x; if (!isFg[p]) continue;
-        if (x > 0) ch |= relax(p, p - 1, 1); if (y > 0) { ch |= relax(p, p - w, 1); if (x > 0) ch |= relax(p, p - w - 1, 1.414); if (x < w - 1) ch |= relax(p, p - w + 1, 1.414); } }
-      for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) { const p = y * w + x; if (!isFg[p]) continue;
-        if (x < w - 1) ch |= relax(p, p + 1, 1); if (y < h - 1) { ch |= relax(p, p + w, 1); if (x < w - 1) ch |= relax(p, p + w + 1, 1.414); if (x > 0) ch |= relax(p, p + w - 1, 1.414); } }
-      if (!ch) break;
+    // reparto tipo "superpíxeles" (SLIC): los trozos son de tamaño parecido pero se pegan a los contornos y cambios de color del dibujo
+    const cid = new Uint16Array(n), isFg = new Uint8Array(n), LB = new Float32Array(n * 3); fgI.forEach(i => { isFg[i] = 1; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); LB[i * 3] = l[0]; LB[i * 3 + 1] = l[1]; LB[i * 3 + 2] = l[2]; });
+    { const S = Math.sqrt(fgI.length / NP), mw = (cfg.m || 12) / S, sl0 = new Float64Array(NP), sa0 = new Float64Array(NP), sb0 = new Float64Array(NP);
+      const cx = Array.from(sxs), cy = Array.from(sys), cl = new Float64Array(NP), ca = new Float64Array(NP), cb = new Float64Array(NP);
+      for (let k = 0; k < NP; k++) { let bi = fgI[0], bd = 1e9; for (const i of fgI) { const dd = ((i % w) - cx[k]) ** 2 + (((i / w) | 0) - cy[k]) ** 2; if (dd < bd) { bd = dd; bi = i; } } cx[k] = bi % w; cy[k] = (bi / w) | 0; cl[k] = LB[bi * 3]; ca[k] = LB[bi * 3 + 1]; cb[k] = LB[bi * 3 + 2]; }
+      for (let it = 0; it < 10; it++) {
+        const sx2 = new Float64Array(NP), sy2 = new Float64Array(NP), sL = new Float64Array(NP), sA = new Float64Array(NP), sB = new Float64Array(NP), sN = new Float64Array(NP);
+        for (const i of fgI) {
+          const x = i % w, y = (i / w) | 0; let b = 0, bd = 1e18;
+          for (let k = 0; k < NP; k++) { const dx = x - cx[k], dy = y - cy[k]; if (dx * dx + dy * dy > 9 * S * S) continue; const dl = LB[i * 3] - cl[k], da = LB[i * 3 + 1] - ca[k], db = LB[i * 3 + 2] - cb[k], dd = dl * dl + da * da + db * db + mw * mw * (dx * dx + dy * dy); if (dd < bd) { bd = dd; b = k; } }
+          if (bd >= 1e18) { for (let k = 0; k < NP; k++) { const dd = (x - cx[k]) ** 2 + (y - cy[k]) ** 2; if (dd < bd) { bd = dd; b = k; } } }
+          cid[i] = b + 1; sx2[b] += x; sy2[b] += y; sL[b] += LB[i * 3]; sA[b] += LB[i * 3 + 1]; sB[b] += LB[i * 3 + 2]; sN[b]++;
+        }
+        for (let k = 0; k < NP; k++) if (sN[k]) { cx[k] = sx2[k] / sN[k]; cy[k] = sy2[k] / sN[k]; cl[k] = sL[k] / sN[k]; ca[k] = sA[k] / sN[k]; cb[k] = sB[k] / sN[k]; }
+      }
     }
+    // cada trozo debe ser de una sola pieza: los fragmentos sueltos o diminutos se pegan al vecino con el que más borde comparten
+    for (let round = 0; round < 6; round++) {
+      const comp = new Int32Array(n).fill(-1), sizes = [], owner = [], st = [];
+      for (const s0 of fgI) { if (comp[s0] >= 0) continue; const id = sizes.length; let cnt = 0; st.length = 0; st.push(s0); comp[s0] = id;
+        while (st.length) { const p = st.pop(); cnt++; const x = p % w, c = cid[p];
+          if (x > 0 && comp[p - 1] < 0 && cid[p - 1] === c) { comp[p - 1] = id; st.push(p - 1); } if (x < w - 1 && comp[p + 1] < 0 && cid[p + 1] === c) { comp[p + 1] = id; st.push(p + 1); }
+          if (p >= w && comp[p - w] < 0 && cid[p - w] === c) { comp[p - w] = id; st.push(p - w); } if (p < n - w && comp[p + w] < 0 && cid[p + w] === c) { comp[p + w] = id; st.push(p + w); } }
+        sizes.push(cnt); owner.push(cid[s0]); }
+      const bigOf = new Map(); sizes.forEach((sz, i) => { const o = owner[i]; if (!bigOf.has(o) || sz > sizes[bigOf.get(o)]) bigOf.set(o, i); });
+      const minSz = Math.max(4, 0.3 * fgI.length / NP), bad = []; sizes.forEach((sz, i) => { if (bigOf.get(owner[i]) !== i || sz < minSz) bad.push(i); });
+      if (!bad.length) break;
+      const badSet = new Set(bad), touch = bad.map(() => new Map()), bi2 = new Map(bad.map((b, j) => [b, j]));
+      for (const p of fgI) { const a = comp[p]; if (!badSet.has(a)) continue; const j = bi2.get(a), x = p % w;
+        const nb = [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1];
+        for (const q of nb) if (q >= 0 && isFg[q] && comp[q] !== a) touch[j].set(comp[q], (touch[j].get(comp[q]) || 0) + 1); }
+      const newOwner = new Map();
+      bad.sort((p, q) => sizes[p] - sizes[q]);
+      bad.forEach(a => { const j = bi2.get(a); let bc = -1, bv = 0; touch[j].forEach((v, c) => { if (v > bv && !(badSet.has(c) && sizes[c] <= sizes[a] && c !== a && false)) { bv = v; bc = c; } }); if (bc >= 0) newOwner.set(a, owner[bc]); });
+      for (const p of fgI) { const a = comp[p]; if (newOwner.has(a)) cid[p] = newOwner.get(a); }
+    }
+    // numeración consecutiva de los trozos
+    { const mp = new Map(); for (const i of fgI) { if (!mp.has(cid[i])) mp.set(cid[i], mp.size + 1); cid[i] = mp.get(cid[i]); } NP2 = mp.size; }
     // color de cada trozo: el medio de la imagen original bajo él -> lápiz más parecido
     const sl = new Float64Array(NP + 1), sa = new Float64Array(NP + 1), sb = new Float64Array(NP + 1), sn = new Float64Array(NP + 1);
     for (const i of fgI) { const c = cid[i]; if (!c) continue; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); sl[c] += l[0]; sa[c] += l[1]; sb[c] += l[2]; sn[c]++; }
@@ -288,7 +314,7 @@
       `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
       `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v3</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v4</text></svg>`;
   }
 
   // ---------- progreso ----------
