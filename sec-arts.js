@@ -35,7 +35,7 @@
         <p>1. Guarda la imagen del premio. 2. Copia el texto. 3. En Grok, adjunta la imagen y pega el texto. 4. Guarda lo que te devuelva y súbelo al repositorio en la carpeta <i>arts</i> con el nombre <b id="arts-grok-file"></b></p>
         <button class="btn btn-primary arts-btn" onclick="app.artsGrokImage()">🖼️ Guardar imagen del premio</button>
         <button id="arts-grok-copy" class="btn btn-primary arts-btn" onclick="app.artsGrokCopy()">📋 Copiar texto para Grok</button>
-        <textarea id="arts-grok-text" class="arts-grok-text" readonly rows="7"></textarea>
+        <textarea id="arts-grok-text" class="arts-grok-text" readonly rows="12"></textarea>
       </div>
       <p class="arts-tip">💡 Colorea cada zona con el color de su número. Las zonas sin número se dejan en blanco. Cuanto más difícil, más zonas pequeñas.</p>
     </div>`
@@ -345,7 +345,7 @@
       `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
       `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v9</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v10</text></svg>`;
   }
 
   // ---------- progreso ----------
@@ -379,7 +379,7 @@
       `<text x="500" y="78" font-size="56" text-anchor="middle" font-family="${FONT}" font-weight="700" fill="#4338CA">${esc(title)}</text>` +
       `<image href="${out.toDataURL('image/jpeg', 0.92)}" x="${(500 - w2 / 2).toFixed(1)}" y="${(140 + (1180 - h2) / 2).toFixed(1)}" width="${w2.toFixed(1)}" height="${h2.toFixed(1)}" preserveAspectRatio="xMidYMid meet"/>` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v9</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v10</text></svg>`;
     return { custom: true, svg, zones: 0, used: [] };
   }
   function loadCustom(name, done) {
@@ -393,7 +393,35 @@
   }
 
   // ---------- ayuda para hacer el dibujo con Grok ----------
-  const grokText = name => 'Convierte esta imagen (' + name + ') en una página de colorear por números para imprimir en A4 vertical. Solo líneas negras finas sobre fondo blanco, sin sombreados ni colores. Cada zona lleva un número. Pon la leyenda de colores (cuadradito de color + número + nombre del color) debajo del dibujo, completa y dentro de los márgenes. Máximo 9 colores. Mantén el personaje igual que en la imagen.';
+  const grokText = name => [
+    'TAREA: convierte la imagen adjunta (' + name + ') en una página de "colorear por números" en blanco y negro, lista para imprimir en una hoja A4 vertical. Es un calco FIEL de la imagen, no una reinterpretación.',
+    '',
+    'REGLA PRINCIPAL: NO INVENTES NADA. El dibujo debe ser IGUAL que la imagen adjunta. No añadas, quites, cambies ni "mejores" ningún elemento. No cambies la forma, la postura, las proporciones, la expresión ni la cara. Si dudas, copia exactamente lo que ves en la imagen.',
+    '',
+    'CÓMO HACERLO:',
+    '1. Antes de dibujar, analiza la imagen y haz una lista mental de TODOS sus elementos (cabeza, cuerpo, alas o brazos, patas o pies, cola, ojos, pico u hocico, boca, ropa, capa, casco, herramientas, accesorios, símbolos, letras y detalles), con su forma, posición, tamaño y orientación exactos. Después dibuja exactamente esa lista, ni más ni menos.',
+    '2. Mantén idéntico: la silueta completa, la postura y la inclinación del cuerpo, la posición y la forma de cada extremidad, la forma y el tamaño de los ojos (y hacia dónde miran), la forma del pico y de la boca (abierta o cerrada, igual que en la imagen), las cejas o antifaces, y cualquier símbolo o letra del pecho o del casco.',
+    '3. No cambies el tamaño relativo de ninguna parte (por ejemplo, ojos más grandes, cabeza más grande, patas más largas). No cambies el número de dedos, plumas, púas o detalles.',
+    '4. No añadas nada que no esté en la imagen: ni mejillas, ni sonrisas distintas, ni dientes, ni lengua, ni cejas, ni brillos, ni sombras, ni decoraciones, ni fondo, ni suelo, ni nubes, ni estrellas.',
+    '5. Quita solo el fondo (círculo, cielo, color de fondo, marcos): dibuja únicamente el personaje, sobre fondo blanco liso. Quita también las sombras y los degradados.',
+    '',
+    'ESTILO DEL DIBUJO:',
+    '- Solo líneas negras de grosor uniforme, limpias y continuas, sobre fondo blanco. SIN colores, SIN relleno, SIN grises, SIN sombreado. Todas las zonas deben quedar en blanco, listas para colorear.',
+    '- Las zonas deben ser cerradas y bien separadas por líneas. Divide el dibujo en las zonas de color que se ven en la imagen original (por ejemplo: cuerpo, antifaz, capa, alas, pico, patas, ojos, símbolo del pecho). No inventes zonas nuevas ni unas dos zonas de color distinto.',
+    '',
+    'NÚMEROS:',
+    '- Cada zona lleva UN solo número, en negro, bien legible, centrado dentro de la zona. Zonas muy grandes pueden llevar el número repetido una o dos veces, pero no pongas varios números juntos en una zona pequeña (una pata o un ojo llevan un único número).',
+    '- Los números dentro de un ojo, un detalle pequeño o una zona oscura deben ser legibles (no se pueden solapar con otros números ni con las líneas).',
+    '- El mismo color lleva siempre el mismo número en todo el dibujo.',
+    '- Usa como máximo 9 colores. Elige los colores REALES de la imagen original (agrupa los tonos parecidos en uno solo: por ejemplo todos los amarillos, o todos los rojos, en un único color).',
+    '',
+    'LEYENDA:',
+    '- Debajo del dibujo, completa y dentro de los márgenes de la hoja, pon la leyenda: un cuadradito de ese color + el número + el nombre del color en español (Amarillo, Rojo, Naranja, Blanco, Negro, Rosa, Verde, Azul, Marrón, Gris...). El cuadradito de la leyenda sí va coloreado con su color real; todo lo demás es blanco y negro.',
+    '',
+    'FORMATO: hoja A4 vertical, personaje centrado y lo más grande posible, con márgenes blancos, sin título, sin marcos y sin textos extra.',
+    '',
+    'COMPRUEBA ANTES DE ENTREGAR: el dibujo es idéntico a la imagen adjunta (misma cara, mismos ojos, mismo pico, misma postura, mismos accesorios), no hay ningún elemento nuevo, no hay colores en el dibujo (solo en la leyenda) y cada zona tiene su número. Si algo no coincide con la imagen original, corrígelo antes de entregar.'
+  ].join('\n');
   function updateGrok() {
     const ta = $('arts-grok-text'); if (ta) ta.value = grokText(cur.name);
     const f = $('arts-grok-file'); if (f) f.textContent = slug(cur.name) + '.png';
