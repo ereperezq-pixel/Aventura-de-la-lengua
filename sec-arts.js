@@ -37,9 +37,10 @@
 
   // Lápices: el número de cada color es siempre el mismo.
   const PAL = [null, ['Amarillo', '#FACC15'], ['Naranja', '#FB923C'], ['Rojo', '#EF4444'], ['Rosa', '#F472B6'], ['Morado', '#A855F7'],
-    ['Azul', '#3B82F6'], ['Celeste', '#38BDF8'], ['Verde', '#22C55E'], ['Marrón', '#A16207'], ['Gris', '#9CA3AF'], ['Negro', '#1F2937']];
+    ['Azul', '#3B82F6'], ['Celeste', '#38BDF8'], ['Verde', '#22C55E'], ['Marrón', '#A16207'], ['Gris', '#9CA3AF'], ['Negro', '#1F2937'],
+    ['Verde claro', '#86EFAC'], ['Verde oscuro', '#15803D'], ['Azul oscuro', '#1E40AF'], ['Beige', '#FDE0B6']];
   // Niveles: W = casillas del lado largo, K = máximo de colores, mm = diámetro mínimo de una zona, zmax = máximo de zonas
-  const LEVELS = { 1: { name: 'Fácil', W: 130, K: 6, mm: 6, zmax: 60 }, 2: { name: 'Medio', W: 170, K: 8, mm: 4.8, zmax: 110 }, 3: { name: 'Difícil', W: 220, K: 10, mm: 3.8, zmax: 190 } };
+  const LEVELS = { 1: { name: 'Fácil', W: 110, K: 7, mm: 7, zmax: 40 }, 2: { name: 'Medio', W: 150, K: 10, mm: 5.5, zmax: 80 }, 3: { name: 'Difícil', W: 200, K: 12, mm: 5, zmax: 120 } };
 
   // ---------- color ----------
   const hex = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
@@ -55,22 +56,26 @@
   const d2 = (a, b) => (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]) + (a[2] - b[2]) * (a[2] - b[2]);
   function nearest(l, allowed) { let best = 0, bd = 1e9; for (const k of allowed) { const d = d2(l, PLAB[k]); if (d < bd) { bd = d; best = k; } } return best; }
 
-  // lápiz que corresponde a un color: se decide por el tono, para que un verde oscuro siga siendo verde
-  function classify(r, g, b) {
-    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx / 255, s = mx ? (mx - mn) / mx : 0;
-    if (v < 0.2) return 11;
-    if (s < 0.2) return 10;
-    let h; const dd = mx - mn;
-    if (mx === r) h = 60 * (((g - b) / dd + 6) % 6); else if (mx === g) h = 60 * ((b - r) / dd + 2); else h = 60 * ((r - g) / dd + 4);
-    if (h < 15 || h >= 345) return (v > 0.8 && s < 0.55) ? 4 : (v < 0.35 ? 9 : 3);
-    if (h < 40) return v < 0.6 ? 9 : 2;
-    if (h < 70) return v < 0.55 ? 9 : 1;
-    if (h < 165) return 8;
-    if (h < 200) return 7;
-    if (h < 255) return (v > 0.75 && s < 0.6) ? 7 : 6;
-    if (h < 290) return 5;
-    return 4;
+  // k-means sencillo (determinista) sobre colores Lab: devuelve K centros
+  function kmeans(pts, K) {
+    let seed = 12345; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const N = pts.length, cen = [pts[Math.floor(rnd() * N)].slice()], step = Math.max(1, Math.floor(N / 3000));
+    while (cen.length < Math.min(K, N)) {                    // k-means++ sobre una muestra
+      let tot = 0; const ds = [];
+      for (let i = 0; i < N; i += step) { let m = 1e9; for (const c of cen) { const d = d2(pts[i], c); if (d < m) m = d; } ds.push([i, m]); tot += m; }
+      if (tot <= 0) break; let r = rnd() * tot, pick = ds[ds.length - 1][0];
+      for (const [i, m] of ds) { r -= m; if (r <= 0) { pick = i; break; } }
+      cen.push(pts[pick].slice());
+    }
+    const as = new Int16Array(N);
+    for (let it = 0; it < 8; it++) {
+      const sum = cen.map(() => [0, 0, 0, 0]);
+      for (let i = 0; i < N; i++) { let b = 0, bd = 1e9; for (let k = 0; k < cen.length; k++) { const d = d2(pts[i], cen[k]); if (d < bd) { bd = d; b = k; } } as[i] = b; const s = sum[b]; s[0] += pts[i][0]; s[1] += pts[i][1]; s[2] += pts[i][2]; s[3]++; }
+      cen.forEach((c, k) => { if (sum[k][3]) { c[0] = sum[k][0] / sum[k][3]; c[1] = sum[k][1] / sum[k][3]; c[2] = sum[k][2] / sum[k][3]; } });
+    }
+    return cen;
   }
+  const PL = c => c ? PLAB[c] : [100, 0, 0];
 
   // ---------- conversión de la imagen en zonas ----------
   function components(L, w, h) {
@@ -116,7 +121,7 @@
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
       cnt.fill(0);
       for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < w && yy < h) cnt[L[yy * w + xx]]++; }
-      let b = L[y * w + x], bc = cnt[b]; for (let k = 0; k < 12; k++) if (cnt[k] > bc) { bc = cnt[k]; b = k; }
+      let b = L[y * w + x], bc = cnt[b]; for (let k = 0; k < 16; k++) if (cnt[k] > bc) { bc = cnt[k]; b = k; }
       o[y * w + x] = b;
     }
     return o;
@@ -192,18 +197,20 @@
       const ax = Math.min(aw - 1, Math.floor((sx + (x + 0.5) / w * sw) / iw * aw)), ay = Math.min(ah - 1, Math.floor((sy + (y + 0.5) / h * sh) / ih * ah));
       return !!mA[ay * aw + ax];
     });
-    const labs = new Array(n), cls = new Uint8Array(n), ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
-    const count = new Array(PAL.length).fill(0); let opaque = 0;
+    const ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
+    // 3) los colores propios de la imagen se agrupan (k-means) y cada grupo toma el lápiz más parecido
+    const idx = [], pts = [];
     for (let i = 0; i < n; i++) {
-      if (mF[i]) { labs[i] = null; continue; }
+      if (mF[i]) continue;
       const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
-      if (px[i * 4 + 3] < 128 || (l[0] > 90 && Math.hypot(l[1], l[2]) < 12)) { labs[i] = null; continue; }   // blanco: se deja sin colorear
-      labs[i] = l; cls[i] = classify(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); count[cls[i]]++; opaque++;
+      if (px[i * 4 + 3] < 128 || (l[0] > 90 && Math.hypot(l[1], l[2]) < 12)) continue;   // blanco: se deja sin colorear
+      idx.push(i); pts.push(l);
     }
-    const keep = ALL.filter(k => count[k] > opaque * 0.008).sort((a, b) => count[b] - count[a]).slice(0, cfg.K);
-    if (!keep.length) keep.push(1);
     let L = new Uint8Array(n);
-    for (let i = 0; i < n; i++) L[i] = labs[i] ? (keep.indexOf(cls[i]) >= 0 ? cls[i] : nearest(labs[i], keep)) : 0;
+    if (pts.length) {
+      const cen = kmeans(pts, cfg.K), pen = cen.map(c => nearest(c, ALL));
+      for (let j = 0; j < pts.length; j++) { let b = 0, bd = 1e9; for (let k = 0; k < cen.length; k++) { const dd = d2(pts[j], cen[k]); if (dd < bd) { bd = dd; b = k; } } L[idx[j]] = pen[b]; }
+    }
     L = smooth(L, w, h); if (lv === 1) L = smooth(L, w, h);
 
     // tamaño en la hoja: 1 casilla = cellMm milímetros
@@ -220,7 +227,7 @@
         const add = (a, b) => { if (a !== b) { const k = a * R + b; adj.set(k, (adj.get(k) || 0) + 1); } };
         for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const p = y * w + x, a = comp.id[p]; if (x < w - 1) { add(a, comp.id[p + 1]); add(comp.id[p + 1], a); } if (y < h - 1) { add(a, comp.id[p + w]); add(comp.id[p + w], a); } }
         const best = new Map();
-        adj.forEach((v, k) => { const a = Math.floor(k / R), b = k % R, cur = best.get(a); if (!cur || v > cur.v) best.set(a, { b, v }); });
+        adj.forEach((v, k) => { const a = Math.floor(k / R), b = k % R, sc = d2(PL(regs[a].c), PL(regs[b].c)) - 40 * v, cur = best.get(a); if (!cur || sc < cur.sc) best.set(a, { b, sc }); });
         const par = regs.map((r, i) => i), find = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
         small.sort((a, b) => regs[a].n - regs[b].n).forEach(a => { const t = best.get(a); if (t && find(a) !== find(t.b)) par[find(a)] = find(t.b); });
         for (let p = 0; p < n; p++) L[p] = regs[find(comp.id[p])].c;
@@ -235,14 +242,39 @@
       const rad = r.bd / 3 + 0.5, fs = Math.min(rad * 1.6, capCells) / (r.c > 9 ? 1.35 : 1);
       labels.push([(r.best % w) + 0.5, Math.floor(r.best / w) + 0.5, Math.round(fs * 10) / 10, r.c]);
     });
+    // bordes suaves: cada casilla se divide en F x F y toma el color que más pesa entre sus 4 vecinas (pesos bilineales)
+    const F = Math.max(3, Math.min(6, Math.ceil(cellMm / 0.4))), fw = w * F, fh = h * F, FL = new Uint8Array(fw * fh), la = [0, 0, 0, 0], wa = [0, 0, 0, 0];
+    for (let fy = 0; fy < fh; fy++) {
+      const v = (fy + 0.5) / F - 0.5, y0 = Math.floor(v), ty = v - y0, ya = Math.max(0, y0), yb = Math.min(h - 1, y0 + 1);
+      for (let fx = 0; fx < fw; fx++) {
+        const u = (fx + 0.5) / F - 0.5, x0 = Math.floor(u), tx = u - x0, xa = Math.max(0, x0), xb = Math.min(w - 1, x0 + 1);
+        la[0] = L[ya * w + xa]; wa[0] = (1 - tx) * (1 - ty); la[1] = L[ya * w + xb]; wa[1] = tx * (1 - ty);
+        la[2] = L[yb * w + xa]; wa[2] = (1 - tx) * ty; la[3] = L[yb * w + xb]; wa[3] = tx * ty;
+        let bl = la[0], bw = -1;
+        for (let i = 0; i < 4; i++) { let s = 0; for (let j = 0; j < 4; j++) if (la[j] === la[i]) s += wa[j]; if (s > bw + 1e-9) { bw = s; bl = la[i]; } }
+        FL[fy * fw + fx] = bl;
+      }
+    }
+    // suavizado de curvatura: moda 5x5 repetida en la malla fina (redondea esquinas y quita astillas)
+    { let A = FL, B = new Uint8Array(fw * fh); const cnt = new Uint16Array(16), R = Math.max(2, Math.round(F * 0.8));
+      for (let pass = 0; pass < 2; pass++) {
+        for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) {
+          cnt.fill(0); const y0 = Math.max(0, y - R), y1 = Math.min(fh - 1, y + R), x0 = Math.max(0, x - R), x1 = Math.min(fw - 1, x + R);
+          for (let yy = y0; yy <= y1; yy++) { const o = yy * fw; for (let xx = x0; xx <= x1; xx++) cnt[A[o + xx]]++; }
+          let bi = A[y * fw + x], bc = cnt[bi]; for (let k = 0; k < 16; k++) if (cnt[k] > bc) { bc = cnt[k]; bi = k; }
+          B[y * fw + x] = bi;
+        }
+        const tmp = A; A = B; B = tmp;
+      }
+      if (A !== FL) FL.set(A); }
     let d = '';
-    for (let y = 1; y < h; y++) { let x = 0; while (x < w) { if (L[y * w + x] !== L[(y - 1) * w + x]) { let e = x; while (e < w && L[y * w + e] !== L[(y - 1) * w + e]) e++; d += `M${x} ${y}h${e - x}`; x = e; } else x++; } }
-    for (let x = 1; x < w; x++) { let y = 0; while (y < h) { if (L[y * w + x] !== L[y * w + x - 1]) { let e = y; while (e < h && L[e * w + x] !== L[e * w + x - 1]) e++; d += `M${x} ${y}v${e - y}`; y = e; } else y++; } }
+    for (let y = 1; y < fh; y++) { let x = 0; while (x < fw) { if (FL[y * fw + x] !== FL[(y - 1) * fw + x]) { let e = x; while (e < fw && FL[y * fw + e] !== FL[(y - 1) * fw + e]) e++; d += `M${x} ${y}h${e - x}`; x = e; } else x++; } }
+    for (let x = 1; x < fw; x++) { let y = 0; while (y < fh) { if (FL[y * fw + x] !== FL[y * fw + x - 1]) { let e = y; while (e < fh && FL[e * fw + x] !== FL[e * fw + x - 1]) e++; d += `M${x} ${y}v${e - y}`; y = e; } else y++; } }
     // vista previa coloreada
-    const pv = document.createElement('canvas'); pv.width = w; pv.height = h; const pc = pv.getContext('2d'), im = pc.createImageData(w, h);
-    for (let i = 0; i < n; i++) { const c = L[i] ? hex(PAL[L[i]][1]) : [255, 255, 255]; im.data[i * 4] = c[0]; im.data[i * 4 + 1] = c[1]; im.data[i * 4 + 2] = c[2]; im.data[i * 4 + 3] = 255; }
+    const pv = document.createElement('canvas'); pv.width = fw; pv.height = fh; const pc = pv.getContext('2d'), im = pc.createImageData(fw, fh);
+    for (let i = 0; i < fw * fh; i++) { const c = FL[i] ? hex(PAL[FL[i]][1]) : [255, 255, 255]; im.data[i * 4] = c[0]; im.data[i * 4 + 1] = c[1]; im.data[i * 4 + 2] = c[2]; im.data[i * 4 + 3] = 255; }
     pc.putImageData(im, 0, 0);
-    return { crop: [sx, sy, sw, sh], w, h, s, cellMm, d, labels, used: [...used].sort((a, b) => a - b), zones: labels.length, preview: pv.toDataURL('image/png') };
+    return { F, w, h, s, cellMm, d, labels, used: [...used].sort((a, b) => a - b), zones: labels.length, preview: pv.toDataURL('image/png') };
   }
 
   // ---------- hoja A4 (proporción 1000 x 1414) ----------
@@ -252,14 +284,14 @@
     const ox = 500 - r.w * r.s / 2, oy = 140 + (950 - r.h * r.s) / 2, sw = Math.round(Math.max(0.12, 0.35 / r.cellMm) * 100) / 100;
     let g = '';
     if (solution) g += `<image href="${r.preview}" x="0" y="0" width="${r.w}" height="${r.h}" preserveAspectRatio="none" style="image-rendering:pixelated"/>`;
-    g += `<path d="${r.d}" fill="none" stroke="#222" stroke-width="${sw}" stroke-linecap="square"/>`;
+    g += `<g transform="scale(${(1 / r.F).toFixed(4)})"><path d="${r.d}" fill="none" stroke="#222" stroke-width="${Math.round(sw * r.F * 100) / 100}" stroke-linecap="square"/></g>`;
     r.labels.forEach(l => { g += `<text x="${l[0]}" y="${l[1]}" font-size="${l[2]}" text-anchor="middle" dominant-baseline="central" font-family="${FONT}" font-weight="700" fill="#1f2937"${solution ? ` stroke="#fff" stroke-width="${Math.round(l[2] * 8) / 100}" paint-order="stroke"` : ''}>${l[3]}</text>`; });
-    let leg = ''; const perRow = 4, cw = 225, x0 = 500 - (Math.min(r.used.length, perRow) * cw) / 2;
+    let leg = ''; const perRow = 4, cw = 240, x0 = 500 - (Math.min(r.used.length, perRow) * cw) / 2;
     r.used.forEach((c, i) => {
       const row = Math.floor(i / perRow), k = i % perRow, x = x0 + k * cw, y = 1112 + row * 76;
       leg += `<rect x="${x}" y="${y}" width="56" height="56" rx="10" fill="${PAL[c][1]}" stroke="#222" stroke-width="2.5"/>` +
         `<text x="${x + 28}" y="${y + 29}" font-size="${c > 9 ? 28 : 34}" text-anchor="middle" dominant-baseline="central" font-family="${FONT}" font-weight="700" fill="#111" stroke="#fff" stroke-width="4" paint-order="stroke">${c}</text>` +
-        `<text x="${x + 66}" y="${y + 29}" font-size="28" dominant-baseline="central" font-family="${FONT}" fill="#222">${PAL[c][0]}</text>`;
+        `<text x="${x + 64}" y="${y + 29}" font-size="24" dominant-baseline="central" font-family="${FONT}" fill="#222">${PAL[c][0]}</text>`;
     });
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1414" width="1000" height="1414" preserveAspectRatio="xMidYMid meet">` +
       `<rect width="1000" height="1414" fill="#fff"/>` +
