@@ -29,3 +29,6 @@
 .arts-grok { margin:14px 0 6px; padding:12px; border:2px dashed #C4B5FD; border-radius:16px; background:#FAF5FF; }
 .arts-grok p { font-size:0.95rem; margin:6px 0 8px; }
 .arts-grok-text { width:100%; box-sizing:border-box; font-size:0.85rem; border:1px solid #DDD6FE; border-radius:10px; padding:8px; background:#fff; resize:none; }
+
+.arts-prize { text-align:center; margin:0 0 12px; }
+.arts-prize img { width:100%; max-width:300px; aspect-ratio:1; object-fit:contain; background:#fff; border:2px solid #C4B5FD; border-radius:18px; box-shadow:0 4px 0 #DDD6FE; padding:8px; }
