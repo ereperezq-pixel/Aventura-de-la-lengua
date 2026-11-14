@@ -40,7 +40,7 @@
     ['Azul', '#3B82F6'], ['Celeste', '#38BDF8'], ['Verde', '#22C55E'], ['Marrón', '#A16207'], ['Gris', '#9CA3AF'], ['Negro', '#1F2937'],
     ['Verde claro', '#86EFAC'], ['Verde oscuro', '#15803D'], ['Azul oscuro', '#1E40AF'], ['Beige', '#FDE0B6']];
   // Niveles: W = casillas del lado largo, n = número aproximado de trozos
-  const LEVELS = { 1: { name: 'Fácil', W: 110, n: 20 }, 2: { name: 'Medio', W: 150, n: 40 }, 3: { name: 'Difícil', W: 200, n: 60 } };
+  const LEVELS = { 1: { name: 'Fácil', W: 240, n: 20, rmm: 9 }, 2: { name: 'Medio', W: 240, n: 40, rmm: 6 }, 3: { name: 'Difícil', W: 240, n: 60, rmm: 4.5 } };
 
   // ---------- color ----------
   const hex = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
@@ -210,6 +210,34 @@
       const big = Math.max(...comps.map(c => c.length)), keep = new Set(); comps.forEach(c => { if (c.length >= 0.04 * big) c.forEach(p => keep.add(p)); });
       for (let k = fgI.length - 1; k >= 0; k--) if (!keep.has(fgI[k])) fgI.splice(k, 1); }
     let NP2 = 0; const NP = Math.max(1, Math.min(cfg.n, fgI.length >> 3));
+    // ---- partición por contornos: las zonas son las que encierran las líneas oscuras del propio dibujo ----
+    const cid = new Uint16Array(n), isFg = new Uint8Array(n), LB = new Float32Array(n * 3), isLine = new Uint8Array(n);
+    fgI.forEach(i => { isFg[i] = 1; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); LB[i * 3] = l[0]; LB[i * 3 + 1] = l[1]; LB[i * 3 + 2] = l[2]; });
+    let byLines = false;
+    { const dark = new Uint8Array(n); for (const i of fgI) if (LB[i * 3] < 36) dark[i] = 1;
+      const all8 = (src, p, v) => { const x = p % w, y = (p / w) | 0; for (let j = -1; j <= 1; j++) for (let k = -1; k <= 1; k++) { const xx = x + k, yy = y + j; const s = (xx < 0 || yy < 0 || xx >= w || yy >= h) ? 0 : src[yy * w + xx]; if (v ? s : !s) return v ? 1 : 0; } return v ? 0 : 1; };
+      const erode = src => { const o = new Uint8Array(n); for (let p = 0; p < n; p++) if (src[p] && all8(src, p, 0)) o[p] = 1; return o; };
+      const dilate = src => { const o = new Uint8Array(n); for (let p = 0; p < n; p++) if (all8(src, p, 1)) o[p] = 1; return o; };
+      const core = dilate(dilate(erode(erode(dark))));           // zonas oscuras gruesas (p. ej. ropa negra): son zona, no línea
+      for (const i of fgI) if (dark[i] && !core[i]) isLine[i] = 1;
+      const rid = new Int32Array(n).fill(-1), st = []; let nr = 0;
+      for (const s0 of fgI) { if (isLine[s0] || rid[s0] >= 0) continue; let cnt = 0; const mem = []; st.length = 0; st.push(s0); rid[s0] = nr;
+        while (st.length) { const p = st.pop(); mem.push(p); cnt++; const x = p % w;
+          if (x > 0 && isFg[p - 1] && !isLine[p - 1] && rid[p - 1] < 0) { rid[p - 1] = nr; st.push(p - 1); } if (x < w - 1 && isFg[p + 1] && !isLine[p + 1] && rid[p + 1] < 0) { rid[p + 1] = nr; st.push(p + 1); }
+          if (p >= w && isFg[p - w] && !isLine[p - w] && rid[p - w] < 0) { rid[p - w] = nr; st.push(p - w); } if (p < n - w && isFg[p + w] && !isLine[p + w] && rid[p + w] < 0) { rid[p + w] = nr; st.push(p + w); } }
+        if (cnt < 4) { mem.forEach(p => { rid[p] = -2; isLine[p] = 1; }); } else nr++; }
+      // renumerar (las zonas diminutas anuladas se tratan como línea)
+      const rm = new Map(); let q = []; for (const i of fgI) if (rid[i] >= 0) { if (!rm.has(rid[i])) rm.set(rid[i], rm.size + 1); cid[i] = rm.get(rid[i]); q.push(i); }
+      if (rm.size >= Math.max(8, cfg.n * 1.2) && rm.size < 60000) {
+        byLines = true;
+        // las líneas se reparten entre las zonas vecinas (crecimiento por capas)
+        for (let guard = 0; guard < 40 && q.length; guard++) { const nq = [];
+          for (const p of q) { const x = p % w; for (const t of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1]) if (t >= 0 && isFg[t] && !cid[t]) { cid[t] = cid[p]; nq.push(t); } }
+          q = nq; }
+        for (const i of fgI) if (!cid[i]) cid[i] = 1;
+      } else { cid.fill(0); isLine.fill(0); }
+    }
+    if (!byLines) {
     const sxs = new Float32Array(NP), sys = new Float32Array(NP);
     { let first = fgI[0]; sxs[0] = first % w; sys[0] = (first / w) | 0;
       const md = new Float32Array(fgI.length).fill(1e9);
@@ -225,7 +253,7 @@
       }
     }
     // reparto tipo "superpíxeles" (SLIC): los trozos son de tamaño parecido pero se pegan a los contornos y cambios de color del dibujo
-    const cid = new Uint16Array(n), isFg = new Uint8Array(n), LB = new Float32Array(n * 3); fgI.forEach(i => { isFg[i] = 1; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); LB[i * 3] = l[0]; LB[i * 3 + 1] = l[1]; LB[i * 3 + 2] = l[2]; });
+
     { const S = Math.sqrt(fgI.length / NP), mw = (cfg.m || 16) / S, sl0 = new Float64Array(NP), sa0 = new Float64Array(NP), sb0 = new Float64Array(NP);
       const cx = Array.from(sxs), cy = Array.from(sys), cl = new Float64Array(NP), ca = new Float64Array(NP), cb = new Float64Array(NP);
       for (let k = 0; k < NP; k++) { let bi = fgI[0], bd = 1e9; for (const i of fgI) { const dd = ((i % w) - cx[k]) ** 2 + (((i / w) | 0) - cy[k]) ** 2; if (dd < bd) { bd = dd; bi = i; } } cx[k] = bi % w; cy[k] = (bi / w) | 0; cl[k] = LB[bi * 3]; ca[k] = LB[bi * 3 + 1]; cb[k] = LB[bi * 3 + 2]; }
@@ -260,40 +288,45 @@
       bad.forEach(a => { const j = bi2.get(a); let bc = -1, bv = 0; touch[j].forEach((v, c) => { if (v > bv && !(badSet.has(c) && sizes[c] <= sizes[a] && c !== a && false)) { bv = v; bc = c; } }); if (bc >= 0) newOwner.set(a, owner[bc]); });
       for (const p of fgI) { const a = comp[p]; if (newOwner.has(a)) cid[p] = newOwner.get(a); }
     }
-    // trozos demasiado estrechos para escribir un número: se pegan al vecino con el que más borde comparten
-    { const cellMm0 = Math.min(900 / w, 950 / h) * 0.21, rmin = 2.6 / cellMm0;
-      for (let round = 0; round < 4; round++) {
-        const dist = distance(cid, w, h), bd = new Map(), cnt = new Map();
-        for (const i of fgI) { const c = cid[i]; cnt.set(c, (cnt.get(c) || 0) + 1); if (dist[i] > (bd.get(c) || 0)) bd.set(c, dist[i]); }
+    }
+    // trozos demasiado pequeños o estrechos para escribir un número: se pegan al vecino con el que más borde comparten y más se parece en color
+    { const cellMm0 = Math.min(900 / w, 950 / h) * 0.21; let rmin = ((cfg.rmm || 5) / 2) / cellMm0;
+      for (let round = 0; round < 24; round++) {
+        const dist = distance(cid, w, h), bd = new Map(), cnt = new Map(), cs = new Map();
+        for (const i of fgI) { const c = cid[i]; cnt.set(c, (cnt.get(c) || 0) + 1); if (dist[i] > (bd.get(c) || 0)) bd.set(c, dist[i]);
+          if (!isLine[i]) { let e = cs.get(c); if (!e) { e = [0, 0, 0, 0]; cs.set(c, e); } e[0] += LB[i * 3]; e[1] += LB[i * 3 + 1]; e[2] += LB[i * 3 + 2]; e[3]++; } }
+        if (bd.size > cfg.n) rmin *= 1.18;
         const small = [...bd.keys()].filter(c => bd.get(c) / 3 + 0.5 < rmin);
-        if (!small.length) break;
+        if (!small.length) { if (bd.size <= cfg.n || round > 21) break; rmin *= 1.25; continue; }
+        const mean = c => { const e = cs.get(c); return e && e[3] ? [e[0] / e[3], e[1] / e[3], e[2] / e[3]] : [50, 0, 0]; };
         const touch = new Map(); small.forEach(c => touch.set(c, new Map()));
         for (const p of fgI) { const c = cid[p]; if (!touch.has(c)) continue; const x = p % w;
           for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1]) if (q >= 0 && isFg[q] && cid[q] !== c) { const tm = touch.get(c); tm.set(cid[q], (tm.get(cid[q]) || 0) + 1); } }
         const par = new Map(); const find = c => { while (par.has(c) && par.get(c) !== c) c = par.get(c); return c; };
-        small.sort((p, q) => cnt.get(p) - cnt.get(q)).forEach(c => { let bc = -1, bv = 0; touch.get(c).forEach((v, k) => { if (v > bv) { bv = v; bc = k; } }); if (bc >= 0 && find(bc) !== c) par.set(c, find(bc)); });
+        small.sort((p, q) => cnt.get(p) - cnt.get(q)).forEach(c => { let bc = -1, bv = -1; const mc = mean(c); touch.get(c).forEach((v, k) => { const sc = v / (1 + Math.sqrt(d2(mc, mean(k))) / 12); if (sc > bv) { bv = sc; bc = k; } }); if (bc >= 0 && find(bc) !== c) par.set(c, find(bc)); });
         for (const i of fgI) cid[i] = find(cid[i]);
+        if (round > 21) break;
       } }
     // numeración consecutiva de los trozos
     { const mp = new Map(); for (const i of fgI) { if (!mp.has(cid[i])) mp.set(cid[i], mp.size + 1); cid[i] = mp.get(cid[i]); } NP2 = mp.size; }
     // color de cada trozo: el medio de la imagen original bajo él -> lápiz más parecido
-    const sl = new Float64Array(NP + 1), sa = new Float64Array(NP + 1), sb = new Float64Array(NP + 1), sn = new Float64Array(NP + 1);
-    for (const i of fgI) { const c = cid[i]; if (!c) continue; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); sl[c] += l[0]; sa[c] += l[1]; sb[c] += l[2]; sn[c]++; }
-    const pen = new Uint8Array(NP + 1);
-    for (let c = 1; c <= NP; c++) pen[c] = sn[c] ? nearest([sl[c] / sn[c], sa[c] / sn[c], sb[c] / sn[c]], ALL) : 1;
+    const sl = new Float64Array(NP2 + 1), sa = new Float64Array(NP2 + 1), sb = new Float64Array(NP2 + 1), sn = new Float64Array(NP2 + 1);
+    for (const i of fgI) { const c = cid[i]; if (!c || isLine[i]) continue; const l = [LB[i * 3], LB[i * 3 + 1], LB[i * 3 + 2]]; sl[c] += l[0]; sa[c] += l[1]; sb[c] += l[2]; sn[c]++; }
+    const pen = new Uint8Array(NP2 + 1);
+    for (let c = 1; c <= NP2; c++) { if (!sn[c]) { pen[c] = 1; continue; } const ml = sl[c] / sn[c], ma = sa[c] / sn[c], mb = sb[c] / sn[c]; pen[c] = (ml > 90 && Math.hypot(ma, mb) < 12) ? 0 : nearest([ml, ma, mb], ALL); }
     const s = Math.min(900 / w, 950 / h), cellMm = s * 0.21;
-    const dist = distance(cid, w, h), best = new Int32Array(NP + 1).fill(-1), bdv = new Int32Array(NP + 1).fill(-1);
+    const dist = distance(cid, w, h), best = new Int32Array(NP2 + 1).fill(-1), bdv = new Int32Array(NP2 + 1).fill(-1);
     for (const i of fgI) { const c = cid[i]; if (c && dist[i] > bdv[c]) { bdv[c] = dist[i]; best[c] = i; } }
     const used = new Set(), labels = [], capCells = 7 / cellMm;
-    for (let c = 1; c <= NP; c++) {
-      if (best[c] < 0) continue; used.add(pen[c]);
+    for (let c = 1; c <= NP2; c++) {
+      if (best[c] < 0 || !pen[c]) continue; used.add(pen[c]);
       const rad = bdv[c] / 3 + 0.5, fs = Math.max(2, Math.min(rad * 1.5, capCells)) / (pen[c] > 9 ? 1.3 : 1);
       labels.push([(best[c] % w) + 0.5, Math.floor(best[c] / w) + 0.5, Math.round(fs * 10) / 10, pen[c]]);
     }
     // malla fina: bordes suaves (cada casilla se divide F x F; luego moda para redondear)
     const F = Math.max(3, Math.min(6, Math.ceil(cellMm / 0.4))), fw = w * F, fh = h * F, FID = new Uint16Array(fw * fh);
     for (let fy = 0; fy < fh; fy++) { const yy = Math.min(h - 1, (fy / F) | 0); for (let fx = 0; fx < fw; fx++) FID[fy * fw + fx] = cid[yy * w + Math.min(w - 1, (fx / F) | 0)]; }
-    { let A = FID, B = new Uint16Array(fw * fh); const cnt = new Uint16Array(NP + 1), R = Math.max(2, Math.round(F * 0.8));
+    { let A = FID, B = new Uint16Array(fw * fh); const cnt = new Uint16Array(NP2 + 1), R = Math.max(2, Math.round(F * 0.8));
       for (let pass = 0; pass < 2; pass++) {
         for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) {
           const y0 = Math.max(0, y - R), y1 = Math.min(fh - 1, y + R), x0 = Math.max(0, x - R), x1 = Math.min(fw - 1, x + R), seen = [];
@@ -337,7 +370,7 @@
       `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
       `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v5</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v6</text></svg>`;
   }
 
   // ---------- progreso ----------
