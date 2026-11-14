@@ -40,7 +40,7 @@
     ['Azul', '#3B82F6'], ['Celeste', '#38BDF8'], ['Verde', '#22C55E'], ['Marrón', '#A16207'], ['Gris', '#9CA3AF'], ['Negro', '#1F2937'],
     ['Verde claro', '#86EFAC'], ['Verde oscuro', '#15803D'], ['Azul oscuro', '#1E40AF'], ['Beige', '#FDE0B6']];
   // Niveles: W = casillas del lado largo, n = número aproximado de trozos
-  const LEVELS = { 1: { name: 'Fácil', W: 240, n: 20, rmm: 9 }, 2: { name: 'Medio', W: 240, n: 40, rmm: 6 }, 3: { name: 'Difícil', W: 240, n: 60, rmm: 4.5 } };
+  const LEVELS = { 1: { name: 'Fácil', W: 18, K: 7, mosaic: 1 }, 2: { name: 'Medio', W: 26, K: 8, mosaic: 1 }, 3: { name: 'Difícil', W: 34, K: 9, mosaic: 1 } };
 
   // ---------- color ----------
   const hex = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
@@ -141,6 +141,36 @@
     return m;
   }
 
+  // ---------- mosaico de cuadraditos con número ----------
+  function mosaic(px, mF, w, h, cfg) {
+    const n = w * h, ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
+    const fg = new Uint8Array(n), blank = new Uint8Array(n), idx = [], pts = [];
+    for (let i = 0; i < n; i++) {
+      if (mF[i] || px[i * 4 + 3] < 128) continue; fg[i] = 1;
+      const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
+      if (l[0] > 90 && Math.hypot(l[1], l[2]) < 12) { blank[i] = 1; continue; }     // blanco: se deja sin colorear
+      idx.push(i); pts.push(l);
+    }
+    const L = new Uint8Array(n);
+    if (pts.length) {
+      const cen = kmeans(pts, Math.min(cfg.K, pts.length)), pen = cen.map(c => nearest(c, ALL));
+      for (let j = 0; j < pts.length; j++) { let b = 0, bd = 1e9; for (let k = 0; k < cen.length; k++) { const dd = d2(pts[j], cen[k]); if (dd < bd) { bd = dd; b = k; } } L[idx[j]] = pen[b]; }
+    }
+    const s = Math.min(900 / w, 950 / h), cellMm = s * 0.21, used = new Set(), labels = [];
+    let d = '';
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const p = y * w + x; if (!fg[p]) continue;
+      if (L[p]) { used.add(L[p]); labels.push([x + 0.5, y + 0.5, L[p] > 9 ? 0.5 : 0.64, L[p]]); }
+      d += `M${x} ${y}h1M${x} ${y}v1`;
+      if (y === h - 1 || !fg[p + w]) d += `M${x} ${y + 1}h1`;
+      if (x === w - 1 || !fg[p + 1]) d += `M${x + 1} ${y}v1`;
+    }
+    const pv = document.createElement('canvas'); pv.width = w; pv.height = h; const pc = pv.getContext('2d'), im = pc.createImageData(w, h);
+    for (let i = 0; i < n; i++) { const c = L[i] ? hex(PAL[L[i]][1]) : [255, 255, 255]; im.data[i * 4] = c[0]; im.data[i * 4 + 1] = c[1]; im.data[i * 4 + 2] = c[2]; im.data[i * 4 + 3] = 255; }
+    pc.putImageData(im, 0, 0);
+    return { F: 1, w, h, s, cellMm, d, labels, used: [...used].sort((a, b) => a - b), zones: labels.length, preview: pv.toDataURL('image/png') };
+  }
+
   function convert(img, lv) {
     const cfg = LEVELS[lv];
     // se dibuja el premio entero en un lienzo de tamaño conocido (las imágenes vectoriales no admiten bien recortes directos)
@@ -197,6 +227,7 @@
       const ax = Math.min(aw - 1, Math.floor((sx + (x + 0.5) / w * sw) / iw * aw)), ay = Math.min(ah - 1, Math.floor((sy + (y + 0.5) / h * sh) / ih * ah));
       return !!mA[ay * aw + ax];
     });
+    if (cfg.mosaic) return mosaic(px, mF, w, h, cfg);
     const ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
     // 3) el dibujo sin color se parte en N trozos parecidos (semillas por k-means de posiciones + reparto por cercanía dentro de la figura)
     const fgI = []; for (let i = 0; i < n; i++) if (!mF[i] && px[i * 4 + 3] >= 128) fgI.push(i);
@@ -352,7 +383,7 @@
   const FONT = 'Arial, Helvetica, sans-serif';
   const esc = t => String(t).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
   function pageSvg(r, title, solution) {
-    const ox = 500 - r.w * r.s / 2, oy = 140 + (950 - r.h * r.s) / 2, sw = Math.round(Math.max(0.12, 0.35 / r.cellMm) * 100) / 100;
+    const ox = 500 - r.w * r.s / 2, oy = 140 + (950 - r.h * r.s) / 2, sw = Math.round(Math.max(0.05, 0.3 / r.cellMm) * 100) / 100;
     let g = '';
     if (solution) g += `<image href="${r.preview}" x="0" y="0" width="${r.w}" height="${r.h}" preserveAspectRatio="none" style="image-rendering:pixelated"/>`;
     g += `<g transform="scale(${(1 / r.F).toFixed(4)})"><path d="${r.d}" fill="none" stroke="#222" stroke-width="${Math.round(sw * r.F * 100) / 100}" stroke-linecap="square"/></g>`;
@@ -367,10 +398,10 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1414" width="1000" height="1414" preserveAspectRatio="xMidYMid meet">` +
       `<rect width="1000" height="1414" fill="#fff"/>` +
       `<text x="500" y="78" font-size="56" text-anchor="middle" font-family="${FONT}" font-weight="700" fill="#4338CA">${esc(title)}</text>` +
-      `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
+      `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada cuadradito con el color de su número. Sin número: en blanco.</text>` +
       `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v6</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v7</text></svg>`;
   }
 
   // ---------- progreso ----------
