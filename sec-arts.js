@@ -288,7 +288,7 @@
       `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
       `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v3</text></svg>`;
   }
 
   // ---------- progreso ----------
