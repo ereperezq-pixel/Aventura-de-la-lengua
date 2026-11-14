@@ -200,6 +200,15 @@
     const ALL = []; for (let k = 1; k < PAL.length; k++) ALL.push(k);
     // 3) el dibujo sin color se parte en N trozos parecidos (semillas por k-means de posiciones + reparto por cercanía dentro de la figura)
     const fgI = []; for (let i = 0; i < n; i++) if (!mF[i] && px[i * 4 + 3] >= 128) fgI.push(i);
+    // se quitan las manchitas sueltas (islas muy pequeñas separadas de la figura)
+    { const cm = new Int32Array(n).fill(-1), comps = []; const st = [];
+      for (const s0 of fgI) { if (cm[s0] >= 0) continue; const id = comps.length, mem = []; st.length = 0; st.push(s0); cm[s0] = id;
+        while (st.length) { const p = st.pop(); mem.push(p); const x = p % w;
+          const nb = [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1];
+          for (const q of nb) if (q >= 0 && cm[q] < 0 && !mF[q] && px[q * 4 + 3] >= 128) { cm[q] = id; st.push(q); } }
+        comps.push(mem); }
+      const big = Math.max(...comps.map(c => c.length)), keep = new Set(); comps.forEach(c => { if (c.length >= 0.04 * big) c.forEach(p => keep.add(p)); });
+      for (let k = fgI.length - 1; k >= 0; k--) if (!keep.has(fgI[k])) fgI.splice(k, 1); }
     let NP2 = 0; const NP = Math.max(1, Math.min(cfg.n, fgI.length >> 3));
     const sxs = new Float32Array(NP), sys = new Float32Array(NP);
     { let first = fgI[0]; sxs[0] = first % w; sys[0] = (first / w) | 0;
@@ -217,7 +226,7 @@
     }
     // reparto tipo "superpíxeles" (SLIC): los trozos son de tamaño parecido pero se pegan a los contornos y cambios de color del dibujo
     const cid = new Uint16Array(n), isFg = new Uint8Array(n), LB = new Float32Array(n * 3); fgI.forEach(i => { isFg[i] = 1; const l = lab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]); LB[i * 3] = l[0]; LB[i * 3 + 1] = l[1]; LB[i * 3 + 2] = l[2]; });
-    { const S = Math.sqrt(fgI.length / NP), mw = (cfg.m || 12) / S, sl0 = new Float64Array(NP), sa0 = new Float64Array(NP), sb0 = new Float64Array(NP);
+    { const S = Math.sqrt(fgI.length / NP), mw = (cfg.m || 16) / S, sl0 = new Float64Array(NP), sa0 = new Float64Array(NP), sb0 = new Float64Array(NP);
       const cx = Array.from(sxs), cy = Array.from(sys), cl = new Float64Array(NP), ca = new Float64Array(NP), cb = new Float64Array(NP);
       for (let k = 0; k < NP; k++) { let bi = fgI[0], bd = 1e9; for (const i of fgI) { const dd = ((i % w) - cx[k]) ** 2 + (((i / w) | 0) - cy[k]) ** 2; if (dd < bd) { bd = dd; bi = i; } } cx[k] = bi % w; cy[k] = (bi / w) | 0; cl[k] = LB[bi * 3]; ca[k] = LB[bi * 3 + 1]; cb[k] = LB[bi * 3 + 2]; }
       for (let it = 0; it < 10; it++) {
@@ -240,7 +249,7 @@
           if (p >= w && comp[p - w] < 0 && cid[p - w] === c) { comp[p - w] = id; st.push(p - w); } if (p < n - w && comp[p + w] < 0 && cid[p + w] === c) { comp[p + w] = id; st.push(p + w); } }
         sizes.push(cnt); owner.push(cid[s0]); }
       const bigOf = new Map(); sizes.forEach((sz, i) => { const o = owner[i]; if (!bigOf.has(o) || sz > sizes[bigOf.get(o)]) bigOf.set(o, i); });
-      const minSz = Math.max(4, 0.3 * fgI.length / NP), bad = []; sizes.forEach((sz, i) => { if (bigOf.get(owner[i]) !== i || sz < minSz) bad.push(i); });
+      const minSz = Math.max(4, 0.4 * fgI.length / NP), bad = []; sizes.forEach((sz, i) => { if (bigOf.get(owner[i]) !== i || sz < minSz) bad.push(i); });
       if (!bad.length) break;
       const badSet = new Set(bad), touch = bad.map(() => new Map()), bi2 = new Map(bad.map((b, j) => [b, j]));
       for (const p of fgI) { const a = comp[p]; if (!badSet.has(a)) continue; const j = bi2.get(a), x = p % w;
@@ -251,6 +260,20 @@
       bad.forEach(a => { const j = bi2.get(a); let bc = -1, bv = 0; touch[j].forEach((v, c) => { if (v > bv && !(badSet.has(c) && sizes[c] <= sizes[a] && c !== a && false)) { bv = v; bc = c; } }); if (bc >= 0) newOwner.set(a, owner[bc]); });
       for (const p of fgI) { const a = comp[p]; if (newOwner.has(a)) cid[p] = newOwner.get(a); }
     }
+    // trozos demasiado estrechos para escribir un número: se pegan al vecino con el que más borde comparten
+    { const cellMm0 = Math.min(900 / w, 950 / h) * 0.21, rmin = 2.6 / cellMm0;
+      for (let round = 0; round < 4; round++) {
+        const dist = distance(cid, w, h), bd = new Map(), cnt = new Map();
+        for (const i of fgI) { const c = cid[i]; cnt.set(c, (cnt.get(c) || 0) + 1); if (dist[i] > (bd.get(c) || 0)) bd.set(c, dist[i]); }
+        const small = [...bd.keys()].filter(c => bd.get(c) / 3 + 0.5 < rmin);
+        if (!small.length) break;
+        const touch = new Map(); small.forEach(c => touch.set(c, new Map()));
+        for (const p of fgI) { const c = cid[p]; if (!touch.has(c)) continue; const x = p % w;
+          for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p >= w ? p - w : -1, p < n - w ? p + w : -1]) if (q >= 0 && isFg[q] && cid[q] !== c) { const tm = touch.get(c); tm.set(cid[q], (tm.get(cid[q]) || 0) + 1); } }
+        const par = new Map(); const find = c => { while (par.has(c) && par.get(c) !== c) c = par.get(c); return c; };
+        small.sort((p, q) => cnt.get(p) - cnt.get(q)).forEach(c => { let bc = -1, bv = 0; touch.get(c).forEach((v, k) => { if (v > bv) { bv = v; bc = k; } }); if (bc >= 0 && find(bc) !== c) par.set(c, find(bc)); });
+        for (const i of fgI) cid[i] = find(cid[i]);
+      } }
     // numeración consecutiva de los trozos
     { const mp = new Map(); for (const i of fgI) { if (!mp.has(cid[i])) mp.set(cid[i], mp.size + 1); cid[i] = mp.get(cid[i]); } NP2 = mp.size; }
     // color de cada trozo: el medio de la imagen original bajo él -> lápiz más parecido
@@ -314,7 +337,7 @@
       `<text x="500" y="122" font-size="24" text-anchor="middle" font-family="${FONT}" fill="#475569">Colorea cada zona con el color de su número. Sin número: en blanco.</text>` +
       `<g transform="translate(${ox.toFixed(1)} ${oy.toFixed(1)}) scale(${r.s.toFixed(4)})">${g}</g>${leg}` +
       `<text x="60" y="1375" font-size="28" font-family="${FONT}" fill="#334155">Nombre: ____________________________</text>` +
-      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v4</text></svg>`;
+      `<text x="940" y="1375" font-size="22" text-anchor="end" font-family="${FONT}" fill="#94A3B8">El Mundo de Nublo · Arts v5</text></svg>`;
   }
 
   // ---------- progreso ----------
