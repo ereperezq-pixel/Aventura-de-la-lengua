@@ -187,9 +187,112 @@
           <div><h3>Bloque 2: Por 10, 100, 1000 y 11</h3><p style="color:#64748B;font-size:.85rem;">Añadir ceros y el truco del 11.</p></div>
         </div>
       </div>
+      <div class="game-choice-card" onclick="app.openSheet()">
+        <div style="display:flex;align-items:center;gap:12px;text-align:left;">
+          <img class="ck-thumb" data-chick="10" alt="Pollito con libro">
+          <div><h3>Bloque 3: La hoja de operaciones</h3><p style="color:#64748B;font-size:.85rem;">10 operaciones mezcladas para hacer en papel y corregir después.</p></div>
+        </div>
+      </div>
+    </div>
+    <div id="screen-ck-sheet" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <button class="btn btn-back" onclick="app.openKitchen()">⬅️ Volver a la cocina</button>
+        <span id="sh-counter" style="font-size:.85rem;color:#64748B;"></span>
+      </div>
+      <h2 style="font-size:1.6rem;margin:6px 0;">📝 La hoja de operaciones</h2>
+      <div id="sh-levels">
+        <p style="color:#64748B;margin-bottom:12px;">Los pollitos te dan 10 operaciones. Las copias en tu cuaderno, las resuelves con calma y después las corregimos juntos. ¡Elige el nivel!</p>
+        <div class="game-choice-card" onclick="app.shStart(1)"><h3>⭐ Fácil</h3><p style="color:#64748B;font-size:.85rem;">Casi todas por una cifra, algunas por 10 y 100, y una por 11.</p></div>
+        <div class="game-choice-card" onclick="app.shStart(2)"><h3>⭐⭐ Medio</h3><p style="color:#64748B;font-size:.85rem;">Mezcla de todo: por una cifra, por 10, 100, 1000 y por 11.</p></div>
+        <div class="game-choice-card" onclick="app.shStart(3)"><h3>⭐⭐⭐ Difícil</h3><p style="color:#64748B;font-size:.85rem;">Más por 1000 y por 11, y las de una cifra con llevadas.</p></div>
+      </div>
+      <div id="sh-list" class="hidden">
+        <p style="color:#92400E;font-weight:700;margin-bottom:8px;">✍️ Copia estas 10 operaciones en tu cuaderno y resuélvelas. Cuando termines, pulsa el botón.</p>
+        <div id="sh-ops" style="background:#fff;border:2px dashed #FCD34D;border-radius:16px;padding:10px 16px;"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="app.shCheck()">✅ ¡Ya las he resuelto! Vamos a corregir</button>
+      </div>
+      <div id="sh-check" class="hidden">
+        <div style="height:10px;background:#FEF3C7;border-radius:8px;overflow:hidden;margin-bottom:10px;"><div id="sh-progress" style="height:100%;width:0;background:#F59E0B;"></div></div>
+        <div class="ck-compare-card" style="flex-direction:column;gap:2px;"><span id="sh-q" class="ck-num" style="font-size:clamp(2rem,10vw,2.8rem);"></span></div>
+        <div id="sh-ask">
+          <h3 style="font-size:1.2rem;margin:12px 0 4px;">¿Te salió ese resultado?</h3>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-green" style="font-size:1rem;" onclick="app.shAnswer(true)">😊 ¡Sí, me salió igual!</button>
+            <button class="btn" style="background:#F87171;font-size:1rem;" onclick="app.shAnswer(false)">✏️ No, me salió distinto</button>
+          </div>
+        </div>
+        <div id="sh-fb" class="hidden feedback-box"></div>
+        <div id="sh-sol" class="hidden"></div>
+        <button id="sh-next" class="btn btn-primary hidden" onclick="app.shNext()">Siguiente ➡️</button>
+      </div>
+      <div id="sh-end" class="hidden"></div>
     </div>` });
       document.querySelectorAll('#screen-ck-kitchen img[data-chick]').forEach(img => { img.src = CHICKS[Number(img.dataset.chick)] || CHICKS[0]; });
       document.querySelectorAll('.world-card').forEach(kc => { if ((kc.getAttribute('onclick') || '').indexOf("startChickGame('mult')") >= 0) { kc.setAttribute('onclick', 'app.openKitchen()'); const p = kc.querySelector('p'); if (p) p.textContent = '2 bloques · Multiplicaciones con los pollitos'; } });
+
+
+      // ---- Bloque 3: la hoja de operaciones (10 mezcladas, se escriben en papel y se corrigen una a una) ----
+      const SH_PLAN = {
+        1: ['u', 'u', 'u', 'u', 'u', 'u', 10, 10, 100, 11],
+        2: ['u', 'u', 'u', 'u', 10, 100, 100, 1000, 11, 11],
+        3: ['u', 'u', 'u', 100, 1000, 1000, 11, 11, 11, 11]
+      };
+      function shOps(level) {
+        const used = new Set(), ops = [];
+        shuffle(SH_PLAN[level]).forEach((k, idx) => {
+          ops.push(k === 'u' ? multPair(used) : multPair2({ seq: [k], i: idx % 2, used }));
+        });
+        return ops;
+      }
+      const shShow = id => ['sh-levels', 'sh-list', 'sh-check', 'sh-end'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+      Object.assign(app, {
+        openSheet() { stopVoice(); showOnly('screen-ck-sheet'); shShow('sh-levels'); $('sh-counter').textContent = ''; app.updateSharedRewards(); },
+        shStart(level) {
+          app.sh = { level, ops: shOps(level), i: 0, score: 0, answered: false };
+          $('sh-ops').innerHTML = app.sh.ops.map((m, k) => `<div style="display:flex;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid #FDE68A;font-size:1.5rem;font-weight:700;color:#78350F;"><span style="min-width:2.2rem;color:#B45309;">${k + 1})</span><span>${m.a} × ${m.n}</span></div>`).join('');
+          $('sh-counter').textContent = ['', 'Fácil', 'Medio', 'Difícil'][level];
+          shShow('sh-list'); window.scrollTo({ top: 0 });
+        },
+        shCheck() { shShow('sh-check'); app.shLoad(); window.scrollTo({ top: 0 }); },
+        shLoad() {
+          const s = app.sh, m = s.ops[s.i]; s.answered = false;
+          $('sh-counter').textContent = `Operación ${s.i + 1} de ${s.ops.length}`;
+          $('sh-progress').style.width = `${(s.i / s.ops.length) * 100}%`;
+          $('sh-q').textContent = `${m.a} × ${m.n} = ${m.a * m.n}`;
+          $('sh-ask').classList.remove('hidden'); $('sh-fb').className = 'hidden feedback-box'; $('sh-fb').innerHTML = '';
+          $('sh-sol').classList.add('hidden'); $('sh-sol').innerHTML = ''; $('sh-next').classList.add('hidden');
+        },
+        shAnswer(ok) {
+          const s = app.sh; if (s.answered) return; s.answered = true;
+          const m = s.ops[s.i], r = m.a * m.n, fb = $('sh-fb');
+          $('sh-ask').classList.add('hidden'); fb.classList.remove('hidden');
+          if (ok) {
+            s.score++; app.awardSharedReward(1);
+            fb.className = 'feedback-box feedback-correct';
+            fb.innerHTML = `<div style="font-size:2.2rem;">🐥🎉🧁</div><h3>${PRAISE[rnd(0, PRAISE.length - 1)]}</h3><p>¡Has hecho bien <b>${m.a} × ${m.n} = ${r}</b>!</p>`;
+            if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: .6 }, zIndex: 100000 });
+            dropChicks(3);
+          } else {
+            fb.className = 'feedback-box feedback-wrong';
+            fb.innerHTML = `<div style="font-size:2rem;">🐣💡</div><h3>¡Casi, pollito! Vamos a aprenderlo</h3><p>El resultado era <b>${m.a} × ${m.n} = ${r}</b>.</p>`;
+            const sol = $('sh-sol'); sol.innerHTML = multSolutionHtml(m) + multWhyHtml(m); sol.classList.remove('hidden');
+          }
+          $('sh-next').textContent = s.i + 1 >= s.ops.length ? 'Ver mi resultado 🏆' : 'Siguiente ➡️'; $('sh-next').classList.remove('hidden');
+          fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+        shNext() {
+          const s = app.sh; s.i++;
+          if (s.i < s.ops.length) { app.shLoad(); window.scrollTo({ top: 0 }); return; }
+          const pct = s.score / s.ops.length;
+          const title = pct >= .9 ? '¡Súper pollito matemático!' : pct >= .6 ? '¡Muy buen trabajo, pollito!' : '¡Sigue practicando, pollito valiente!';
+          $('sh-counter').textContent = 'Fin';
+          $('sh-end').innerHTML = `<div class="feedback-box feedback-correct"><div style="font-size:2.6rem;">🐥🏆🌻</div><h3>${title}</h3><p>Has acertado ${s.score} de ${s.ops.length} operaciones.</p><p style="font-size:.92rem;margin-top:6px;">¡Cada acierto cuenta! Con 8 o más ganas un premio.</p>${pct >= .8 ? app.prizeBoxHtml(app.awardPrize('chicks')) : ''}</div>
+            <button class="btn btn-green" style="margin-top:12px;" onclick="app.shStart(app.sh.level)">Otra hoja nueva 🔁</button>
+            <button class="btn btn-back" style="margin-top:8px;" onclick="app.openSheet()">Cambiar de nivel</button>`;
+          shShow('sh-end'); window.scrollTo({ top: 0 }); dropChicks(4);
+          if (pct >= .8 && typeof confetti === 'function') confetti({ particleCount: 150, spread: 90, origin: { y: .5 }, zIndex: 100000 });
+        }
+      });
 
       // ---- Celebración y ánimo ----
       function dropChicks(n = 2) {
