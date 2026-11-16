@@ -12,12 +12,15 @@
       const AREA_ORDER = ['chicks', 'santa', 'nublo', 'dragons'];
       const MSG = 'Gracias a todo lo que has aprendido, y a lo que aprenderás en el futuro, podrás elegir la profesión que más te guste: médica, astronauta, cocinero, piloto, artista, científica… Si te esfuerzas y sigues aprendiendo, ¡puedes dedicarte a lo que sueñes!';
       // ===== JUEGOS CON DIPLOMA =====
-      // Cada juego tiene su propio diploma: se consigue ganando TODOS los premios (tantos como imágenes tiene su colección) jugando a ese juego.
+      // Cada juego (o bloque) tiene su propio diploma: se consigue ganando NEED premios jugando a ese juego (un premio = acertar al menos el 80% de una partida).
+      const NEED = 5;
       // Para un juego nuevo basta con añadir una línea aquí (o llamar a app.registerGame({...})): id, col (colección de premios), name, icon y test()
       // (test devuelve true cuando la pantalla de ese juego está abierta).
       const vis = id => { const e = document.getElementById(id); return !!e && !e.classList.contains('hidden'); };
       const GAMES = [
-        { id: 'mult', col: 'chicks', name: 'La Cocina de las Tablas', icon: '🧁', test: () => vis('screen-ck-game') && app.ck && app.ck.mode === 'mult' },
+        { id: 'mult', col: 'chicks', name: 'La Cocina · Bloque 1: Por una cifra', icon: '🧁', test: () => vis('screen-ck-game') && app.ck && app.ck.mode === 'mult' },
+        { id: 'mult2', col: 'chicks', name: 'La Cocina · Bloque 2: Por 10, 100, 1000 y 11', icon: '🧮', test: () => vis('screen-ck-game') && app.ck && app.ck.mode === 'mult2' },
+        { id: 'sheet', col: 'chicks', name: 'La Cocina · Bloque 3: La hoja de operaciones', icon: '📝', test: () => vis('screen-ck-sheet') },
         { id: 'compare', col: 'chicks', name: 'Mayor, menor o igual', icon: '🚀', test: () => vis('screen-ck-game') && app.ck && app.ck.mode === 'compare' },
         { id: 'order', col: 'chicks', name: 'La Carrera de los Pollitos', icon: '🚲', test: () => vis('screen-ck-game') && app.ck && app.ck.mode === 'order' },
         { id: 'abn', col: 'chicks', name: 'El Cuaderno ABN', icon: '📒', test: () => vis('screen-abn-game') },
@@ -26,8 +29,8 @@
         { id: 'bone', col: 'dragons', name: 'Los Huesos del Cuerpo', icon: '🦴', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'bone' },
         { id: 'musc', col: 'dragons', name: 'Los Músculos del Cuerpo', icon: '💪', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'musc' },
         { id: 'vert', col: 'dragons', name: 'Vertebrados e Invertebrados', icon: '🐾', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'vert' },
-        { id: 'libro', col: 'nublo', need: () => (window.NUBLO_BOOK || []).length, name: 'Las Aventuras de Nublo', icon: '📚', test: () => vis('screen-libro-game') },
-        { id: 'world', col: 'dragons', need: 15, name: 'El Gran Safari de las Curiosidades', icon: '🧭', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'world' },
+        { id: 'libro', col: 'nublo', need: () => Math.min(NEED, (window.NUBLO_BOOK || []).length), name: 'Las Aventuras de Nublo', icon: '📚', test: () => vis('screen-libro-game') },
+        { id: 'world', col: 'dragons', name: 'El Gran Safari de las Curiosidades', icon: '🧭', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'world' },
         { id: 'quiz', col: 'dragons', name: 'El Quiz de los Animales', icon: '🧠', test: () => vis('screen-dr-game') && app.dr && app.dr.kind === 'quiz' }
       ];
       window.NUBLO_GAMES = GAMES;
@@ -39,7 +42,7 @@
       function info(id) {
         if (id === 'all') return { all: true, n: 0 };
         const g = GAME_BY_ID(id);
-        if (g) { const A = AREAS[g.col]; return { game: g, col: g.col, area: A.area, icon: g.icon, name: g.name, lead: A.lead, n: (typeof g.need === 'function' ? g.need() : g.need) || COLS[g.col].items.length }; }
+        if (g) { const A = AREAS[g.col]; return { game: g, col: g.col, area: A.area, icon: g.icon, name: g.name, lead: A.lead, n: (typeof g.need === 'function' ? g.need() : g.need) || NEED }; }
         const A = AREAS[id]; return { legacy: true, col: id, area: A.area, icon: A.icon, name: A.place, lead: A.lead, n: COLS[id].items.length };
       }
       const LIGADA_B64 = '';
