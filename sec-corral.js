@@ -84,8 +84,65 @@
         }
         const t = rnd(1, 9), u = rnd(1, 9), n = rnd(2, 9); return { a: t * 10 + u, n, t, u };
       }
+      // ---- Bloque 2: multiplicar por 10, 100, 1000 (un 1 seguido de ceros) y por 11 ----
+      function multPair2(c) {
+        const k = c.seq[c.i % c.seq.length], used = c.used;
+        for (let t = 0; t < 200; t++) {
+          let a, m;
+          if (k === 11) {
+            // la mitad con suma de cifras menor que 10 (truco de las cifras) y la mitad con llevada
+            const wantSmall = c.i % 2 === 0; a = rnd(12, 98);
+            const s = Math.floor(a / 10) + (a % 10);
+            if (a % 10 === 0 || (s < 10) !== wantSmall) continue;
+            m = { kind: 'eleven', a, n: 11 };
+          } else {
+            const z = String(k).length - 1;
+            a = (z < 3 && Math.random() < .25) ? rnd(101, 999) : (Math.random() < .3 ? rnd(1, 9) * 10 : rnd(2, 99));
+            m = { kind: 'zeros', a, n: k, z };
+          }
+          const key = a + 'x' + m.n; if (used.has(key)) continue; used.add(key); return m;
+        }
+        return { kind: 'zeros', a: 35, n: 10, z: 1 };
+      }
+      function multSolutionHtml2(m) {
+        const r = m.a * m.n;
+        if (m.kind === 'zeros') {
+          const zeros = '0'.repeat(m.z), nm = m.n === 10 ? 'diez' : m.n === 100 ? 'cien' : 'mil';
+          return `<div class="ck-mult-sol">
+          <h3>🐥 Así lo hacen los pollitos</h3>
+          <p class="ck-mstep">1️⃣ Multiplicar por <b>${m.n}</b> es poner <b>${m.z} cero${m.z > 1 ? 's' : ''}</b> al final del número (${m.n} tiene ${m.z} cero${m.z > 1 ? 's' : ''}).</p>
+          <p class="ck-mstep">2️⃣ Cogemos el número: <b>${m.a}</b></p>
+          <p class="ck-mstep">3️⃣ Le añadimos ${m.z} cero${m.z > 1 ? 's' : ''}: <b>${m.a}<span class="ck-m10">${zeros}</span></b></p>
+          ${m.a % 10 === 0 ? `<p class="ck-mstep">⚠️ ${m.a} ya acababa en cero: nos quedamos con ese cero y añadimos los nuevos.</p>` : ''}
+          <p class="ck-mstep">💡 Cada cifra sube ${m.z} lugar${m.z > 1 ? 'es' : ''}: las unidades pasan a ${m.z === 1 ? 'decenas' : m.z === 2 ? 'centenas' : 'unidades de millar'}, y así todas.</p>
+          <div class="ck-mult-total">${m.a} × ${m.n} = ${r}</div>
+        </div>`;
+        }
+        const t10 = m.a * 10, d1 = Math.floor(m.a / 10), d2 = m.a % 10, sum = d1 + d2;
+        return `<div class="ck-mult-sol">
+          <h3>🐥 Así lo hacen los pollitos</h3>
+          <p class="ck-mstep">1️⃣ Multiplicar por 11 es multiplicar por 10 y sumar el número una vez más: <b>${m.a} × 11 = ${m.a} × 10 + ${m.a}</b></p>
+          <p class="ck-mstep">2️⃣ Por 10: añadimos un cero → <b>${m.a} × 10 = ${t10}</b></p>
+          <p class="ck-mstep">3️⃣ Sumamos ${m.a} una vez más → <b>${t10} + ${m.a} = ${r}</b></p>
+          ${sum < 10 ? `<p class="ck-mstep">⭐ Truco: separa las cifras (${d1} y ${d2}) y pon su suma en medio: <b>${d1} (${d1}+${d2}) ${d2} = ${d1}${sum}${d2}</b></p>` : `<p class="ck-mstep">⭐ Ojo: ${d1}+${d2} = ${sum} pasa de 9, así que el truco de las cifras es más difícil. ¡Mejor usa ${m.a} × 10 + ${m.a}!</p>`}
+          <div class="ck-mult-total">${m.a} × 11 = ${r}</div>
+        </div>`;
+      }
+      function multWhyHtml2(m) {
+        const r = m.a * m.n; let tips;
+        if (m.kind === 'zeros') {
+          const bad = m.a * (m.n / 10), wrongSame = String(m.a) + '0'.repeat(Math.max(0, m.z - 1));
+          tips = [`Cuenta los ceros de ${m.n}: tiene <b>${m.z}</b>. Hay que añadir ${m.z} cero${m.z > 1 ? 's' : ''} a ${m.a}.`];
+          if (m.z > 1) tips.push(`Si te ha salido <b>${wrongSame}</b>, te ha faltado algún cero.`);
+          tips.push(`Comprueba: ${m.a} con ${m.z} cero${m.z > 1 ? 's' : ''} detrás se lee <b>${r}</b>.`);
+        } else {
+          tips = [`Primero ${m.a} × 10 = ${m.a * 10} (un cero detrás) y después le sumas ${m.a}: <b>${m.a * 10} + ${m.a} = ${r}</b>.`, `Si te ha salido <b>${m.a * 10}</b>, solo has multiplicado por 10: falta sumar ${m.a} una vez más.`, `Si te ha salido <b>${m.a * 2}</b>, has hecho ${m.a} + ${m.a}: ¡es por 11, no por 2!`];
+        }
+        return `<p>El resultado es <b>${r}</b>.</p><ul class="ck-why">${tips.map(x => `<li>${x}</li>`).join('')}</ul>`;
+      }
       const plus = (d, n) => Array(n).fill(d).join(' + ');
       function multSolutionHtml(m) {
+        if (m.kind) return multSolutionHtml2(m);
         const ts = m.t * m.n, us = m.u * m.n, tv = ts * 10, r = m.a * m.n;
         const rows = d => Array(m.n).fill(`<div class="ck-mrow">${d}</div>`).join('');
         return `<div class="ck-mult-sol">
@@ -102,6 +159,7 @@
         </div>`;
       }
       function multWhyHtml(m) {
+        if (m.kind) return multWhyHtml2(m);
         const ts = m.t * m.n, us = m.u * m.n, tv = ts * 10, r = m.a * m.n;
         const tips = [`Las decenas suman ${ts}, pero cada decena vale 10: son ${ts} decenas = <b>${tv}</b>, no ${ts}.`];
         if (us >= 10) tips.push(`Las unidades suman ${us}. ¡Es normal que pasen de 9! No hay que "llevarse" nada: se suman tal cual, ${tv} + ${us}.`);
@@ -109,6 +167,29 @@
         tips.push(`Para comprobarlo: ${m.n <= 4 ? plus(m.a, m.n) : m.a + ' repetido ' + m.n + ' veces'} = ${r}.`);
         return `<p>El resultado es <b>${r}</b> porque ${tv} + ${us} = ${r}.</p><ul class="ck-why">${tips.map(t => `<li>${t}</li>`).join('')}</ul>`;
       }
+
+      // La Cocina de las Tablas es ahora un bloque con varios juegos dentro
+      registrarSeccion({ pantallas: `    <!-- ===== LA COCINA DE LAS TABLAS (bloque con varios juegos) ===== -->
+    <div id="screen-ck-kitchen" class="hidden">
+      <div style="display:flex;justify-content:flex-start;margin-bottom:10px;"><button class="btn btn-back" onclick="app.openChickMenu()">⬅️ Volver al corral</button></div>
+      <img class="ck-mascot ck-medium" data-chick="7" alt="Pollito cocinero">
+      <h2 style="font-size:1.7rem;margin:8px 0;">🧁 La Cocina de las Tablas</h2>
+      <p style="color:#64748B;margin-bottom:12px;">Elige un bloque de multiplicaciones.</p>
+      <div class="game-choice-card" onclick="app.startChickGame('mult')">
+        <div style="display:flex;align-items:center;gap:12px;text-align:left;">
+          <img class="ck-thumb" data-chick="7" alt="Pollito cocinero">
+          <div><h3>Bloque 1: Por una cifra</h3><p style="color:#64748B;font-size:.85rem;">Multiplicaciones con el método de los pollitos.</p></div>
+        </div>
+      </div>
+      <div class="game-choice-card" onclick="app.startChickGame('mult2')">
+        <div style="display:flex;align-items:center;gap:12px;text-align:left;">
+          <img class="ck-thumb" data-chick="5" alt="Pollito matemático">
+          <div><h3>Bloque 2: Por 10, 100, 1000 y 11</h3><p style="color:#64748B;font-size:.85rem;">Añadir ceros y el truco del 11.</p></div>
+        </div>
+      </div>
+    </div>` });
+      document.querySelectorAll('#screen-ck-kitchen img[data-chick]').forEach(img => { img.src = CHICKS[Number(img.dataset.chick)] || CHICKS[0]; });
+      document.querySelectorAll('.world-card').forEach(kc => { if ((kc.getAttribute('onclick') || '').indexOf("startChickGame('mult')") >= 0) { kc.setAttribute('onclick', 'app.openKitchen()'); const p = kc.querySelector('p'); if (p) p.textContent = '2 bloques · Multiplicaciones con los pollitos'; } });
 
       // ---- Celebración y ánimo ----
       function dropChicks(n = 2) {
@@ -154,6 +235,7 @@
 
         enterChickAdventure() { app.currentSectionKey = null; app.openChickMenu(); },
         openChickMenu() { stopVoice(); showOnly('screen-ck-menu'); app.updateChickPrizeCount(); $('ck-soon-note').classList.add('hidden'); app.updateSharedRewards(); },
+        openKitchen() { stopVoice(); showOnly('screen-ck-kitchen'); app.updateSharedRewards(); },
         openChickNumbers() { stopVoice(); showOnly('screen-ck-numbers'); app.updateSharedRewards(); },
         showChickSoon() { const n = $('ck-soon-note'); n.classList.remove('hidden'); n.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); },
 
@@ -251,8 +333,9 @@
           app.ck = { mode, used: new Set(), total: mode === 'order' ? 6 : 10, i: 0, score: 0, answered: false, finished: false, chicks: shuffle([...Array(CHICKS.length).keys()]) };
           showOnly('screen-ck-game');
           const back = $('ck-back');
-          if (mode === 'mult') { back.textContent = '⬅️ Volver al corral'; back.onclick = () => app.openChickMenu(); }
+          if (mode === 'mult' || mode === 'mult2') { back.textContent = '⬅️ Volver a la cocina'; back.onclick = () => app.openKitchen(); }
           else { back.textContent = '⬅️ Menú de juegos'; back.onclick = () => app.openChickNumbers(); }
+          if (mode === 'mult2') app.ck.seq = shuffle([10, 10, 100, 100, 1000, 1000, 11, 11, 11, 11]);
           app.loadChickRound();
         },
 
@@ -273,10 +356,13 @@
             $('ck-a').innerHTML = digitsHtml(c.a); $('ck-b').innerHTML = digitsHtml(c.b);
             const slot = $('ck-slot'); slot.textContent = '?'; slot.className = 'ck-slot';
             document.querySelectorAll('.ck-sign').forEach(b => { b.disabled = false; b.className = 'ck-sign'; });
-          } else if (c.mode === 'mult') {
-            c.m = multPair(c.used);
-            $('ck-title').textContent = '🧁 La Cocina de las Tablas';
+          } else if (c.mode === 'mult' || c.mode === 'mult2') {
+            const two = c.mode === 'mult2';
+            c.m = two ? multPair2(c) : multPair(c.used);
+            $('ck-title').textContent = two ? '🧁 Cocina · Por 10, 100, 1000 y 11' : '🧁 La Cocina de las Tablas';
             $('ck-instruction').textContent = 'Haz esta multiplicación en tu cuaderno.';
+            { const sm = document.querySelector('#ck-mult small'); if (sm) sm.textContent = two ? '✍️ Resuélvela en tu cuaderno y, cuando termines, pulsa Resolver.' : '✍️ Resuélvela en tu cuaderno con el método de los pollitos y, cuando termines, pulsa Resolver.';
+              $('ck-mult-tip').textContent = !two ? '🐥 Recuerda: escribe cada cifra tantas veces como indica el número de abajo y suma las decenas y las unidades por separado.' : c.m.kind === 'zeros' ? '🐥 Recuerda: multiplicar por 10, 100 o 1000 es añadir tantos ceros como tiene ese número.' : '🐥 Recuerda: por 11 es lo mismo que por 10 y sumar el número una vez más.'; }
             $('ck-compare').classList.add('hidden'); $('ck-order').classList.add('hidden'); $('ck-mult').classList.remove('hidden');
             $('ck-mult-q').textContent = `${c.m.a} × ${c.m.n} = ?`;
             $('ck-mult-solve').classList.remove('hidden'); $('ck-mult-tip').classList.remove('hidden');
@@ -309,7 +395,7 @@
           const c = app.ck; if (!window.speechSynthesis) return;
           let text;
           if (c.mode === 'compare') text = `${words(c.a)}. Y ${words(c.b)}.`;
-          else if (c.mode === 'mult') text = `${words(c.m.a)} por ${words(c.m.n)}.`;
+          else if (c.mode === 'mult' || c.mode === 'mult2') text = `${words(c.m.a)} por ${words(c.m.n)}.`;
           else text = c.nums.map(words).join('. ');
           stopVoice();
           const u = new SpeechSynthesisUtterance(text); u.lang = 'es-ES'; u.rate = .85;
