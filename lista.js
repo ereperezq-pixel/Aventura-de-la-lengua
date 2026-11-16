@@ -4,12 +4,12 @@ self.LISTA = {
   estilos: ['nucleo-fuente.css', 'nucleo-estilos.css', 'sec-arts.css'],
   scripts: [
     // contenido (imágenes y datos)
-    'nucleo-imagenes.js', 'dat-pegatinas.js', 'dat-reino.js', 'dat-nublo-cap1.js',
+    'nucleo-imagenes.js', 'dat-pegatinas.js', 'dat-reino.js', 'dat-rangos.js', 'dat-nublo-cap1.js',
     // núcleo
     'nucleo-arranque.js', 'nucleo-app.js', 'nucleo-errores.js',
     // secciones
     'sec-corral.js', 'sec-dragones.js', 'sec-isla.js', 'sec-abn.js', 'sec-nublo.js', 'sec-diplomas.js', 'sec-arts.js',
     // final
-    'nucleo-final.js', 'nucleo-pwa.js'
+    'nucleo-final.js', 'nucleo-rango.js', 'nucleo-pwa.js'
   ]
 };
