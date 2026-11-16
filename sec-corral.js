@@ -209,7 +209,8 @@
       <div id="sh-list" class="hidden">
         <p style="color:#92400E;font-weight:700;margin-bottom:8px;">✍️ Copia estas 10 operaciones en tu cuaderno y resuélvelas. Cuando termines, pulsa el botón.</p>
         <div id="sh-ops" style="background:#fff;border:2px dashed #FCD34D;border-radius:16px;padding:10px 16px;"></div>
-        <button class="btn btn-primary" style="margin-top:12px;" onclick="app.shCheck()">✅ ¡Ya las he resuelto! Vamos a corregir</button>
+        <button class="btn btn-purple" style="margin-top:12px;" onclick="app.shPrint()">🖨️ Imprimir la hoja (A4)</button>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="app.shCheck()">✅ ¡Ya las he resuelto! Vamos a corregir</button>
       </div>
       <div id="sh-check" class="hidden">
         <div style="height:10px;background:#FEF3C7;border-radius:8px;overflow:hidden;margin-bottom:10px;"><div id="sh-progress" style="height:100%;width:0;background:#F59E0B;"></div></div>
@@ -291,6 +292,44 @@
             <button class="btn btn-back" style="margin-top:8px;" onclick="app.openSheet()">Cambiar de nivel</button>`;
           shShow('sh-end'); window.scrollTo({ top: 0 }); dropChicks(4);
           if (pct >= .8 && typeof confetti === 'function') confetti({ particleCount: 150, spread: 90, origin: { y: .5 }, zIndex: 100000 });
+        }
+      });
+
+
+      // ---- Imprimir la hoja de operaciones (A4, con marco de pollitos de los trofeos) ----
+      { const st = document.createElement('style');
+        st.textContent = '#sh-print{display:none}@media print{@page{size:A4 portrait;margin:0}body.sh-printing > *:not(#sh-print){display:none !important}body.sh-printing{background:#fff !important;margin:0 !important;padding:0 !important}body.sh-printing > #sh-print{display:block !important;width:210mm;height:297mm}body.sh-printing #sh-print svg{display:block;width:210mm;height:297mm}}';
+        document.head.appendChild(st); }
+      function shSheetSvg(s) {
+        const col = (window.NUBLO_COLLECTIONS && window.NUBLO_COLLECTIONS.chicks && window.NUBLO_COLLECTIONS.chicks.items) || CHICKS, imgs = col.slice(0, 16), S = 88, F = 'Arial, Helvetica, sans-serif';
+        const defs = imgs.map((src, i) => `<image id="shc${i}" href="${src}" width="${S}" height="${S}"/>`).join('');
+        let k = 0, uses = ''; const put = (x, y) => { uses += `<use href="#shc${k % imgs.length}" x="${x}" y="${y}"/>`; k++; };
+        const nx = 10, gx = (1000 - 2 * 16 - S) / (nx - 1), ny = 13, gy = (1414 - 2 * 16 - S) / (ny - 1);
+        for (let i = 0; i < nx; i++) put(16 + i * gx, 16);                       // arriba
+        for (let j = 1; j < ny - 1; j++) put(1000 - 16 - S, 16 + j * gy);       // derecha
+        for (let i = nx - 1; i >= 0; i--) put(16 + i * gx, 1414 - 16 - S);       // abajo
+        for (let j = ny - 2; j >= 1; j--) put(16, 16 + j * gy);                 // izquierda
+        let cells = ''; const cw = 360, ch = 186, x0 = 130 + (740 - 2 * cw - 20) / 2, y0 = 330;
+        s.ops.forEach((m, i) => {
+          const x = x0 + (i % 2) * (cw + 20), y = y0 + Math.floor(i / 2) * (ch + 12);
+          cells += `<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="16" fill="#fff" stroke="#F59E0B" stroke-width="3"/>` +
+            `<text x="${x + 18}" y="${y + 48}" font-size="30" font-weight="700" fill="#B45309" font-family="${F}">${i + 1})</text>` +
+            `<text x="${x + 88}" y="${y + 50}" font-size="44" font-weight="700" fill="#78350F" font-family="${F}">${m.a} × ${m.n}</text>`;
+        });
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1414" width="1000" height="1414" preserveAspectRatio="xMidYMid meet"><rect width="1000" height="1414" fill="#fff"/><defs>${defs}</defs>${uses}` +
+          `<text x="500" y="168" font-size="54" text-anchor="middle" font-weight="700" fill="#B45309" font-family="${F}">La hoja de operaciones</text>` +
+          `<text x="500" y="212" font-size="28" text-anchor="middle" fill="#64748B" font-family="${F}">Cocina de las Tablas · Nivel ${['', 'Fácil', 'Medio', 'Difícil'][s.level]}</text>` +
+          `<text x="130" y="274" font-size="26" fill="#334155" font-family="${F}">Nombre: ______________________</text><text x="870" y="274" font-size="26" text-anchor="end" fill="#334155" font-family="${F}">Fecha: ____________</text>` +
+          `<text x="500" y="312" font-size="22" text-anchor="middle" fill="#64748B" font-family="${F}">Resuelve cada operación en su cuadro.</text>` + cells + `</svg>`;
+      }
+      Object.assign(app, {
+        shPrint() {
+          if (!app.sh) return;
+          let el = $('sh-print'); if (!el) { el = document.createElement('div'); el.id = 'sh-print'; document.body.appendChild(el); }
+          el.innerHTML = shSheetSvg(app.sh); document.body.classList.add('sh-printing');
+          const end = () => document.body.classList.remove('sh-printing');
+          window.addEventListener('afterprint', end, { once: true });
+          setTimeout(() => { try { window.print(); } catch (e) { end(); } }, 120);
         }
       });
 
