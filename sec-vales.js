@@ -1,24 +1,25 @@
-/* Vales: la tienda de vales. Con 100 estrellas se canjea un vale (elegir la cena, el postre, la excursión...).
+/* Vales: la tienda de vales. Cada vale tiene su precio en estrellas (elegir la cena, el postre, la excursión...).
    Los vales canjeados quedan en "Mis vales" hasta que un adulto los marca como usados con la clave.
    Gastar estrellas NO baja el rango de Nublo (el rango cuenta las estrellas ganadas en total).
    Para cambiar los vales o los precios basta con editar la lista VALES de abajo. */
 (function () {
   const $ = id => document.getElementById(id);
-  const PRECIO = 100;                 // estrellas por vale (cada vale puede llevar su propio "precio")
+  const PRECIO = 100;                 // precio por defecto (cada vale lleva su propio "precio" en la lista)
+  const ESPERA = 3;                   // para repetir un vale hay que haber canjeado antes al menos ESPERA vales distintos
   const CLAVE = '4321';               // clave de adultos para marcar un vale como usado (la misma que la de los premios)
   const VALES = [
-    { id: 'cena', icon: '🍽️', name: 'Elegir la cena', desc: 'Hoy cenamos lo que tú elijas.' },
-    { id: 'postre', icon: '🍰', name: 'Elegir el postre', desc: 'El postre del día lo eliges tú.' },
-    { id: 'excursion', icon: '🏞️', name: 'Elegir la excursión', desc: 'Una salida o excursión que elijas tú.' },
-    { id: 'peli', icon: '🎬', name: 'Elegir la película', desc: 'La película de la noche la eliges tú.' },
-    { id: 'tablet', icon: '📱', name: '30 minutos extra de tablet', desc: 'Media hora de juego extra.' },
-    { id: 'cuento', icon: '📖', name: 'Un cuento extra', desc: 'Un cuento más antes de dormir.' },
-    { id: 'acostarse', icon: '🌙', name: 'Acostarse 30 minutos más tarde', desc: 'Una noche con media hora más.' },
-    { id: 'juegos', icon: '🧸', name: 'Tarde de juegos', desc: 'Un rato de juego con papá o mamá, a tu elección.' },
-    { id: 'amigo', icon: '👫', name: 'Invitar a un amigo', desc: 'Un amigo o amiga viene a jugar.' },
-    { id: 'musica', icon: '🚗', name: 'Elegir la música del coche', desc: 'Tú pones la música en el próximo viaje.' },
-    { id: 'helado', icon: '🍦', name: 'Un helado especial', desc: 'Un helado o una merienda especial.' },
-    { id: 'mesa', icon: '🎲', name: 'Elegir el juego de mesa', desc: 'Jugamos al juego de mesa que elijas.' }
+    { id: 'cena', precio: 150, icon: '🍽️', name: 'Elegir la cena', desc: 'Hoy cenamos lo que tú elijas.' },
+    { id: 'postre', precio: 60, icon: '🍰', name: 'Elegir el postre', desc: 'El postre del día lo eliges tú.' },
+    { id: 'excursion', precio: 400, icon: '🏞️', name: 'Elegir la excursión', desc: 'Una salida o excursión que elijas tú.' },
+    { id: 'peli', precio: 120, icon: '🎬', name: 'Elegir la película', desc: 'La película de la noche la eliges tú.' },
+    { id: 'tablet', precio: 80, icon: '📱', name: '30 minutos extra de tablet', desc: 'Media hora de juego extra.' },
+    { id: 'cuento', precio: 50, icon: '📖', name: 'Un cuento extra', desc: 'Un cuento más antes de dormir.' },
+    { id: 'acostarse', precio: 100, icon: '🌙', name: 'Acostarse 30 minutos más tarde', desc: 'Una noche con media hora más.' },
+    { id: 'juegos', precio: 200, icon: '🧸', name: 'Tarde de juegos', desc: 'Un rato de juego con papá o mamá, a tu elección.' },
+    { id: 'amigo', precio: 250, icon: '👫', name: 'Invitar a un amigo', desc: 'Un amigo o amiga viene a jugar.' },
+    { id: 'musica', precio: 40, icon: '🚗', name: 'Elegir la música del coche', desc: 'Tú pones la música en el próximo viaje.' },
+    { id: 'helado', precio: 60, icon: '🍦', name: 'Un helado especial', desc: 'Un helado o una merienda especial.' },
+    { id: 'mesa', precio: 80, icon: '🎲', name: 'Elegir el juego de mesa', desc: 'Jugamos al juego de mesa que elijas.' }
   ];
   registrarSeccion({
     antes: '.academy-card[onclick*="openChickGallery"]',
@@ -34,6 +35,7 @@
       <h2 class="vales-h">🎁 Mis vales</h2>
       <div id="vales-mios"></div>
       <h2 class="vales-h">🛍️ Canjea tus estrellas</h2>
+      <p style="color:#64748B;font-size:.9rem;margin:-4px 0 8px;">Cada vale tiene su precio: ¡elige bien en qué gastas! Para repetir un vale, antes tienes que canjear 3 vales distintos.</p>
       <div id="vales-tienda"></div>
       <div id="vales-usados-box" class="hidden"><h2 class="vales-h">✅ Vales ya usados</h2><div id="vales-usados"></div></div>
     </div>`
@@ -57,6 +59,8 @@
   const stars = () => { try { return Number(localStorage.getItem('owl_academy_shared_stars') || 0); } catch (e) { return 0; } };
   const setStars = n => { try { localStorage.setItem('owl_academy_shared_stars', String(n)); } catch (e) {} if (app.updateSharedRewards) app.updateSharedRewards(); };
   const price = v => v.precio || PRECIO;
+  // cuántos canjes de otros vales faltan para poder repetir este (0 = disponible)
+  const espera = (id, d) => { let i = -1; d.mine.forEach((x, k) => { if (x.id === id) i = k; }); return i < 0 ? 0 : Math.max(0, ESPERA - (d.mine.length - 1 - i)); };
   const esc = t => String(t).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
   const fecha = ts => { const d = new Date(ts); return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(); };
   const hideAll = () => { document.querySelectorAll('[id^="screen-"]').forEach(e => e.classList.add('hidden')); document.body.classList.remove('santa-theme', 'letter-theme', 'chick-theme', 'dragon-theme'); window.scrollTo({ top: 0 }); };
@@ -71,18 +75,19 @@
     const sin = d.mine.filter(v => !v.used), usados = d.mine.filter(v => v.used);
     $('vales-mios').innerHTML = sin.length ? sin.map(v => `<div class="vale mio"><div class="vi">${v.icon}</div><div class="vt"><h3>${esc(v.name)}</h3><p>Canjeado el ${fecha(v.ts)}</p></div><button class="vb" onclick="app.valeUsar(${v.n})">Usar</button></div>`).join('')
       : '<p style="color:#64748B;font-size:.95rem;">Aún no tienes vales. ¡Canjea uno con tus estrellas!</p>';
-    $('vales-tienda').innerHTML = VALES.map(v => { const p = price(v), ok = s >= p;
-      return `<div class="vale"><div class="vi">${v.icon}</div><div class="vt"><h3>${esc(v.name)}</h3><p>${esc(v.desc)}</p></div><button class="vb" ${ok ? '' : 'disabled'} onclick="app.valeCanjear('${v.id}')">${ok ? p + ' ⭐ Canjear' : 'Faltan ' + (p - s)}</button></div>`; }).join('');
+    $('vales-tienda').innerHTML = VALES.slice().sort((a, b) => price(a) - price(b)).map(v => { const p = price(v), w = espera(v.id, d), ok = s >= p && !w;
+      const label = w ? '🔒 Elige ' + w + ' vale' + (w > 1 ? 's' : '') + ' más' : (s >= p ? 'Canjear' : 'Faltan ' + (p - s) + ' ⭐');
+      return `<div class="vale"><div class="vi">${v.icon}</div><div class="vt"><h3>${esc(v.name)}</h3><p>${esc(v.desc)}</p><p style="color:#B45309;font-weight:800;margin-top:2px;">${p} ⭐</p></div><button class="vb" ${ok ? '' : 'disabled'} onclick="app.valeCanjear('${v.id}')">${label}</button></div>`; }).join('');
     $('vales-usados-box').classList.toggle('hidden', !usados.length);
     $('vales-usados').innerHTML = usados.map(v => `<div class="vale usado"><div class="vi">${v.icon}</div><div class="vt"><h3>${esc(v.name)}</h3><p>Usado el ${fecha(v.used)}</p></div></div>`).join('');
   }
   app.openVales = function () { hideAll(); $('screen-vales').classList.remove('hidden'); render(); app.currentSectionKey = null; if (app.updateSharedRewards) app.updateSharedRewards(); };
   app.valeCanjear = function (id) {
-    const v = VALES.find(x => x.id === id); if (!v) return; if (stars() < price(v)) return;
+    const v = VALES.find(x => x.id === id); if (!v) return; if (stars() < price(v) || espera(id, load())) return;
     const o = modal(`<div style="font-size:2.4rem;">${v.icon}</div><h2 style="color:#4338CA;margin:6px 0;">${esc(v.name)}</h2><p style="color:#64748B;">¿Quieres cambiar <b>${price(v)} estrellas</b> por este vale?</p><div class="vm-row"><button class="btn btn-back" id="vm-no">Ahora no</button><button class="btn btn-green" id="vm-si">¡Sí, canjear!</button></div>`);
     o.querySelector('#vm-no').onclick = () => o.remove();
     o.querySelector('#vm-si').onclick = () => {
-      if (stars() < price(v)) { o.remove(); render(); return; }
+      if (stars() < price(v) || espera(id, load())) { o.remove(); render(); return; }
       setStars(stars() - price(v));
       const d = load(); d.n = (d.n || 0) + 1; d.mine.push({ n: d.n, id: v.id, icon: v.icon, name: v.name, ts: Date.now(), used: null }); save(d);
       o.innerHTML = `<div><div style="font-size:2.4rem;">🎉${v.icon}🎉</div><h2 style="color:#047857;margin:6px 0;">¡Vale conseguido!</h2><p style="color:#334155;">${esc(v.name)}</p><p style="color:#64748B;font-size:.9rem;">Lo encontrarás en “Mis vales”. Cuando lo uses, un adulto lo marcará.</p><button class="btn btn-primary" id="vm-ok">¡Genial!</button></div>`;
