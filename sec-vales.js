@@ -16,7 +16,7 @@
     { id: 'cuento', precio: 100, icon: '📖', name: 'Un cuento extra', desc: 'Un cuento más antes de dormir.' },
     { id: 'acostarse', precio: 180, icon: '🌙', name: 'Acostarse 30 minutos más tarde', desc: 'Una noche con media hora más.' },
     { id: 'juegos', precio: 350, icon: '🧸', name: 'Tarde de juegos', desc: 'Un rato de juego con papá o mamá, a tu elección.' },
-    { id: 'amigo', precio: 450, icon: '👫', name: 'Invitar a un amigo', desc: 'Un amigo o amiga viene a jugar.' },
+    { id: 'amigo', precio: 450, icon: '👫', name: 'Invitar al cine', desc: 'Invitar a lea al cine.' },
     { id: 'musica', precio: 90, icon: '🚗', name: 'Elegir la música del coche', desc: 'Tú pones la música en el próximo viaje.' },
     { id: 'helado', precio: 120, icon: '🍦', name: 'Un helado especial', desc: 'Un helado o una merienda especial.' },
     { id: 'mesa', precio: 150, icon: '🎲', name: 'Elegir el juego de mesa', desc: 'Jugamos al juego de mesa que elijas.' }
