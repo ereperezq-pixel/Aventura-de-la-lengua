@@ -4,22 +4,22 @@
    Para cambiar los vales o los precios basta con editar la lista VALES de abajo. */
 (function () {
   const $ = id => document.getElementById(id);
-  const PRECIO = 100;                 // precio por defecto (cada vale lleva su propio "precio" en la lista)
+  const PRECIO = 90;                  // precio por defecto (cada vale lleva su propio "precio" en la lista)
   const ESPERA = 3;                   // para repetir un vale hay que haber canjeado antes al menos ESPERA vales distintos
   const CLAVE = '4321';               // clave de adultos para marcar un vale como usado (la misma que la de los premios)
   const VALES = [
-    { id: 'cena', precio: 150, icon: '🍽️', name: 'Elegir la cena', desc: 'Hoy cenamos lo que tú elijas.' },
-    { id: 'postre', precio: 60, icon: '🍰', name: 'Elegir el postre', desc: 'El postre del día lo eliges tú.' },
-    { id: 'excursion', precio: 400, icon: '🏞️', name: 'Elegir la excursión', desc: 'Una salida o excursión que elijas tú.' },
-    { id: 'peli', precio: 120, icon: '🎬', name: 'Elegir la película', desc: 'La película de la noche la eliges tú.' },
-    { id: 'tablet', precio: 80, icon: '📱', name: '30 minutos extra de tablet', desc: 'Media hora de juego extra.' },
-    { id: 'cuento', precio: 50, icon: '📖', name: 'Un cuento extra', desc: 'Un cuento más antes de dormir.' },
-    { id: 'acostarse', precio: 100, icon: '🌙', name: 'Acostarse 30 minutos más tarde', desc: 'Una noche con media hora más.' },
-    { id: 'juegos', precio: 200, icon: '🧸', name: 'Tarde de juegos', desc: 'Un rato de juego con papá o mamá, a tu elección.' },
-    { id: 'amigo', precio: 250, icon: '👫', name: 'Invitar a un amigo', desc: 'Un amigo o amiga viene a jugar.' },
-    { id: 'musica', precio: 40, icon: '🚗', name: 'Elegir la música del coche', desc: 'Tú pones la música en el próximo viaje.' },
-    { id: 'helado', precio: 60, icon: '🍦', name: 'Un helado especial', desc: 'Un helado o una merienda especial.' },
-    { id: 'mesa', precio: 80, icon: '🎲', name: 'Elegir el juego de mesa', desc: 'Jugamos al juego de mesa que elijas.' }
+    { id: 'cena', precio: 280, icon: '🍽️', name: 'Elegir la cena', desc: 'Hoy cenamos lo que tú elijas.' },
+    { id: 'postre', precio: 120, icon: '🍰', name: 'Elegir el postre', desc: 'El postre del día lo eliges tú.' },
+    { id: 'excursion', precio: 700, icon: '🏞️', name: 'Elegir la excursión', desc: 'Una salida o excursión que elijas tú.' },
+    { id: 'peli', precio: 220, icon: '🎬', name: 'Elegir la película', desc: 'La película de la noche la eliges tú.' },
+    { id: 'tablet', precio: 150, icon: '📱', name: '30 minutos extra de tablet', desc: 'Media hora de juego extra.' },
+    { id: 'cuento', precio: 100, icon: '📖', name: 'Un cuento extra', desc: 'Un cuento más antes de dormir.' },
+    { id: 'acostarse', precio: 180, icon: '🌙', name: 'Acostarse 30 minutos más tarde', desc: 'Una noche con media hora más.' },
+    { id: 'juegos', precio: 350, icon: '🧸', name: 'Tarde de juegos', desc: 'Un rato de juego con papá o mamá, a tu elección.' },
+    { id: 'amigo', precio: 450, icon: '👫', name: 'Invitar a un amigo', desc: 'Un amigo o amiga viene a jugar.' },
+    { id: 'musica', precio: 90, icon: '🚗', name: 'Elegir la música del coche', desc: 'Tú pones la música en el próximo viaje.' },
+    { id: 'helado', precio: 120, icon: '🍦', name: 'Un helado especial', desc: 'Un helado o una merienda especial.' },
+    { id: 'mesa', precio: 150, icon: '🎲', name: 'Elegir el juego de mesa', desc: 'Jugamos al juego de mesa que elijas.' }
   ];
   registrarSeccion({
     antes: '.academy-card[onclick*="openChickGallery"]',
