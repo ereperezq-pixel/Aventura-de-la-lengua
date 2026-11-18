@@ -10,6 +10,6 @@ self.LISTA = {
     // secciones
     'sec-corral.js', 'sec-dragones.js', 'sec-isla.js', 'sec-abn.js', 'sec-nublo.js', 'sec-diplomas.js', 'sec-arts.js', 'sec-vales.js',
     // final
-    'nucleo-final.js', 'nucleo-rango.js', 'nucleo-pwa.js'
+    'nucleo-final.js', 'nucleo-rango.js', 'nucleo-version.js','nucleo-pwa.js'
   ]
 };
