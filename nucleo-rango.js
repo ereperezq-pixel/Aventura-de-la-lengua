@@ -37,7 +37,7 @@
   }
   function toast(html, ms) {
     let t = document.getElementById('rango-toast');
-    if (!t) { t = document.createElement('div'); t.id = 'rango-toast'; t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:88vw;background:#4338CA;color:#fff;padding:10px 16px;border-radius:16px;font-weight:700;font-size:.95rem;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:99999;text-align:center;transition:opacity .3s;'; document.body.appendChild(t); }
+    if (!t) { t = document.createElement('div'); t.id = 'rango-toast'; t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:88vw;background:#4338CA;color:#fff;padding:10px 16px;border-radius:16px;font-weight:700;font-size:.95rem;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:99999;text-align:center;transition:opacity .3s;pointer-events:none;'; document.body.appendChild(t); }
     t.innerHTML = html; t.style.opacity = '1'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.opacity = '0'; }, ms || 2600);
   }
   function levelUp(i) {
