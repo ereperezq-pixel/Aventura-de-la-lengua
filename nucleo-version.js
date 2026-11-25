@@ -1,5 +1,5 @@
 // VERSIÓN DE LA APP: suma 1 al último número (2.5.0 → 2.5.1) en cada modificación; novedad grande: sube el del medio (2.6.0); cambio enorme: el primero (3.0.0) y entrega SIEMPRE este archivo.
-window.APP_VERSION = '2.5.1';
+window.APP_VERSION = '2.6.0';
 (function(){
   function poner(){
     if(document.getElementById('app-version')) return;

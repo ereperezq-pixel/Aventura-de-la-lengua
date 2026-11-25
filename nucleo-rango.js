@@ -78,4 +78,26 @@
   // al volver a la Academia se refresca el cartel
   const back = app.goToAcademyMenu && app.goToAcademyMenu.bind(app);
   if (back) app.goToAcademyMenu = function () { const r = back.apply(app, arguments); paint(); return r; };
+
+  // ----- subir de categoría con la clave de los padres, desde la Galería de Premios -----
+  app.rangoSubir = function () {
+    const inp = document.getElementById('rango-clave'), msg = document.getElementById('rango-msg');
+    if (!inp || !msg) return;
+    if (inp.value.trim() !== '4321') { msg.textContent = '❌ Clave incorrecta'; return; }
+    const before = rankIndex(total), nx = RANGOS[before + 1];
+    if (!nx) { msg.textContent = '🏆 Nublo ya tiene el rango más alto'; inp.value = ''; return; }
+    total = nx.min; wr(TOTAL_KEY, total); wr(RANK_KEY, before + 1); paint(); inp.value = '';
+    msg.textContent = '✅ ¡Nublo sube a ' + nx.name + '!'; levelUp(before + 1);
+    const lb = document.getElementById('rango-lvl'); if (lb) lb.textContent = RANGOS[before + 1].name;
+  };
+  const rg = app.renderChickGallery && app.renderChickGallery.bind(app);
+  if (rg) app.renderChickGallery = function () {
+    const r = rg.apply(app, arguments), w = document.getElementById('ck-gallery'); if (!w) return r;
+    const d = document.createElement('div'); d.style.cssText = 'margin:18px 0;padding:12px;border:2px dashed #A5B4FC;border-radius:16px;text-align:center;';
+    d.innerHTML = '<div style="font-weight:800;color:#4338CA;">🔑 Subir a Nublo de categoría</div>' +
+      '<div style="font-size:.85rem;color:#64748B;margin:4px 0 8px;">Rango actual: <b id="rango-lvl">' + RANGOS[rankIndex(total)].name + '</b> · solo con la clave de los padres</div>' +
+      '<input id="rango-clave" type="password" inputmode="numeric" placeholder="Clave" style="padding:8px;border-radius:10px;border:2px solid #CBD5E1;width:110px;text-align:center;"> ' +
+      '<button class="btn btn-purple" onclick="app.rangoSubir()">⬆️ Subir</button><div id="rango-msg" style="margin-top:6px;font-weight:700;"></div>';
+    w.appendChild(d); return r;
+  };
 })();
